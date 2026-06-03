@@ -379,6 +379,7 @@
 </div>
 
 <script>
+    // إعداد سوبابيس
     const supabaseClient = supabase.createClient(
         'https://kuepdppngskwkmhyhohq.supabase.co',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI'
@@ -387,6 +388,7 @@
     let currentUserId = null;
     let watchedMap = new Map();
     
+    // تحميل الحضور من قاعدة البيانات
     async function loadWatchedFromSupabase() {
         const { data: { user } } = await supabaseClient.auth.getUser();
         if (!user) return;
@@ -406,6 +408,7 @@
         if (currentClassroomId) updateLecturesUI();
     }
     
+    // تحديث واجهة المحاضرات حسب حالة الإكمال
     function updateLecturesUI() {
         document.querySelectorAll('.lecture-item').forEach(el => {
             const lecId = el.getAttribute('data-lecture-id');
@@ -429,6 +432,7 @@
         updateProgressStats();
     }
     
+    // تبديل حالة مشاهدة يدوياً (زر الدائرة)
     window.toggleWatchedManual = async function(lectureId) {
         if (!currentUserId) {
             alert('الرجاء تسجيل الدخول أولاً');
@@ -478,6 +482,7 @@
         }
     };
     
+    // تحديث نقاط المستخدم
     async function updateUserPoints(userId, pointsToAdd) {
         const { data: profile } = await supabaseClient.from('profiles').select('points').eq('id', userId).single();
         const newPoints = (profile?.points || 0) + pointsToAdd;
@@ -488,6 +493,7 @@
         await supabaseClient.from('profiles').update({ points: newPoints, level }).eq('id', userId);
     }
     
+    // تحميل بيانات المستخدم (النقاط والمستوى)
     async function loadUserData() {
         const { data: { user } } = await supabaseClient.auth.getUser();
         if (!user) return;
@@ -503,6 +509,7 @@
         }
     }
     
+    // تحديث إحصائيات التقدم
     function updateProgressStats() {
         const container = document.getElementById('progressArea');
         if (!container) return;
@@ -520,42 +527,44 @@
         container.innerHTML = `<div class="progress-stats"><i class="fas fa-chart-line" style="color:#e8be6e;"></i> نسبة الإنجاز: ${completedLectures}/${totalLectures} (${percent}%) &nbsp; <i class="fas fa-check-circle" style="color:#2e7d32;"></i></div>`;
     }
     
-    // === دالة تشغيل الفيديو المُحسَّنة ===
-    window.playLecture = (url) => {
+    // ** دالة تشغيل الفيديو المُحسّنة والخالية من أخطاء الـ Syntax **
+    window.playLecture = function(url) {
         if (!url) {
             alert("رابط الفيديو غير موجود");
             return;
         }
-        // استخراج معرف الفيديو من جميع صيغ يوتيوب المعروفة
-        let videoId = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)?.[1];
+        // استخراج معرف الفيديو باستخدام تعبير عادي عادي بدون optional chaining
+        var match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+        var videoId = match ? match[1] : null;
         if (!videoId) {
             alert("لم نتمكن من استخراج معرف الفيديو. تأكد من أن الرابط صحيح من يوتيوب.");
             return;
         }
-        const iframe = document.getElementById('videoIframe');
-        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+        var iframe = document.getElementById('videoIframe');
+        iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&enablejsapi=1';
         document.getElementById('videoModal').style.display = 'flex';
     };
     
-    // === إغلاق الفيديو مع مسح المصدر ===
-    window.closeVideo = () => { 
-        const modal = document.getElementById('videoModal');
-        const iframe = document.getElementById('videoIframe');
-        iframe.src = '';   // إيقاف الفيديو بشكل كامل
-        modal.style.display = 'none'; 
+    // إغلاق الفيديو
+    window.closeVideo = function() {
+        var modal = document.getElementById('videoModal');
+        var iframe = document.getElementById('videoIframe');
+        iframe.src = '';
+        modal.style.display = 'none';
     };
     
+    // تحميل قائمة المعلمين
     async function loadTeachers() {
         const { data: teachers, error } = await supabaseClient.from('teachers').select('*').order('name');
-        if (error || !teachers?.length) {
+        if (error || !teachers || teachers.length === 0) {
             document.getElementById('contentArea').innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-chalkboard-user fa-3x" style="color:#e8be6e;"></i><br>لا يوجد مدرسون حالياً</div>';
             return;
         }
-        let html = `<div class="teachers-grid">`;
+        let html = '<div class="teachers-grid">';
         teachers.forEach(t => {
             const avatarHtml = t.avatar_url 
-                ? `<img src="${t.avatar_url}" class="teacher-avatar-img" alt="${escapeHtml(t.name)}">`
-                : `<div style="font-size: 52px; color:#c49a3b;"><i class="fas fa-user-graduate"></i></div>`;
+                ? '<img src="' + escapeHtml(t.avatar_url) + '" class="teacher-avatar-img" alt="' + escapeHtml(t.name) + '">'
+                : '<div style="font-size: 52px; color:#c49a3b;"><i class="fas fa-user-graduate"></i></div>';
             html += `
                 <div class="teacher-card" onclick="selectTeacher('${t.id}')">
                     <div class="teacher-avatar-wrapper">${avatarHtml}</div>
@@ -564,44 +573,47 @@
                 </div>
             `;
         });
-        html += `</div>`;
+        html += '</div>';
         document.getElementById('contentArea').innerHTML = html;
         document.getElementById('progressArea').innerHTML = '';
     }
     
-    window.selectTeacher = async (teacherId) => {
+    // اختيار معلم وعرض فصوله
+    window.selectTeacher = async function(teacherId) {
         currentTeacherId = teacherId;
         const { data: classrooms } = await supabaseClient.from('classrooms').select('*').eq('teacher_id', teacherId).order('order_index');
-        if (!classrooms?.length) {
-            document.getElementById('contentArea').innerHTML = `<button class="back-step" onclick="loadTeachers()"><i class="fas fa-arrow-right"></i> العودة للمدرسين</button><div style="text-align:center; padding:40px;"><i class="fas fa-folder-open"></i> لا توجد فصول لهذا المدرس</div>`;
+        if (!classrooms || classrooms.length === 0) {
+            document.getElementById('contentArea').innerHTML = '<button class="back-step" onclick="loadTeachers()"><i class="fas fa-arrow-right"></i> العودة للمدرسين</button><div style="text-align:center; padding:40px;"><i class="fas fa-folder-open"></i> لا توجد فصول لهذا المدرس</div>';
             return;
         }
-        let html = `<button class="back-step" onclick="loadTeachers()"><i class="fas fa-arrow-right"></i> المدرسين</button>`;
+        let html = '<button class="back-step" onclick="loadTeachers()"><i class="fas fa-arrow-right"></i> المدرسين</button>';
         classrooms.forEach(cls => { 
-            html += `<div class="class-item" onclick="selectClass('${cls.id}')"><span><i class="fas fa-layer-group" style="color:#c49a3b;"></i> ${escapeHtml(cls.name)}</span> <i class="fas fa-chevron-left"></i></div>`; 
+            html += '<div class="class-item" onclick="selectClass(\'' + cls.id + '\')"><span><i class="fas fa-layer-group" style="color:#c49a3b;"></i> ' + escapeHtml(cls.name) + '</span> <i class="fas fa-chevron-left"></i></div>';
         });
         document.getElementById('contentArea').innerHTML = html;
         document.getElementById('progressArea').innerHTML = '';
     };
     
-    window.selectClass = async (classroomId) => {
+    // اختيار فصل وعرض محاضراته
+    window.selectClass = async function(classroomId) {
         currentClassroomId = classroomId;
         const { data: lectures } = await supabaseClient.from('lectures').select('*').eq('classroom_id', classroomId).order('created_at', { ascending: true });
-        if (!lectures?.length) {
-            document.getElementById('contentArea').innerHTML = `<button class="back-step" onclick="selectTeacher('${currentTeacherId}')"><i class="fas fa-arrow-right"></i> الفصول</button><div style="text-align:center; padding:40px;">📭 لا توجد محاضرات في هذا الفصل بعد</div>`;
+        if (!lectures || lectures.length === 0) {
+            document.getElementById('contentArea').innerHTML = '<button class="back-step" onclick="selectTeacher(\'' + currentTeacherId + '\')"><i class="fas fa-arrow-right"></i> الفصول</button><div style="text-align:center; padding:40px;">📭 لا توجد محاضرات في هذا الفصل بعد</div>';
             return;
         }
-        let html = `<button class="back-step" onclick="selectTeacher('${currentTeacherId}')"><i class="fas fa-arrow-right"></i> رجوع للفصول</button>`;
+        let html = '<button class="back-step" onclick="selectTeacher(\'' + currentTeacherId + '\')"><i class="fas fa-arrow-right"></i> رجوع للفصول</button>';
         lectures.forEach(lec => {
             const lecId = lec.id;
             const completed = watchedMap.get(lecId) === true;
             const completedClass = completed ? 'completed' : '';
             const checkIcon = completed ? 'fa-check-circle' : 'fa-circle';
             const btnCompletedClass = completed ? 'completed' : '';
-            // مهم: استخدام JSON.stringify لتمرير الرابط بدون إفساده
+            const videoUrl = lec.youtube_url ? lec.youtube_url : '';
+            // استخدام JSON.stringify لنقل الرابط بشكل آمن
             html += `
                 <div class="lecture-item ${completedClass}" data-lecture-id="${lecId}">
-                    <div class="lecture-title" onclick="playLecture(${JSON.stringify(lec.youtube_url)})">
+                    <div class="lecture-title" onclick='playLecture(${JSON.stringify(videoUrl)})'>
                         <span class="play-icon"><i class="fas fa-play"></i></span>
                         <span>${escapeHtml(lec.title)}</span>
                     </div>
@@ -618,12 +630,19 @@
         updateProgressStats();
     };
     
-    function escapeHtml(str) { 
-        if (!str) return ''; 
-        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); 
+    // دالة لتأمين النصوص ضد XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
     
-    (async () => {
+    // بدء التشغيل: التحقق من الجلسة ثم تحميل البيانات
+    (async function() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) {
             window.location.href = 'index.html';
