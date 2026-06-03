@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>فلاش كارد </title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(125deg, #f1eaff 0%, #f7f0ff 50%, #fdf8ff 100%);
+      min-height: 100vh;
+      padding: 2rem;
+      font-family: 'Tajawal', 'Cairo', 'Segoe UI', system-ui, sans-serif;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, #d9c6ff, transparent);
+      top: -100px;
+      left: -100px;
+      border-radius: 50%;
+      z-index: 0;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, #c7aeff, transparent);
+      bottom: -150px;
+      right: -100px;
+      border-radius: 50%;
+      z-index: 0;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .header h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #3a1c71, #9d4edd, #d96cff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+      text-shadow: 0 5px 15px rgba(128, 0, 255, 0.1);
+    }
+    .header p {
+      background: rgba(255,255,245,0.7);
+      backdrop-filter: blur(12px);
+      display: inline-block;
+      padding: 0.5rem 2rem;
+      border-radius: 60px;
+      font-weight: 500;
+      color: #4c2a7c;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .card-ui {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 45px -15px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255,255,255,0.6) inset;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    .card-ui:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 35px 55px -18px rgba(106, 27, 154, 0.3);
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .form-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      background: linear-gradient(115deg, #4a1b8a, #b77eff);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      border-right: 6px solid #c28aff;
+      padding-right: 1rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .input-field {
+      flex: 1;
+      min-width: 220px;
+    }
+    .input-field label {
+      font-weight: 700;
+      color: #4f2c8c;
+      margin-bottom: 0.5rem;
+      display: block;
+      font-size: 0.9rem;
+    }
+    .input-field input, .input-field textarea {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      border: 2px solid #f0e4ff;
+      border-radius: 1.8rem;
+      background: #ffffffcc;
+      font-size: 1rem;
+      transition: all 0.25s;
+    }
+    .input-field input:focus, .input-field textarea:focus {
+      border-color: #b87eff;
+      box-shadow: 0 0 0 4px rgba(184, 126, 255, 0.2);
+      outline: none;
+      background: white;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      padding: 0.8rem 1.8rem;
+      border-radius: 3rem;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-primary {
+      background: linear-gradient(105deg, #752fe0, #aa5eff);
+      color: white;
+      box-shadow: 0 10px 20px -8px #8a3be0;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.03);
+      box-shadow: 0 18px 28px -12px #7b2fdd;
+    }
+    .btn-outline {
+      background: white;
+      border: 2px solid #cfaaff;
+      color: #633eb3;
+    }
+    .btn-outline:hover {
+      background: #f5eeff;
+      transform: scale(0.97);
+    }
+
+    .study-area {
+      text-align: center;
+    }
+    .flashcard {
+      background: transparent;
+      width: 100%;
+      max-width: 640px;
+      height: 400px;
+      cursor: pointer;
+      margin: 0 auto;
+      perspective: 2000px;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.65s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+      transform-style: preserve-3d;
+      border-radius: 2.2rem;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .front, .back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 2.2rem;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(2px);
+      box-shadow: 0 40px 60px -25px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(210, 175, 255, 0.6);
+    }
+    .front {
+      background: linear-gradient(125deg, #fffafc, #fbf5ff);
+    }
+    .back {
+      background: linear-gradient(125deg, #fef9ff, #faf2ff);
+      transform: rotateY(180deg);
+    }
+    .front h3, .back h3 {
+      font-size: 1rem;
+      background: #e9dcff;
+      padding: 0.2rem 1.2rem;
+      border-radius: 60px;
+      display: inline-block;
+      color: #5f35b0;
+      margin-bottom: 1rem;
+    }
+    .front p {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-top: 0.5rem;
+      color: #2f1757;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .back p {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: #3b2a58;
+      text-align: center;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .card-counter {
+      background: #d9c6ff;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      font-weight: bold;
+      display: inline-block;
+      margin-bottom: 0.8rem;
+    }
+    .nav-buttons {
+      margin-top: 1.2rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .card-item {
+      background: rgba(255, 245, 255, 0.9);
+      backdrop-filter: blur(4px);
+      border-radius: 1.8rem;
+      padding: 1.2rem;
+      transition: all 0.25s;
+      border: 1px solid #f0e2ff;
+    }
+    .card-item:hover {
+      background: white;
+      transform: translateY(-6px);
+      border-color: #caa6ff;
+      box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.15);
+    }
+    .badge-count {
+      background: #dac0ff;
+      border-radius: 2rem;
+      padding: 0.3rem 1rem;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      opacity: 0.7;
+    }
+    @media (max-width: 680px) {
+      body { padding: 1rem; }
+      .flashcard { height: 340px; }
+      .front p { font-size: 1.3rem; }
+      .back p { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <h1> فلاش كارد | نص فقط</h1>
+    <p>اضغط على البطاقة لتظهر الاجابة</p>
+  </div>
+
+  <!-- نموذج إضافة / تعديل -->
+  <div class="card-ui form-section">
+    <div class="form-title">➕ إضافة أو تعديل بطاقة</div>
+    <div class="input-group">
+      <div class="input-field">
+        <label> الوجه الأمامي (السؤال)</label>
+        <input type="text" id="frontInput" placeholder="مثال: ما هي عاصمة فرنسا؟" autocomplete="off">
+      </div>
+      <div class="input-field">
+        <label> الوجه الخلفي (الإجابة)</label>
+        <textarea id="backInput" rows="3" placeholder="مثال: باريس"></textarea>
+      </div>
+    </div>
+    <div class="button-group">
+      <button class="btn btn-primary" id="saveBtn">💾 حفظ البطاقة</button>
+      <button class="btn btn-outline" id="cancelEditBtn">❌ إلغاء التعديل</button>
+      <button class="btn btn-outline" id="deleteAllBtn" style="border-color:#ffbcbc; color:#bc3f6b;">🗑️ حذف الكل</button>
+    </div>
+  </div>
+
+  <!-- منطقة الدراسة -->
+  <div class="card-ui study-area">
+    <div class="form-title" style="border-right-color: #e5b0ff;">📖 بطاقة المراجعة التفاعلية</div>
+    <div class="card-counter" id="counter">0 / 0</div>
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="front">
+          <h3>📌 السؤال</h3>
+          <p id="frontDisplay">لا توجد بطاقات</p>
+        </div>
+        <div class="back">
+          <h3>🔎 الإجابة</h3>
+          <p id="backDisplay"></p>
+        </div>
+      </div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-outline" id="prevBtn">◀ السابق</button>
+      <button class="btn btn-outline" id="nextBtn">التالي ▶</button>
+    </div>
+    <p style="margin-top: 15px; font-size: 0.75rem; color:#a071cf;">💡 اضغط على البطاقة لقلبها وظهور الإجابة</p>
+  </div>
+
+  <!-- قائمة البطاقات -->
+  <div class="card-ui">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 1rem;">
+      <div class="form-title" style="margin-bottom: 0;">📚 مكتبة البطاقات</div>
+      <span class="badge-count" id="listCount">0 بطاقة</span>
+    </div>
+    <div id="cardsGrid" class="cards-grid"></div>
+  </div>
+  <footer>💜 حفظ تلقائي في المتصفح • تصميم عصري • بياناتك تبقى خاصة</footer>
+</div>
+
+<script>
+  // ---------------------------------------------
+  let flashcards = [];        // { id, front, back }
+  let currentIndex = 0;
+  let editId = null;
+
+  // DOM elements
+  const frontInput = document.getElementById('frontInput');
+  const backInput = document.getElementById('backInput');
+  const saveBtn = document.getElementById('saveBtn');
+  const cancelEditBtn = document.getElementById('cancelEditBtn');
+  const deleteAllBtn = document.getElementById('deleteAllBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const flashcardDiv = document.getElementById('flashcard');
+  const frontDisplay = document.getElementById('frontDisplay');
+  const backDisplay = document.getElementById('backDisplay');
+  const counterSpan = document.getElementById('counter');
+  const listCountSpan = document.getElementById('listCount');
+  const cardsGrid = document.getElementById('cardsGrid');
+
+  // حفظ التخزين المحلي
+  function saveToLocal() {
+    localStorage.setItem('flashcards_text_only', JSON.stringify(flashcards));
+  }
+
+  function loadFromLocal() {
+    const data = localStorage.getItem('flashcards_text_only');
+    if (data) {
+      try {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) flashcards = parsed;
+        else flashcards = [];
+      } catch(e) { flashcards = []; }
+    }
+    if (!flashcards.length) {
+      flashcards = [
+        { id: Date.now()+101, front: "ما هي عاصمة فرنسا؟", back: "باريس" },
+        { id: Date.now()+102, front: "ما هي لغة CSS؟", back: "Cascading Style Sheets" },
+        { id: Date.now()+103, front: "ماذا يعني API؟", back: "Application Programming Interface" }
+      ];
+      saveToLocal();
+    }
+  }
+
+  // تحديث البطاقة الرئيسية (قلب)
+  function updateMainCard() {
+    const total = flashcards.length;
+    if (total === 0) {
+      frontDisplay.innerText = "📭 لا توجد بطاقات";
+      backDisplay.innerText = "أضف بطاقة جديدة";
+      counterSpan.innerText = "0 / 0";
+      return;
+    }
+    if (currentIndex >= total) currentIndex = total - 1;
+    if (currentIndex < 0 && total > 0) currentIndex = 0;
+    const card = flashcards[currentIndex];
+    if (card) {
+      frontDisplay.innerText = card.front || "(بدون نص)";
+      backDisplay.innerText = card.back || "(لا توجد إجابة)";
+    } else {
+      frontDisplay.innerText = "خطأ";
+      backDisplay.innerText = "خطأ";
+    }
+    counterSpan.innerText = `${currentIndex+1} / ${total}`;
+    // إعادة ضبط القلب إلى الوضع الأمامي
+    if (flashcardDiv.classList.contains('flipped')) flashcardDiv.classList.remove('flipped');
+  }
+
+  // عرض قائمة البطاقات (الأمامي فقط)
+  function renderCardList() {
+    if (!cardsGrid) return;
+    if (flashcards.length === 0) {
+      cardsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:2rem;">✨ لا توجد بطاقات، أضف بطاقتك الأولى ✨</div>`;
+      listCountSpan.innerText = `0 بطاقة`;
+      return;
+    }
+    listCountSpan.innerText = `${flashcards.length} ${flashcards.length===1?'بطاقة':'بطاقات'}`;
+    let html = '';
+    flashcards.forEach(card => {
+      html += `
+        <div class="card-item" data-id="${card.id}">
+          <div style="font-weight:800; margin-bottom:8px;">📌 ${escapeHtml(card.front.length>60?card.front.slice(0,60)+'...':card.front)}</div>
+          <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:12px;">
+            <button class="btn-edit-card" data-id="${card.id}" style="background:#eee0ff; border:none; padding:5px 14px; border-radius:30px; font-weight:bold; cursor:pointer;">✏️ تعديل</button>
+            <button class="btn-del-card" data-id="${card.id}" style="background:#ffe6f0; border:none; padding:5px 14px; border-radius:30px; font-weight:bold; cursor:pointer;">🗑️ حذف</button>
+          </div>
+        </div>
+      `;
+    });
+    cardsGrid.innerHTML = html;
+    // ربط الأحداث
+    document.querySelectorAll('.btn-edit-card').forEach(btn => {
+      btn.addEventListener('click', (e) => { startEdit(parseInt(btn.dataset.id)); });
+    });
+    document.querySelectorAll('.btn-del-card').forEach(btn => {
+      btn.addEventListener('click', (e) => { deleteCard(parseInt(btn.dataset.id)); });
+    });
+  }
+
+  function escapeHtml(str) { 
+    if(!str) return ''; 
+    return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); 
+  }
+
+  function startEdit(id) {
+    const card = flashcards.find(c => c.id === id);
+    if (!card) return;
+    editId = id;
+    frontInput.value = card.front;
+    backInput.value = card.back || '';
+    saveBtn.innerText = '✏️ تحديث البطاقة';
+    document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function deleteCard(id) {
+    if (confirm("هل تريد حذف هذه البطاقة نهائياً؟")) {
+      const idx = flashcards.findIndex(c => c.id === id);
+      if (idx !== -1) {
+        flashcards.splice(idx, 1);
+        saveToLocal();
+        if (flashcards.length === 0) currentIndex = 0;
+        else if (currentIndex >= flashcards.length) currentIndex = flashcards.length - 1;
+        if (currentIndex < 0 && flashcards.length) currentIndex = 0;
+        if (editId === id) cancelEdit();
+        refreshAll();
+      }
+    }
+  }
+
+  function deleteAll() {
+    if (flashcards.length === 0) return;
+    if (confirm("⚠️ سيتم حذف جميع البطاقات نهائياً. هل أنت متأكد؟")) {
+      flashcards = [];
+      saveToLocal();
+      currentIndex = 0;
+      editId = null;
+      cancelEdit();
+      refreshAll();
+    }
+  }
+
+  function saveCard() {
+    const front = frontInput.value.trim();
+    const back = backInput.value.trim();
+    if (front === '') {
+      alert("❌ الرجاء إدخال النص الأمامي (السؤال)");
+      return;
+    }
+    if (back === '') {
+      alert("❌ الرجاء إدخال النص الخلفي (الإجابة)");
+      return;
+    }
+    if (editId !== null) {
+      // تعديل بطاقة موجودة
+      const idx = flashcards.findIndex(c => c.id === editId);
+      if (idx !== -1) {
+        flashcards[idx].front = front;
+        flashcards[idx].back = back;
+        saveToLocal();
+        if (flashcards[currentIndex] && flashcards[currentIndex].id === editId) updateMainCard();
+        else updateMainCard();
+      }
+      cancelEdit();
+    } else {
+      // إضافة جديدة
+      const newCard = {
+        id: Date.now(),
+        front: front,
+        back: back,
+      };
+      flashcards.push(newCard);
+      saveToLocal();
+      currentIndex = flashcards.length - 1;
+    }
+    if (editId === null) {
+      frontInput.value = '';
+      backInput.value = '';
+    }
+    refreshAll();
+    if (flashcardDiv.classList.contains('flipped')) flashcardDiv.classList.remove('flipped');
+  }
+
+  function cancelEdit() {
+    editId = null;
+    frontInput.value = '';
+    backInput.value = '';
+    saveBtn.innerText = '💾 حفظ البطاقة';
+  }
+
+  function nextCard() { 
+    if(flashcards.length) { 
+      currentIndex = (currentIndex + 1) % flashcards.length; 
+      updateMainCard(); 
+    } 
+  }
+  function prevCard() { 
+    if(flashcards.length) { 
+      currentIndex = (currentIndex - 1 + flashcards.length) % flashcards.length; 
+      updateMainCard(); 
+    } 
+  }
+  function toggleFlip() { 
+    if(flashcards.length) flashcardDiv.classList.toggle('flipped'); 
+  }
+  function refreshAll() { 
+    renderCardList(); 
+    updateMainCard(); 
+  }
+
+  // ربط الأحداث
+  function bindEvents() {
+    saveBtn.addEventListener('click', saveCard);
+    cancelEditBtn.addEventListener('click', cancelEdit);
+    deleteAllBtn.addEventListener('click', deleteAll);
+    prevBtn.addEventListener('click', prevCard);
+    nextBtn.addEventListener('click', nextCard);
+    flashcardDiv.addEventListener('click', toggleFlip);
+  }
+
+  function init() {
+    loadFromLocal();
+    if (flashcards.length > 0) currentIndex = 0;
+    bindEvents();
+    refreshAll();
+  }
+  init();
+</script>
+</body>
+</html>

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ديموفر | المكتبة البابلية</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background: radial-gradient(circle at 10% 20%, #2c1a0f, #1a2a3a);
+            color: #f5e7c8;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            position: relative;
+        }
+
+        .bg-cuneiform {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.1"><path fill="none" stroke="%23d4af37" stroke-width="1.2" d="M30 40 L45 35 L45 50 Z M80 70 L95 65 L95 80 Z M140 100 L155 95 L155 110 Z M50 140 L65 135 L65 150 Z M170 30 L185 25 L185 40 Z M110 160 L125 155 L125 170 Z"/><path fill="none" stroke="%23e0b354" stroke-width="0.8" d="M10 80 L22 76 L22 88 Z M60 20 L72 16 L72 28 Z M160 150 L172 146 L172 158 Z"/><text x="15" y="190" font-size="22" fill="%23d4af37" opacity="0.3">𒀭𒂗𒆤</text><text x="140" y="30" font-size="18" fill="%23d4af37" opacity="0.3">𒈨𒌍</text></svg>');
+            background-repeat: repeat;
+            background-size: 180px 180px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .points-bar {
+            background: rgba(245, 240, 230, 0.94);
+            backdrop-filter: blur(12px);
+            padding: 12px 28px;
+            border-radius: 80px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 15px 30px -12px rgba(0, 0, 0, 0.4);
+            border: 1px solid #d4af37;
+        }
+
+        .points-box, .level-box {
+            background: rgba(255, 250, 235, 0.9);
+            padding: 8px 28px;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #2c2418;
+            border: 1px solid #d4af37;
+        }
+
+        .points-box i, .level-box i {
+            color: #c49a3b;
+        }
+
+        .back-link, .back-step {
+            background: rgba(255, 250, 235, 0.9);
+            padding: 10px 28px;
+            border-radius: 60px;
+            text-decoration: none;
+            color: #2c2418;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            border: 1px solid #d4af37;
+            cursor: pointer;
+        }
+
+        .back-link:hover, .back-step:hover {
+            background: #c49a3b;
+            color: #1e2a2f;
+            transform: translateX(-4px);
+            border-color: #e8be6e;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #e8be6e, #f5e7c8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header p {
+            color: #e8be6e;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        .teachers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .teacher-card {
+            background: rgba(255, 250, 235, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 28px 20px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            text-align: center;
+            border: 1px solid #d4af37;
+            box-shadow: 0 12px 25px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        .teacher-card:hover {
+            transform: translateY(-8px);
+            border-color: #e8be6e;
+            background: #fffef7;
+            box-shadow: 0 20px 30px -12px rgba(212, 175, 55, 0.4);
+        }
+
+        .teacher-avatar-wrapper {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 18px auto;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #fff1e0, #ffe4cc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid #c49a3b;
+            box-shadow: 0 8px 14px rgba(0, 0, 0, 0.2);
+        }
+
+        .teacher-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* اسم المدرس - واضح بلون غامق */
+        .teacher-card .teacher-name {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #2c2418;
+            margin: 12px 0 6px;
+        }
+
+        .teacher-card .teacher-bio {
+            color: #7a5d3c;
+            margin-top: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .class-item {
+            background: rgba(255, 250, 235, 0.95);
+            padding: 18px 28px;
+            border-radius: 60px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-right: 5px solid #c49a3b;
+            transition: all 0.2s;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #2c2418;
+        }
+
+        .class-item:hover {
+            background: #fffef7;
+            transform: translateX(-5px);
+            border-right-width: 8px;
+        }
+
+        .lecture-item {
+            background: rgba(255, 250, 235, 0.95);
+            padding: 12px 20px 12px 16px;
+            border-radius: 80px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 1px solid #d4af37;
+            transition: all 0.25s;
+        }
+
+        .lecture-item.completed {
+            background: rgba(46, 125, 50, 0.25);
+            border-right: 5px solid #2e7d32;
+        }
+
+        .lecture-title {
+            flex: 2;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-weight: 600;
+            color: #2c2418;
+        }
+
+        .play-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(105deg, #b48b3a, #e0b15c);
+            border-radius: 60px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #2a241a;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .play-icon:hover {
+            transform: scale(1.05);
+            background: #c49a3b;
+        }
+
+        .badge {
+            background: rgba(212, 175, 55, 0.25);
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #c49a3b;
+        }
+
+        .watched-btn {
+            background: rgba(255, 250, 235, 0.6);
+            border: 1px solid #d4af37;
+            font-size: 1.7rem;
+            cursor: pointer;
+            color: #b48b3a;
+            transition: 0.2s;
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .watched-btn.completed {
+            color: #2e7d32;
+            background: rgba(46, 125, 50, 0.3);
+            border-color: #2e7d32;
+        }
+
+        .watched-btn:hover {
+            transform: scale(1.1);
+            background: #e8be6e;
+            color: #2a241a;
+        }
+
+        .progress-stats {
+            text-align: center;
+            background: rgba(255, 250, 235, 0.9);
+            padding: 10px 28px;
+            border-radius: 60px;
+            display: inline-block;
+            font-weight: 700;
+            border: 1px solid #d4af37;
+            color: #c49a3b;
+        }
+
+        .video-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(16px);
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        .video-container {
+            background: #000;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 40px 60px rgba(0,0,0,0.5);
+            border: 2px solid #c49a3b;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 520px;
+            border: none;
+        }
+
+        .close-video {
+            position: absolute;
+            top: -44px;
+            left: 0;
+            background: linear-gradient(105deg, #b48b3a, #e0b15c);
+            color: #2a241a;
+            padding: 8px 22px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .close-video:hover {
+            background: #c49a3b;
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .video-container iframe { height: 260px; }
+            .lecture-item { border-radius: 28px; padding: 12px 18px; }
+            .points-bar { justify-content: center; }
+            .points-box, .level-box { font-size: 0.9rem; padding: 6px 20px; }
+            .teacher-avatar-wrapper { width: 80px; height: 80px; }
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 40px;
+            color: #e8be6e;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+<div class="bg-cuneiform"></div>
+<div class="container">
+    <div class="points-bar">
+        <div class="points-box"><i class="fas fa-coins"></i> <span id="userPoints">0 نقطة</span></div>
+        <div class="level-box"><i class="fas fa-chart-simple"></i> <span id="userLevel">مبتدئ</span></div>
+    </div>
+    <a href="dashbord.html" class="back-link"><i class="fas fa-arrow-right"></i> 𒀭 لوحة القيادة</a>
+    <div class="header">
+        <h1><i class="fas fa-graduation-cap" style="color: #e8be6e;"></i> 𒈨𒌍 المكتبة التعليمية البابلية 𒀭</h1>
+        <p>اكتشف دروسك من كبار المعلمين، سجل إنجازك واحصل على نقاط التميز ✨</p>
+    </div>
+    <div id="contentArea"><div style="text-align:center; padding:60px;"><i class="fas fa-spinner fa-pulse fa-2x" style="color:#e8be6e;"></i><br>جاري تحميل المحتوى...</div></div>
+    <div style="text-align: center; margin-top: 25px;" id="progressArea"></div>
+    <div class="footer-note">⭐ أكمل المحاضرة بالضغط على زر الدائرة — كل مشاهدة تمنحك 10 نقاط وخبرة</div>
+</div>
+<div id="videoModal" class="video-modal" onclick="closeVideo()">
+    <div class="video-container" onclick="event.stopPropagation()">
+        <span class="close-video" onclick="closeVideo()"><i class="fas fa-times"></i> إغلاق</span>
+        <iframe id="videoIframe" allowfullscreen></iframe>
+    </div>
+</div>
+
+<script>
+    const supabaseClient = supabase.createClient(
+        'https://kuepdppngskwkmhyhohq.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI'
+    );
+    let currentTeacherId = null, currentClassroomId = null;
+    let currentUserId = null;
+    let watchedMap = new Map();
+    
+    async function loadWatchedFromSupabase() {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) return;
+        currentUserId = user.id;
+        const { data: attendance, error } = await supabaseClient
+            .from('attendance')
+            .select('lecture_id, completed')
+            .eq('student_id', currentUserId);
+        if (error) {
+            console.error('خطأ في تحميل العلامات:', error);
+            return;
+        }
+        watchedMap.clear();
+        attendance.forEach(rec => {
+            if (rec.completed) watchedMap.set(rec.lecture_id, true);
+        });
+        if (currentClassroomId) updateLecturesUI();
+    }
+    
+    function updateLecturesUI() {
+        document.querySelectorAll('.lecture-item').forEach(el => {
+            const lecId = el.getAttribute('data-lecture-id');
+            const isCompleted = watchedMap.get(lecId) === true;
+            if (isCompleted) {
+                el.classList.add('completed');
+                const btn = el.querySelector('.watched-btn');
+                if (btn) {
+                    btn.classList.add('completed');
+                    btn.innerHTML = '<i class="fas fa-check-circle"></i>';
+                }
+            } else {
+                el.classList.remove('completed');
+                const btn = el.querySelector('.watched-btn');
+                if (btn) {
+                    btn.classList.remove('completed');
+                    btn.innerHTML = '<i class="fas fa-circle"></i>';
+                }
+            }
+        });
+        updateProgressStats();
+    }
+    
+    window.toggleWatchedManual = async function(lectureId) {
+        if (!currentUserId) {
+            alert('الرجاء تسجيل الدخول أولاً');
+            return;
+        }
+        const currentlyCompleted = watchedMap.get(lectureId) === true;
+        try {
+            if (!currentlyCompleted) {
+                const { data: existing } = await supabaseClient
+                    .from('attendance')
+                    .select('id')
+                    .eq('student_id', currentUserId)
+                    .eq('lecture_id', lectureId)
+                    .maybeSingle();
+                if (existing) {
+                    await supabaseClient
+                        .from('attendance')
+                        .update({ completed: true, watched_at: new Date(), watched_percentage: 100 })
+                        .eq('id', existing.id);
+                } else {
+                    await supabaseClient
+                        .from('attendance')
+                        .insert({ student_id: currentUserId, lecture_id: lectureId, completed: true, watched_at: new Date(), watched_percentage: 100, points_earned: 10 });
+                    await updateUserPoints(currentUserId, 10);
+                }
+                watchedMap.set(lectureId, true);
+            } else {
+                const { data: existing } = await supabaseClient
+                    .from('attendance')
+                    .select('id')
+                    .eq('student_id', currentUserId)
+                    .eq('lecture_id', lectureId)
+                    .maybeSingle();
+                if (existing) {
+                    await supabaseClient
+                        .from('attendance')
+                        .update({ completed: false, points_earned: 0 })
+                        .eq('id', existing.id);
+                }
+                watchedMap.set(lectureId, false);
+            }
+            updateLecturesUI();
+            await loadUserData();
+        } catch (err) {
+            console.error(err);
+            alert('حدث خطأ أثناء حفظ العلامة');
+        }
+    };
+    
+    async function updateUserPoints(userId, pointsToAdd) {
+        const { data: profile } = await supabaseClient.from('profiles').select('points').eq('id', userId).single();
+        const newPoints = (profile?.points || 0) + pointsToAdd;
+        let level = 'مبتدئ';
+        if (newPoints >= 200) level = 'خبير';
+        else if (newPoints >= 100) level = 'متقدم';
+        else if (newPoints >= 50) level = 'متوسط';
+        await supabaseClient.from('profiles').update({ points: newPoints, level }).eq('id', userId);
+    }
+    
+    async function loadUserData() {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) return;
+        const { data: profile } = await supabaseClient.from('profiles').select('points, level').eq('id', user.id).single();
+        if (profile) {
+            let pointsVal = profile.points || 0;
+            document.getElementById('userPoints').innerText = `${pointsVal} نقطة`;
+            let levelText = '🌱 مبتدئ';
+            if (pointsVal >= 50) levelText = '🥈 متوسط';
+            if (pointsVal >= 100) levelText = '🥇 متقدم';
+            if (pointsVal >= 200) levelText = '🏆 خبير';
+            document.getElementById('userLevel').innerHTML = `<i class="fas fa-crown"></i> ${levelText}`;
+        }
+    }
+    
+    function updateProgressStats() {
+        const container = document.getElementById('progressArea');
+        if (!container) return;
+        const totalLectures = document.querySelectorAll('.lecture-item').length;
+        let completedLectures = 0;
+        document.querySelectorAll('.lecture-item').forEach(el => {
+            const lecId = el.getAttribute('data-lecture-id');
+            if (watchedMap.get(lecId) === true) completedLectures++;
+        });
+        if (totalLectures === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        const percent = Math.round((completedLectures / totalLectures) * 100);
+        container.innerHTML = `<div class="progress-stats"><i class="fas fa-chart-line" style="color:#e8be6e;"></i> نسبة الإنجاز: ${completedLectures}/${totalLectures} (${percent}%) &nbsp; <i class="fas fa-check-circle" style="color:#2e7d32;"></i></div>`;
+    }
+    
+    window.playLecture = (url) => {
+        let videoId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=))([^"&?\/\s]{11})/)?.[1];
+        if (videoId) {
+            document.getElementById('videoIframe').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            document.getElementById('videoModal').style.display = 'flex';
+        } else {
+            alert("رابط الفيديو غير صالح");
+        }
+    };
+    window.closeVideo = () => { 
+        document.getElementById('videoModal').style.display = 'none'; 
+        document.getElementById('videoIframe').src = ''; 
+    };
+    
+    async function loadTeachers() {
+        const { data: teachers, error } = await supabaseClient.from('teachers').select('*').order('name');
+        if (error || !teachers?.length) {
+            document.getElementById('contentArea').innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-chalkboard-user fa-3x" style="color:#e8be6e;"></i><br>لا يوجد مدرسون حالياً</div>';
+            return;
+        }
+        let html = `<div class="teachers-grid">`;
+        teachers.forEach(t => {
+            const avatarHtml = t.avatar_url 
+                ? `<img src="${t.avatar_url}" class="teacher-avatar-img" alt="${escapeHtml(t.name)}">`
+                : `<div style="font-size: 52px; color:#c49a3b;"><i class="fas fa-user-graduate"></i></div>`;
+            html += `
+                <div class="teacher-card" onclick="selectTeacher('${t.id}')">
+                    <div class="teacher-avatar-wrapper">${avatarHtml}</div>
+                    <div class="teacher-name">${escapeHtml(t.name)}</div>
+                    <div class="teacher-bio">${escapeHtml(t.bio) || 'متميز في التدريس'}</div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        document.getElementById('contentArea').innerHTML = html;
+        document.getElementById('progressArea').innerHTML = '';
+    }
+    
+    window.selectTeacher = async (teacherId) => {
+        currentTeacherId = teacherId;
+        const { data: classrooms } = await supabaseClient.from('classrooms').select('*').eq('teacher_id', teacherId).order('order_index');
+        if (!classrooms?.length) {
+            document.getElementById('contentArea').innerHTML = `<button class="back-step" onclick="loadTeachers()"><i class="fas fa-arrow-right"></i> العودة للمدرسين</button><div style="text-align:center; padding:40px;"><i class="fas fa-folder-open"></i> لا توجد فصول لهذا المدرس</div>`;
+            return;
+        }
+        let html = `<button class="back-step" onclick="loadTeachers()"><i class="fas fa-arrow-right"></i> المدرسين</button>`;
+        classrooms.forEach(cls => { 
+            html += `<div class="class-item" onclick="selectClass('${cls.id}')"><span><i class="fas fa-layer-group" style="color:#c49a3b;"></i> ${escapeHtml(cls.name)}</span> <i class="fas fa-chevron-left"></i></div>`; 
+        });
+        document.getElementById('contentArea').innerHTML = html;
+        document.getElementById('progressArea').innerHTML = '';
+    };
+    
+    window.selectClass = async (classroomId) => {
+        currentClassroomId = classroomId;
+        const { data: lectures } = await supabaseClient.from('lectures').select('*').eq('classroom_id', classroomId).order('created_at', { ascending: true });
+        if (!lectures?.length) {
+            document.getElementById('contentArea').innerHTML = `<button class="back-step" onclick="selectTeacher('${currentTeacherId}')"><i class="fas fa-arrow-right"></i> الفصول</button><div style="text-align:center; padding:40px;">📭 لا توجد محاضرات في هذا الفصل بعد</div>`;
+            return;
+        }
+        let html = `<button class="back-step" onclick="selectTeacher('${currentTeacherId}')"><i class="fas fa-arrow-right"></i> رجوع للفصول</button>`;
+        lectures.forEach(lec => {
+            const lecId = lec.id;
+            const completed = watchedMap.get(lecId) === true;
+            const completedClass = completed ? 'completed' : '';
+            const checkIcon = completed ? 'fa-check-circle' : 'fa-circle';
+            const btnCompletedClass = completed ? 'completed' : '';
+            html += `
+                <div class="lecture-item ${completedClass}" data-lecture-id="${lecId}">
+                    <div class="lecture-title" onclick="playLecture('${escapeHtml(lec.youtube_url)}')">
+                        <span class="play-icon"><i class="fas fa-play"></i></span>
+                        <span>${escapeHtml(lec.title)}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="badge"><i class="fas fa-gem"></i> +10 نقاط</span>
+                        <button class="watched-btn ${btnCompletedClass}" onclick="toggleWatchedManual('${lecId}')" title="تحديد كمشاهدة / إلغاء">
+                            <i class="fas ${checkIcon}"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById('contentArea').innerHTML = html;
+        updateProgressStats();
+    };
+    
+    function escapeHtml(str) { 
+        if (!str) return ''; 
+        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); 
+    }
+    
+    (async () => {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.href = 'index.html';
+            return;
+        }
+        await loadWatchedFromSupabase();
+        await loadTeachers();
+        await loadUserData();
+    })();
+</script>
+</body>
+</html>

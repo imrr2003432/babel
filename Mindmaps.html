@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MindForge | خريطة ذهنية - تحكم فائق السلاسة مثل TradingView</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, 'SF Pro Text', 'BlinkMacSystemFont', system-ui, sans-serif;
+            background: #000;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: fixed;
+            touch-action: none;
+        }
+
+        .app-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 30% 40%, #1c1c1e, #0c0c0d);
+        }
+
+        .canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            cursor: grab;
+            touch-action: none;
+            will-change: transform;
+        }
+        .canvas-container:active { cursor: grabbing; }
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            will-change: transform;
+        }
+
+        /* شريط الأدوات القابل للطي (بدون سحب) */
+        .toolbar-wrapper {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toolbar-toggle {
+            background: rgba(28, 28, 30, 0.9);
+            backdrop-filter: blur(24px);
+            border: 0.5px solid rgba(255,255,255,0.2);
+            border-radius: 40px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            pointer-events: auto;
+        }
+        .toolbar-toggle:active { transform: scale(0.94); background: #0a84ff; }
+        .draggable-toolbar {
+            background: rgba(28, 28, 30, 0.92);
+            backdrop-filter: blur(32px);
+            border-radius: 56px;
+            padding: 8px 12px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            border: 0.5px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+            scrollbar-width: thin;
+            max-width: 90vw;
+            direction: rtl;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .draggable-toolbar.collapsed {
+            transform: scale(0);
+            opacity: 0;
+            padding: 0;
+            margin: 0;
+            width: 0;
+            visibility: hidden;
+        }
+        .draggable-toolbar button, .draggable-toolbar .color-wrap {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 13px;
+            color: #ffffffdd;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.1s linear;
+            flex-shrink: 0;
+            touch-action: manipulation;
+        }
+        .draggable-toolbar button:active { transform: scale(0.94); background: rgba(255,255,255,0.25); }
+        .primary-btn { background: #0a84ff !important; color: white !important; }
+        .danger-btn { background: #ff3b30 !important; color: white !important; }
+        .accent-btn { background: #5e5ce6 !important; }
+        .toolbar input[type="color"] { width: 38px; height: 34px; border-radius: 30px; background: #2c2c2e; border: none; }
+
+        .open-sidebar-btn {
+            position: fixed;
+            top: 20px;
+            left: 16px;
+            background: rgba(28,28,30,0.85);
+            backdrop-filter: blur(20px);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 30px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1150;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            touch-action: manipulation;
+        }
+        .open-sidebar-btn:active { transform: scale(0.94); background: #0a84ff; }
+
+        /* الشريط الجانبي */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 100%;
+            background: rgba(28, 28, 30, 0.96);
+            backdrop-filter: blur(40px);
+            z-index: 1200;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            display: flex;
+            flex-direction: column;
+            border-left: 0.5px solid rgba(255,255,255,0.2);
+            direction: rtl;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+        }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 0.5px solid rgba(255,255,255,0.15);
+        }
+        .sidebar-header h2 { color: white; font-size: 20px; font-weight: 590; }
+        .close-sidebar {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 30px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .sidebar-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.2);
+        }
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 10px;
+            border-radius: 28px;
+            color: #e5e5ea;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .tab-btn.active { background: #0a84ff; color: white; }
+        .tab-content { flex: 1; overflow-y: auto; padding: 16px; display: none; }
+        .tab-content.active { display: block; }
+        .sidebar label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #e5e5ea;
+            font-size: 14px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .sidebar select, .sidebar input[type="color"], .sidebar input[type="text"] {
+            background: #1c1c1e;
+            border: 0.5px solid #3a3a3c;
+            border-radius: 12px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 13px;
+        }
+        .sidebar input[type="range"] { width: 120px; }
+        .map-item {
+            background: #2c2c2e;
+            border-radius: 20px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .map-item button {
+            background: transparent;
+            border: none;
+            color: #ff9f0a;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 4px;
+        }
+        .save-map-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .save-map-row input { flex: 1; }
+        .save-map-row button {
+            background: #0a84ff;
+            border: none;
+            border-radius: 30px;
+            padding: 0 16px;
+            color: white;
+        }
+        .info-status {
+            position: fixed;
+            bottom: 20px;
+            right: 16px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            color: #e5e5ea;
+            z-index: 1040;
+            font-family: monospace;
+            border-left: 2px solid #0a84ff;
+            pointer-events: none;
+        }
+        @media (max-width: 640px) {
+            .sidebar { width: 280px; }
+            .draggable-toolbar button { padding: 6px 10px; font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="canvas-container" id="canvasContainer">
+        <canvas id="mindCanvas"></canvas>
+    </div>
+
+    <div class="toolbar-wrapper">
+        <div class="toolbar-toggle" id="toggleToolbarBtn">
+            <i class="fas fa-chevron-up" id="toggleIcon"></i>
+        </div>
+        <div id="draggableToolbar" class="draggable-toolbar">
+            <button id="addChildBtn"><i class="fas fa-plus-circle"></i> فرع</button>
+            <button id="addSiblingBtn"><i class="fas fa-code-branch"></i> شقيق</button>
+            <button id="deleteNodeBtn" class="danger-btn"><i class="fas fa-trash-alt"></i> حذف</button>
+            <button id="editTextBtn"><i class="fas fa-pen"></i> تعديل</button>
+            <div class="color-wrap"><i class="fas fa-fill-drip"></i><input type="color" id="nodeColorPicker" value="#4f9da6"></div>
+            <button id="applyColorBtn"><i class="fas fa-palette"></i> تطبيق</button>
+            <button id="autoLayoutBtn" class="primary-btn"><i class="fas fa-magic"></i> ترتيب</button>
+            <button id="centerViewBtn"><i class="fas fa-crosshairs"></i> توسيط</button>
+            <button id="saveLocalBtn"><i class="fas fa-save"></i> حفظ</button>
+            <button id="resetMapBtn"><i class="fas fa-undo-alt"></i> إعادة</button>
+        </div>
+    </div>
+
+    <button id="openSidebarBtn" class="open-sidebar-btn"><i class="fas fa-sliders-h"></i></button>
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-cog"></i> الإعدادات</h2>
+            <button id="closeSidebarBtn" class="close-sidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="sidebar-tabs">
+            <button id="tabCustomizeBtn" class="tab-btn active">🎨 تخصيص</button>
+            <button id="tabMapsBtn" class="tab-btn">🗂️ خرائطي</button>
+        </div>
+        <div id="customizeTab" class="tab-content active">
+            <label>الخلفية: <select id="bgType"><option value="gradient">تدرج داكن</option><option value="solid">لون صلب</option><option value="image">صورة</option></select></label>
+            <label id="bgColorLabel">لون الخلفية: <input type="color" id="bgColor" value="#1c1c1e"></label>
+            <label id="bgImageLabel" style="display:none;">رابط الصورة: <input type="text" id="bgImageUrl" placeholder="https://..."></label>
+            <label>شكل العقدة: <select id="nodeShape"><option value="rounded">مستدير</option><option value="pill">كبسولة</option><option value="square">مربع</option></select></label>
+            <label>حجم العقدة: <div><input type="range" id="nodeWidth" min="90" max="210" step="2" value="130"> عرض <span id="widthVal">130</span> / <input type="range" id="nodeHeight" min="42" max="76" step="2" value="52"> ارتفاع <span id="heightVal">52</span></div></label>
+            <label>لون النص: <input type="color" id="textColor" value="#ffffff"></label>
+            <label>لون الحدود: <input type="color" id="borderColor" value="#ffffffcc"></label>
+            <label>سمك الحدود: <input type="range" id="borderWidth" min="1" max="4" step="0.5" value="1.5"></label>
+            <label>ظل العقدة: <input type="range" id="shadowBlur" min="0" max="15" value="6"></label>
+        </div>
+        <div id="mapsTab" class="tab-content">
+            <div id="mapsListContainer"></div>
+            <div class="save-map-row">
+                <input type="text" id="newMapName" placeholder="اسم الخريطة (فيزياء، كيمياء...)" dir="rtl">
+                <button id="saveCurrentMapBtn"><i class="fas fa-save"></i> حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-status" id="infoStatus">
+        <i class="fas fa-chart-line"></i> تحكم فائق السلاسة مثل TradingView | إصبعين للتكبير
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- النموذج الأساسي ----------
+        let currentMapId = "default";
+        let mapsLibrary = {};
+        let nodes = [], nextId = 1, selectedNodeId = null;
+        let styleSettings = {
+            bgType: "gradient", bgColor: "#1c1c1e", bgImageUrl: "",
+            nodeShape: "rounded", nodeWidth: 130, nodeHeight: 52,
+            textColor: "#ffffff", borderColor: "#ffffffcc", borderWidth: 1.5, shadowBlur: 6
+        };
+
+        // متغيرات التحكم في العرض (pan, zoom) - فائقة السلاسة
+        let panX = 0, panY = 0;
+        let scale = 1.0;
+        const MIN_SCALE = 0.3;
+        const MAX_SCALE = 2.5;
+
+        // متغيرات التفاعل TradingView-style
+        let isDragging = false;
+        let isPinching = false;
+        let dragStart = { x: 0, y: 0 };
+        let panStart = { x: 0, y: 0 };
+        let pinchStartDistance = 0;
+        let pinchStartScale = 1;
+        let pinchCenter = { x: 0, y: 0 };
+        let pinchStartPan = { x: 0, y: 0 };
+
+        // سحب العقد
+        let dragNodeActive = false;
+        let dragNodeId = null;
+        let dragNodeStartWorld = { x: 0, y: 0 };
+
+        let devicePixelRatio = window.devicePixelRatio || 1;
+        let canvas, ctx, container;
+        let renderRequested = false;
+
+        const DEFAULT_COLOR = "#4f9da6";
+        const SELECTION_BORDER = "#ff9f0a";
+        const CONNECTION_COLOR = "rgba(140, 160, 210, 0.7)";
+        const STORAGE_KEY = "mindforge_tradingview_smooth";
+
+        // --- دوال مساعدة للرسم والعقد ---
+        function getNode(id) { return nodes.find(n => n.id === id); }
+        function getChildrenIds(pid) { return nodes.filter(n => n.parentId === pid).map(n=>n.id); }
+        function getDescendants(id, self=true) { let res=self?[id]:[]; for(let ch of getChildrenIds(id)) res.push(...getDescendants(ch,true)); return res; }
+        function moveSubtree(id, dx, dy) { for(let nid of getDescendants(id,true)){ let n=getNode(nid); if(n){ n.x+=dx; n.y+=dy; } } triggerRenderAndSave(); }
+        function addNode(parentId,text,x,y,color=null) { let id=nextId++; let newNode={id,text,parentId,x,y,color:color||DEFAULT_COLOR}; nodes.push(newNode); selectedNodeId=id; triggerRenderAndSave(); return id; }
+        function addChild() { if(!selectedNodeId){showToast("اختر عقدة"); return;} let p=getNode(selectedNodeId); if(!p) return; let cnt=getChildrenIds(selectedNodeId).length; addNode(selectedNodeId,"فكرة جديدة",p.x+210,p.y+(cnt-1)*70+20,"#5e5ce6"); }
+        function addSibling() { if(!selectedNodeId) return; let node=getNode(selectedNodeId); if(!node.parentId){ addChild(); return; } let parent=getNode(node.parentId); if(parent){ let siblings=getChildrenIds(parent.id); let idx=siblings.indexOf(selectedNodeId); addNode(parent.id,"عقدة مجاورة",parent.x+210,parent.y+(idx+1)*72-30,"#5e5ce6"); } }
+        function deleteNodeAndChildren(id) { if(!id) return; let root=nodes.find(n=>n.parentId===null); if(root&&root.id===id&&nodes.length>1){ if(confirm("إعادة تعيين؟")) initDefaultMap(); return; } let toDel=getDescendants(id,true); nodes=nodes.filter(n=>!toDel.includes(n.id)); if(selectedNodeId===id||toDel.includes(selectedNodeId)) selectedNodeId=nodes.length?nodes[0].id:null; triggerRenderAndSave(); }
+        function editText() { if(!selectedNodeId){showToast("حدد عقدة"); return;} let n=getNode(selectedNodeId); if(n){ let newText=prompt("تعديل النص:",n.text); if(newText?.trim()){ n.text=newText.trim(); triggerRenderAndSave(); } } }
+        function applyColor(color) { if(selectedNodeId){ let n=getNode(selectedNodeId); if(n){ n.color=color; triggerRenderAndSave(); } } else showToast("حدد عقدة"); }
+        function autoLayout() { let root=nodes.find(n=>n.parentId===null); if(!root) return; root.x=0; root.y=0; function layout(parent,offX=220){ let children=nodes.filter(n=>n.parentId===parent.id).sort((a,b)=>a.id-b.id); if(!children.length) return; let startY=parent.y-((children.length-1)*62)/2; for(let i=0;i<children.length;i++){ children[i].x=parent.x+offX; children[i].y=startY+i*72; layout(children[i],offX+30); } } layout(root); triggerRenderAndSave(); centerView(); }
+
+        // رسم فائق الأداء
+        function drawBackground() { let w=canvas.width/devicePixelRatio, h=canvas.height/devicePixelRatio; if(styleSettings.bgType==="gradient"){ let grad=ctx.createLinearGradient(0,0,w,h); grad.addColorStop(0,"#0c0c0d"); grad.addColorStop(1,"#1c1c1e"); ctx.fillStyle=grad; ctx.fillRect(0,0,w,h); } else if(styleSettings.bgType==="solid"){ ctx.fillStyle=styleSettings.bgColor; ctx.fillRect(0,0,w,h); } else if(styleSettings.bgType==="image"&&styleSettings.bgImageUrl){ let img=new Image(); img.crossOrigin="Anonymous"; img.onload=()=>{ ctx.drawImage(img,0,0,w,h); requestRender(); }; img.src=styleSettings.bgImageUrl; ctx.fillStyle="#1c1c1e"; ctx.fillRect(0,0,w,h); if(img.complete) ctx.drawImage(img,0,0,w,h); } else { ctx.fillStyle="#1c1c1e"; ctx.fillRect(0,0,w,h); } }
+        function render() { if(!ctx) return; let w=canvas.width/devicePixelRatio, h=canvas.height/devicePixelRatio; ctx.clearRect(0,0,w,h); drawBackground(); ctx.save(); ctx.translate(panX, panY); ctx.scale(scale, scale); for(let node of nodes){ if(node.parentId){ let parent=getNode(node.parentId); if(parent){ ctx.beginPath(); let sx=parent.x,sy=parent.y,ex=node.x,ey=node.y; let cp1x=sx+(ex-sx)*0.4,cp1y=sy+(ey-sy)*0.15,cp2x=ex-(ex-sx)*0.4,cp2y=ey-(ey-sy)*0.15; ctx.moveTo(sx,sy); ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,ex,ey); ctx.strokeStyle=CONNECTION_COLOR; ctx.lineWidth=2.2/scale; ctx.stroke(); } } } for(let node of nodes){ ctx.save(); ctx.shadowBlur=styleSettings.shadowBlur/scale; ctx.shadowColor="rgba(0,0,0,0.4)"; let fontSize=Math.floor(15/Math.max(0.75,scale)); ctx.font=`500 ${fontSize}px -apple-system, "SF Pro Text"`; let metrics=ctx.measureText(node.text); let boxW=Math.max(metrics.width+32,styleSettings.nodeWidth); let boxH=styleSettings.nodeHeight; let radius=(styleSettings.nodeShape==="rounded")?18:(styleSettings.nodeShape==="pill"?boxH/2:6); let xPos=node.x-boxW/2, yPos=node.y-boxH/2; let grad=ctx.createLinearGradient(node.x-boxW/4,node.y-boxH/4,node.x+boxW/4,node.y+boxH/4); grad.addColorStop(0,node.color||DEFAULT_COLOR); grad.addColorStop(1,shadeColor(node.color||DEFAULT_COLOR,-18)); ctx.fillStyle=grad; ctx.beginPath(); ctx.roundRect(xPos,yPos,boxW,boxH,radius); ctx.fill(); ctx.shadowBlur=0; ctx.beginPath(); ctx.roundRect(xPos,yPos,boxW,boxH,radius); ctx.strokeStyle=(selectedNodeId===node.id)?SELECTION_BORDER:styleSettings.borderColor; ctx.lineWidth=selectedNodeId===node.id?3:styleSettings.borderWidth; ctx.stroke(); ctx.fillStyle=styleSettings.textColor; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(node.text,node.x,node.y); if(selectedNodeId===node.id){ ctx.beginPath(); ctx.arc(node.x+boxW/2-14,node.y-boxH/2+14,10,0,2*Math.PI); ctx.fillStyle="#ff9f0a"; ctx.fill(); ctx.fillStyle="#1c1c1e"; ctx.font=`bold ${fontSize-2}px system-ui`; ctx.fillText("✓",node.x+boxW/2-18,node.y-boxH/2+12); } ctx.restore(); } ctx.restore(); document.getElementById('infoStatus').innerHTML=`<i class="fas fa-chart-line"></i> ${Math.round(scale*100)}% | ${nodes.length} عقدة | ${mapsLibrary[currentMapId]?.name||"حالية"}`; }
+        function shadeColor(c,p){ let R=parseInt(c.slice(1,3),16),G=parseInt(c.slice(3,5),16),B=parseInt(c.slice(5,7),16); R=Math.min(255,Math.max(0,R+p)); G=Math.min(255,Math.max(0,G+p)); B=Math.min(255,Math.max(0,B+p)); return `#${(R<16?'0':'')+R.toString(16)}${(G<16?'0':'')+G.toString(16)}${(B<16?'0':'')+B.toString(16)}`; }
+        function showToast(msg){ let el=document.getElementById('infoStatus'); let old=el.innerHTML; el.innerHTML=`<i class="fas fa-info-circle"></i> ${msg}`; setTimeout(()=>{ if(el) el.innerHTML=old; },1800); }
+        function triggerRenderAndSave(){ requestRender(); saveCurrentMapToLibrary(); }
+
+        function requestRender() {
+            if (!renderRequested) {
+                renderRequested = true;
+                requestAnimationFrame(() => {
+                    render();
+                    renderRequested = false;
+                });
+            }
+        }
+
+        // تحويل إحداثيات الشاشة إلى العالم
+        function screenToWorld(clientX, clientY) {
+            const rect = canvas.getBoundingClientRect();
+            const canvasX = clientX - rect.left;
+            const canvasY = clientY - rect.top;
+            return { x: (canvasX - panX) / scale, y: (canvasY - panY) / scale };
+        }
+
+        function getNodeUnder(screenX, screenY) {
+            const {x: wx, y: wy} = screenToWorld(screenX, screenY);
+            for(let i=nodes.length-1; i>=0; i--) {
+                const n = nodes[i];
+                ctx.font = "500 15px -apple-system";
+                const tw = ctx.measureText(n.text).width;
+                const bw = Math.max(tw+32, styleSettings.nodeWidth);
+                const bh = styleSettings.nodeHeight;
+                const l = n.x - bw/2, r = n.x + bw/2, t = n.y - bh/2, b = n.y + bh/2;
+                if(wx >= l && wx <= r && wy >= t && wy <= b) return n;
+            }
+            return null;
+        }
+
+        // --- نظام التحكم مثل TradingView (فائق السلاسة) ---
+        function handlePanStart(clientX, clientY, isNodeDrag = false) {
+            if (!isNodeDrag) {
+                isDragging = true;
+                dragStart.x = clientX;
+                dragStart.y = clientY;
+                panStart.x = panX;
+                panStart.y = panY;
+                container.style.cursor = 'grabbing';
+            }
+        }
+
+        function handlePanMove(clientX, clientY) {
+            if (!isDragging) return;
+            const dx = clientX - dragStart.x;
+            const dy = clientY - dragStart.y;
+            panX = panStart.x + dx;
+            panY = panStart.y + dy;
+            requestRender();
+            saveCurrentMapToLibrary();
+        }
+
+        function handlePanEnd() {
+            isDragging = false;
+            container.style.cursor = 'grab';
+        }
+
+        function handlePinchStart(touches) {
+            if (touches.length !== 2) return;
+            isPinching = true;
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            pinchStartDistance = Math.hypot(dx, dy);
+            pinchStartScale = scale;
+            const rect = canvas.getBoundingClientRect();
+            const centerX = (touches[0].clientX + touches[1].clientX) / 2 - rect.left;
+            const centerY = (touches[0].clientY + touches[1].clientY) / 2 - rect.top;
+            pinchCenter.x = centerX;
+            pinchCenter.y = centerY;
+            pinchStartPan.x = panX;
+            pinchStartPan.y = panY;
+        }
+
+        function handlePinchMove(touches) {
+            if (!isPinching || touches.length !== 2) return;
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            const newDistance = Math.hypot(dx, dy);
+            let newScale = pinchStartScale * (newDistance / pinchStartDistance);
+            newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
+            if (newScale === scale) return;
+
+            // تصحيح التكبير حول نقطة اللمس المركزية (مثل TradingView)
+            const worldCenterX = (pinchCenter.x - pinchStartPan.x) / pinchStartScale;
+            const worldCenterY = (pinchCenter.y - pinchStartPan.y) / pinchStartScale;
+            scale = newScale;
+            panX = pinchCenter.x - worldCenterX * scale;
+            panY = pinchCenter.y - worldCenterY * scale;
+            requestRender();
+            saveCurrentMapToLibrary();
+        }
+
+        function handlePinchEnd() {
+            isPinching = false;
+        }
+
+        // --- معالجات الأحداث الرئيسية ---
+        function onTouchStart(e) {
+            e.preventDefault();
+            const touches = e.touches;
+            if (touches.length === 1) {
+                const { clientX, clientY } = touches[0];
+                const node = getNodeUnder(clientX, clientY);
+                if (node) {
+                    // بدء سحب العقدة
+                    selectedNodeId = node.id;
+                    requestRender();
+                    dragNodeActive = true;
+                    dragNodeId = node.id;
+                    const world = screenToWorld(clientX, clientY);
+                    dragNodeStartWorld.x = world.x;
+                    dragNodeStartWorld.y = world.y;
+                } else {
+                    handlePanStart(clientX, clientY, false);
+                }
+            } else if (touches.length === 2) {
+                if (dragNodeActive) dragNodeActive = false;
+                handlePinchStart(touches);
+            }
+        }
+
+        function onTouchMove(e) {
+            e.preventDefault();
+            const touches = e.touches;
+            if (touches.length === 1) {
+                if (dragNodeActive && dragNodeId) {
+                    const { clientX, clientY } = touches[0];
+                    const world = screenToWorld(clientX, clientY);
+                    const dx = world.x - dragNodeStartWorld.x;
+                    const dy = world.y - dragNodeStartWorld.y;
+                    if (dx !== 0 || dy !== 0) {
+                        moveSubtree(dragNodeId, dx, dy);
+                        const newWorld = screenToWorld(clientX, clientY);
+                        dragNodeStartWorld.x = newWorld.x;
+                        dragNodeStartWorld.y = newWorld.y;
+                    }
+                } else if (isDragging) {
+                    const { clientX, clientY } = touches[0];
+                    handlePanMove(clientX, clientY);
+                }
+            } else if (touches.length === 2 && isPinching) {
+                handlePinchMove(touches);
+            }
+        }
+
+        function onTouchEnd(e) {
+            e.preventDefault();
+            if (dragNodeActive) dragNodeActive = false;
+            if (isDragging) handlePanEnd();
+            if (isPinching) handlePinchEnd();
+        }
+
+        // دعم الماوس (للتجربة على الحاسوب)
+        function onMouseDown(e) {
+            e.preventDefault();
+            const node = getNodeUnder(e.clientX, e.clientY);
+            if (node) {
+                selectedNodeId = node.id;
+                requestRender();
+                dragNodeActive = true;
+                dragNodeId = node.id;
+                const world = screenToWorld(e.clientX, e.clientY);
+                dragNodeStartWorld.x = world.x;
+                dragNodeStartWorld.y = world.y;
+            } else {
+                handlePanStart(e.clientX, e.clientY, false);
+            }
+        }
+
+        function onMouseMove(e) {
+            if (dragNodeActive && dragNodeId) {
+                const world = screenToWorld(e.clientX, e.clientY);
+                const dx = world.x - dragNodeStartWorld.x;
+                const dy = world.y - dragNodeStartWorld.y;
+                if (dx !== 0 || dy !== 0) {
+                    moveSubtree(dragNodeId, dx, dy);
+                    const newWorld = screenToWorld(e.clientX, e.clientY);
+                    dragNodeStartWorld.x = newWorld.x;
+                    dragNodeStartWorld.y = newWorld.y;
+                }
+            } else if (isDragging) {
+                handlePanMove(e.clientX, e.clientY);
+            }
+        }
+
+        function onMouseUp(e) {
+            if (dragNodeActive) dragNodeActive = false;
+            if (isDragging) handlePanEnd();
+        }
+
+        function onWheel(e) {
+            e.preventDefault();
+            let delta = e.deltaY > 0 ? -0.08 : 0.08;
+            let newScale = scale + delta;
+            newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
+            if (newScale === scale) return;
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            const worldX = (mouseX - panX) / scale;
+            const worldY = (mouseY - panY) / scale;
+            scale = newScale;
+            panX = mouseX - worldX * scale;
+            panY = mouseY - worldY * scale;
+            requestRender();
+            saveCurrentMapToLibrary();
+        }
+
+        function onDoubleClick(e) {
+            const node = getNodeUnder(e.clientX, e.clientY);
+            if (node) {
+                let newText = prompt("تعديل النص:", node.text);
+                if (newText?.trim()) {
+                    node.text = newText.trim();
+                    triggerRenderAndSave();
+                }
+            }
+        }
+
+        function centerView() {
+            const target = selectedNodeId ? getNode(selectedNodeId) : nodes[0];
+            if (target) {
+                const centerX = canvas.width / devicePixelRatio / 2;
+                const centerY = canvas.height / devicePixelRatio / 2;
+                panX = centerX - (target.x * scale);
+                panY = centerY - (target.y * scale);
+                requestRender();
+            }
+        }
+
+        function resetView() {
+            scale = 1.0;
+            centerView();
+            requestRender();
+            saveCurrentMapToLibrary();
+        }
+
+        // --- إدارة الخرائط المحفوظة ---
+        function saveAllMaps() { let toStore={}; for(let id in mapsLibrary) toStore[id]={name:mapsLibrary[id].name,nodes:mapsLibrary[id].nodes,nextId:mapsLibrary[id].nextId,selectedNodeId:mapsLibrary[id].selectedNodeId,panX:mapsLibrary[id].panX,panY:mapsLibrary[id].panY,scale:mapsLibrary[id].scale,styleSettings:mapsLibrary[id].styleSettings}; localStorage.setItem(STORAGE_KEY,JSON.stringify(toStore)); }
+        function loadAllMaps() { let raw=localStorage.getItem(STORAGE_KEY); if(!raw) return false; try { let data=JSON.parse(raw); for(let id in data) mapsLibrary[id]={id:id,name:data[id].name,nodes:data[id].nodes,nextId:data[id].nextId,selectedNodeId:data[id].selectedNodeId,panX:data[id].panX,panY:data[id].panY,scale:data[id].scale,styleSettings:data[id].styleSettings}; return true; } catch(e){return false;} }
+        function saveCurrentMapToLibrary() { mapsLibrary[currentMapId]={id:currentMapId,name:mapsLibrary[currentMapId]?.name||currentMapId,nodes:JSON.parse(JSON.stringify(nodes)),nextId:nextId,selectedNodeId:selectedNodeId,panX:panX,panY:panY,scale:scale,styleSettings:JSON.parse(JSON.stringify(styleSettings))}; saveAllMaps(); renderMapsList(); }
+        function loadMapFromLibrary(mapId) { if(!mapsLibrary[mapId]) return false; let map=mapsLibrary[mapId]; nodes=JSON.parse(JSON.stringify(map.nodes)); nextId=map.nextId; selectedNodeId=map.selectedNodeId; panX=map.panX; panY=map.panY; scale=map.scale; styleSettings=JSON.parse(JSON.stringify(map.styleSettings)); currentMapId=mapId; updateCustomizeInputsFromStyle(); requestRender(); showToast(`فتح: ${map.name}`); return true; }
+        function createNewMap(name) { let id="map_"+Date.now()+"_"+Math.floor(Math.random()*10000); let newNodes=[]; let nid=1; let root={id:nid++,text:name||"خريطة جديدة",parentId:null,x:0,y:0,color:"#0a84ff"}; newNodes.push(root); mapsLibrary[id]={id:id,name:name,nodes:newNodes,nextId:nid,selectedNodeId:root.id,panX:0,panY:0,scale:1,styleSettings:JSON.parse(JSON.stringify(styleSettings))}; saveAllMaps(); loadMapFromLibrary(id); renderMapsList(); showToast(`جديدة: ${name}`); }
+        function deleteMap(mapId) { if(mapId===currentMapId){ let first=Object.keys(mapsLibrary).find(k=>k!==mapId); if(first) loadMapFromLibrary(first); else createNewMap("الرئيسية"); } delete mapsLibrary[mapId]; saveAllMaps(); renderMapsList(); showToast("حذفت"); }
+        function renderMapsList() { let cont=document.getElementById('mapsListContainer'); if(!cont) return; cont.innerHTML=''; for(let id in mapsLibrary){ let map=mapsLibrary[id]; let div=document.createElement('div'); div.className='map-item'; div.innerHTML=`<span><i class="fas fa-map"></i> ${map.name}</span><div><button class="load-map-btn" data-id="${id}"><i class="fas fa-folder-open"></i></button><button class="delete-map-btn" data-id="${id}"><i class="fas fa-trash-alt"></i></button></div>`; cont.appendChild(div); } document.querySelectorAll('.load-map-btn').forEach(btn=>btn.addEventListener('click',(e)=>{let id=btn.dataset.id; if(id) loadMapFromLibrary(id);})); document.querySelectorAll('.delete-map-btn').forEach(btn=>btn.addEventListener('click',(e)=>{let id=btn.dataset.id; if(id&&confirm("حذف؟")) deleteMap(id);})); }
+        function saveCurrentAsNamed() { let nameInput=document.getElementById('newMapName'); let name=nameInput.value.trim(); if(!name){showToast("ادخل اسم"); return;} let existingId=null; for(let id in mapsLibrary) if(mapsLibrary[id].name===name){existingId=id; break;} if(existingId){ if(confirm(`استبدال "${name}"؟`)){ currentMapId=existingId; saveCurrentMapToLibrary(); showToast(`تم تحديث ${name}`); } } else { let newId="map_"+Date.now()+"_"+Math.floor(Math.random()*10000); mapsLibrary[newId]={id:newId,name:name,nodes:JSON.parse(JSON.stringify(nodes)),nextId:nextId,selectedNodeId:selectedNodeId,panX:panX,panY:panY,scale:scale,styleSettings:JSON.parse(JSON.stringify(styleSettings))}; currentMapId=newId; saveAllMaps(); showToast(`حفظ: ${name}`); } renderMapsList(); nameInput.value=''; }
+
+        function initDefaultMap() {
+            nodes = []; nextId = 1;
+            let root = { id: nextId++, text: "الرؤية المركزية", parentId: null, x: 0, y: 0, color: "#0a84ff" };
+            nodes.push(root);
+            nodes.push({ id: nextId++, text: "استراتيجيات النمو", parentId: root.id, x: 220, y: -70, color: "#5e5ce6" });
+            nodes.push({ id: nextId++, text: "الابتكار", parentId: root.id, x: 230, y: 20, color: "#32d74b" });
+            nodes.push({ id: nextId++, text: "التنفيذ", parentId: root.id, x: 220, y: 110, color: "#ff9f0a" });
+            nodes.push({ id: nextId++, text: "تحليل السوق", parentId: nodes[1].id, x: 440, y: -100, color: "#bf5af2" });
+            nodes.push({ id: nextId++, text: "شراكات", parentId: nodes[1].id, x: 450, y: -30, color: "#64d2ff" });
+            nodes.push({ id: nextId++, text: "مختبر الأفكار", parentId: nodes[2].id, x: 460, y: -10, color: "#30b0c0" });
+            nodes.push({ id: nextId++, text: "منهجيات Agile", parentId: nodes[2].id, x: 450, y: 60, color: "#8e8e93" });
+            nodes.push({ id: nextId++, text: "مؤشرات الأداء", parentId: nodes[3].id, x: 450, y: 80, color: "#ff453a" });
+            nodes.push({ id: nextId++, text: "مراجعات دورية", parentId: nodes[3].id, x: 440, y: 150, color: "#ffd60a" });
+            selectedNodeId = root.id;
+            autoLayout();
+        }
+
+        function resetToExample() { if(confirm("استبدال الخريطة الحالية؟")) { initDefaultMap(); saveCurrentMapToLibrary(); requestRender(); showToast("تم إعادة التعيين"); } }
+
+        function resizeCanvasHighRes() { if(!container) return; const rect=container.getBoundingClientRect(); canvas.width=rect.width*devicePixelRatio; canvas.height=rect.height*devicePixelRatio; canvas.style.width=rect.width+'px'; canvas.style.height=rect.height+'px'; ctx.setTransform(1,0,0,1,0,0); ctx.scale(devicePixelRatio,devicePixelRatio); requestRender(); }
+
+        function updateCustomizeInputsFromStyle() {
+            document.getElementById('bgType').value=styleSettings.bgType;
+            document.getElementById('bgColor').value=styleSettings.bgColor;
+            document.getElementById('bgImageUrl').value=styleSettings.bgImageUrl||'';
+            document.getElementById('nodeShape').value=styleSettings.nodeShape;
+            document.getElementById('nodeWidth').value=styleSettings.nodeWidth;
+            document.getElementById('nodeHeight').value=styleSettings.nodeHeight;
+            document.getElementById('textColor').value=styleSettings.textColor;
+            document.getElementById('borderColor').value=styleSettings.borderColor;
+            document.getElementById('borderWidth').value=styleSettings.borderWidth;
+            document.getElementById('shadowBlur').value=styleSettings.shadowBlur;
+            document.getElementById('widthVal').innerText=styleSettings.nodeWidth;
+            document.getElementById('heightVal').innerText=styleSettings.nodeHeight;
+            let type=styleSettings.bgType;
+            document.getElementById('bgColorLabel').style.display=type==='solid'?'flex':'none';
+            document.getElementById('bgImageLabel').style.display=type==='image'?'flex':'none';
+        }
+        function applyStyleFromSidebar() {
+            styleSettings.bgType=document.getElementById('bgType').value;
+            styleSettings.bgColor=document.getElementById('bgColor').value;
+            styleSettings.bgImageUrl=document.getElementById('bgImageUrl').value;
+            styleSettings.nodeShape=document.getElementById('nodeShape').value;
+            styleSettings.nodeWidth=parseInt(document.getElementById('nodeWidth').value);
+            styleSettings.nodeHeight=parseInt(document.getElementById('nodeHeight').value);
+            styleSettings.textColor=document.getElementById('textColor').value;
+            styleSettings.borderColor=document.getElementById('borderColor').value;
+            styleSettings.borderWidth=parseFloat(document.getElementById('borderWidth').value);
+            styleSettings.shadowBlur=parseInt(document.getElementById('shadowBlur').value);
+            document.getElementById('widthVal').innerText=styleSettings.nodeWidth;
+            document.getElementById('heightVal').innerText=styleSettings.nodeHeight;
+            requestRender();
+            saveCurrentMapToLibrary();
+        }
+
+        // ربط الأزرار والواجهة
+        let toolbar=document.getElementById('draggableToolbar');
+        let toggleBtn=document.getElementById('toggleToolbarBtn');
+        let toggleIcon=document.getElementById('toggleIcon');
+        let isCollapsed=false;
+        toggleBtn.addEventListener('click',()=>{
+            isCollapsed=!isCollapsed;
+            if(isCollapsed){
+                toolbar.classList.add('collapsed');
+                toggleIcon.classList.remove('fa-chevron-up');
+                toggleIcon.classList.add('fa-chevron-down');
+            } else {
+                toolbar.classList.remove('collapsed');
+                toggleIcon.classList.remove('fa-chevron-down');
+                toggleIcon.classList.add('fa-chevron-up');
+            }
+        });
+
+        let sidebar=document.getElementById('sidebar');
+        document.getElementById('openSidebarBtn').onclick=()=>sidebar.classList.add('open');
+        document.getElementById('closeSidebarBtn').onclick=()=>sidebar.classList.remove('open');
+        document.getElementById('tabCustomizeBtn').onclick=()=>{ document.getElementById('customizeTab').classList.add('active'); document.getElementById('mapsTab').classList.remove('active'); document.getElementById('tabCustomizeBtn').classList.add('active'); document.getElementById('tabMapsBtn').classList.remove('active'); };
+        document.getElementById('tabMapsBtn').onclick=()=>{ document.getElementById('mapsTab').classList.add('active'); document.getElementById('customizeTab').classList.remove('active'); document.getElementById('tabMapsBtn').classList.add('active'); document.getElementById('tabCustomizeBtn').classList.remove('active'); };
+
+        document.getElementById('addChildBtn').onclick=addChild;
+        document.getElementById('addSiblingBtn').onclick=addSibling;
+        document.getElementById('deleteNodeBtn').onclick=()=>{ if(selectedNodeId) deleteNodeAndChildren(selectedNodeId); else showToast("اختر عقدة"); };
+        document.getElementById('editTextBtn').onclick=editText;
+        document.getElementById('applyColorBtn').onclick=()=>applyColor(document.getElementById('nodeColorPicker').value);
+        document.getElementById('autoLayoutBtn').onclick=()=>{ autoLayout(); showToast("تم الترتيب"); };
+        document.getElementById('centerViewBtn').onclick=centerView;
+        document.getElementById('saveLocalBtn').onclick=()=>{ saveCurrentMapToLibrary(); showToast("حفظ الخريطة"); };
+        document.getElementById('resetMapBtn').onclick=resetToExample;
+        document.getElementById('saveCurrentMapBtn').onclick=saveCurrentAsNamed;
+        document.getElementById('bgType').onchange=()=>{ let type=document.getElementById('bgType').value; document.getElementById('bgColorLabel').style.display=type==='solid'?'flex':'none'; document.getElementById('bgImageLabel').style.display=type==='image'?'flex':'none'; applyStyleFromSidebar(); };
+        document.getElementById('nodeWidth').oninput=applyStyleFromSidebar;
+        document.getElementById('nodeHeight').oninput=applyStyleFromSidebar;
+        document.getElementById('borderWidth').oninput=applyStyleFromSidebar;
+        document.getElementById('shadowBlur').oninput=applyStyleFromSidebar;
+        document.getElementById('bgColor').onchange=applyStyleFromSidebar;
+        document.getElementById('bgImageUrl').onchange=applyStyleFromSidebar;
+        document.getElementById('nodeShape').onchange=applyStyleFromSidebar;
+        document.getElementById('textColor').onchange=applyStyleFromSidebar;
+        document.getElementById('borderColor').onchange=applyStyleFromSidebar;
+
+        function attachEvents() {
+            canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+            canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+            canvas.addEventListener('touchend', onTouchEnd);
+            canvas.addEventListener('touchcancel', onTouchEnd);
+            canvas.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+            canvas.addEventListener('wheel', onWheel, { passive: false });
+            canvas.addEventListener('dblclick', onDoubleClick);
+        }
+
+        window.addEventListener('resize', ()=>{ resizeCanvasHighRes(); resetView(); saveCurrentMapToLibrary(); });
+        canvas=document.getElementById('mindCanvas');
+        container=document.getElementById('canvasContainer');
+        ctx=canvas.getContext('2d');
+        attachEvents();
+        container.style.cursor='grab';
+        if(!loadAllMaps() || Object.keys(mapsLibrary).length===0){
+            initDefaultMap();
+            saveCurrentMapToLibrary();
+            mapsLibrary[currentMapId].name="الخريطة الرئيسية";
+            saveAllMaps();
+        } else {
+            let firstId=Object.keys(mapsLibrary)[0];
+            loadMapFromLibrary(firstId);
+        }
+        renderMapsList();
+        resizeCanvasHighRes();
+        centerView();
+        requestRender();
+    })();
+</script>
+</body>
+</html>

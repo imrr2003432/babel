@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>ديموفر | لوحة التحكم البابلية</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23c49a3b'%3E%3Cpath d='M12 3L1 9l11 6 11-6-11-6zm0 11.5L5.5 12 12 8.5 18.5 12 12 14.5zM5 13.5v4L12 22l7-4.5v-4L12 18l-7-4.5z'/%3E%3C/svg%3E">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Cairo', 'Tajawal', sans-serif; background: radial-gradient(circle at 10% 20%, #2c1a0f, #1a2a3a); color: #f5e7c8; min-height: 100vh; padding: 2rem 1.5rem; position: relative; }
+        .bg-cuneiform { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.1"><path fill="none" stroke="%23d4af37" stroke-width="1.2" d="M30 40 L45 35 L45 50 Z M80 70 L95 65 L95 80 Z M140 100 L155 95 L155 110 Z M50 140 L65 135 L65 150 Z M170 30 L185 25 L185 40 Z M110 160 L125 155 L125 170 Z"/><path fill="none" stroke="%23e0b354" stroke-width="0.8" d="M10 80 L22 76 L22 88 Z M60 20 L72 16 L72 28 Z M160 150 L172 146 L172 158 Z"/><text x="15" y="190" font-size="22" fill="%23d4af37" opacity="0.3">𒀭𒂗𒆤</text><text x="140" y="30" font-size="18" fill="%23d4af37" opacity="0.3">𒈨𒌍</text></svg>'); background-repeat: repeat; background-size: 180px 180px; }
+        .container { max-width: 1300px; margin: 0 auto; position: relative; z-index: 2; }
+        .status-bar { background: rgba(245, 240, 230, 0.94); backdrop-filter: blur(12px); border-radius: 80px; padding: 0.8rem 2rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 2rem; border: 1px solid #d4af37; box-shadow: 0 15px 30px -12px rgba(0, 0, 0, 0.4); }
+        .greeting h1 { font-size: 1.7rem; font-weight: 800; background: linear-gradient(135deg, #c49a3b, #e8be6e); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .greeting p { font-size: 0.85rem; color: #b48b3a; font-weight: 700; }
+        .stats-group { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .stat-card { background: rgba(255, 250, 235, 0.9); border-radius: 50px; padding: 0.5rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; font-weight: 800; color: #b48b3a; border: 1px solid #d4af37; }
+        .logout-btn { background: linear-gradient(105deg, #b48b3a, #e0b15c); border: none; color: #2a241a; padding: 0.6rem 1.5rem; border-radius: 50px; font-weight: 800; display: flex; align-items: center; gap: 0.6rem; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2); }
+        .logout-btn:hover { transform: scale(0.96); background: linear-gradient(105deg, #c49a3b, #e8be6e); }
+        .hero { background: rgba(245, 240, 230, 0.85); backdrop-filter: blur(8px); border-radius: 2rem; padding: 2rem; margin-bottom: 2rem; border: 1px solid #d4af37; }
+        .hero h2 { font-size: 2rem; font-weight: 800; display: flex; align-items: center; gap: 0.8rem; background: linear-gradient(135deg, #e8be6e, #b48b3a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero p { color: #7a5d3c; font-weight: 600; margin-top: 0.5rem; }
+        .announcements-section { background: rgba(245, 240, 230, 0.85); backdrop-filter: blur(8px); border-radius: 2rem; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #d4af37; }
+        .section-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.7rem; border-right: 5px solid #e8be6e; padding-right: 1rem; color: #b48b3a; }
+        .announcements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.8rem; }
+        .announcement-card { background: #fffef7; border-radius: 1.5rem; overflow: hidden; transition: 0.3s ease; border: 1px solid #e8be6e; box-shadow: 0 6px 14px rgba(0,0,0,0.1); }
+        .announcement-card:hover { transform: translateY(-6px); border-color: #c49a3b; box-shadow: 0 15px 25px rgba(0,0,0,0.15); }
+        .announcement-img { width: 100%; height: 170px; object-fit: cover; }
+        .announcement-content { padding: 1.2rem; color: #2c2418; }
+        .announcement-title { font-size: 1.25rem; font-weight: 800; display: flex; gap: 0.6rem; color: #b48b3a; }
+        .announcement-text { margin: 0.8rem 0; color: #4a3a2a; }
+        .announcement-date { font-size: 0.8rem; color: #8b6b3d; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .card { background: rgba(255, 250, 235, 0.9); backdrop-filter: blur(8px); border-radius: 2rem; padding: 1.8rem; transition: 0.35s ease; cursor: pointer; text-decoration: none; display: block; border: 1px solid #d4af37; box-shadow: 0 12px 25px -10px rgba(0, 0, 0, 0.2); }
+        .card:hover { transform: translateY(-10px); background: rgba(255, 252, 240, 0.96); border-color: #e8be6e; box-shadow: 0 20px 30px -12px rgba(212, 175, 55, 0.4); }
+        .icon-circle { width: 70px; height: 70px; border-radius: 1.8rem; display: flex; align-items: center; justify-content: center; font-size: 34px; margin-bottom: 1.5rem; background: rgba(212, 175, 55, 0.2); color: #c49a3b; }
+        .card h3 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #b48b3a; }
+        .card p { color: #7a5d3c; line-height: 1.4; font-size: 0.9rem; margin-top: 0.5rem; }
+        .edit-profile-btn { background: transparent; border: 1.5px solid #c49a3b; border-radius: 60px; padding: 0.6rem 1rem; width: 100%; margin-top: 1.2rem; font-weight: 800; color: #b48b3a; cursor: pointer; transition: 0.2s; }
+        .edit-profile-btn:hover { background: rgba(212, 175, 55, 0.2); border-color: #e8be6e; }
+        @media (max-width: 700px) { body { padding: 1rem; } .card h3 { font-size: 1.3rem; } }
+    </style>
+</head>
+<body>
+<div class="bg-cuneiform"></div>
+<div class="container">
+    <div class="status-bar">
+        <div class="greeting"><h1 id="greeting">مرحباً بك 👋</h1><p id="currentDate"></p></div>
+        <div class="stats-group">
+            <div class="stat-card"><i class="fas fa-star"></i> <span id="userPoints">0 نقطة</span></div>
+            <div class="stat-card"><i class="fas fa-chart-line"></i> <span id="userLevel">مبتدئ</span></div>
+            <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> خروج</button>
+        </div>
+    </div>
+    <div class="hero">
+        <h2><i class="fas fa-graduation-cap"></i> 𒀭 ديموفر 𒈨𒌍 | منصة بابل التعليمية</h2>
+        <p><i class="fas fa-lightbulb"></i> تعلم بإبداع، تفوق بثقة — رحلتك نحو القمة تبدأ من هنا</p>
+    </div>
+    <div class="announcements-section">
+        <div class="section-title"><i class="fas fa-bullhorn"></i><span>آخر المستجدات والإعلانات</span></div>
+        <div id="announcementsContainer" class="announcements-grid"><div class="no-announcements"><i class="fas fa-spinner fa-pulse"></i> جاري التحميل...</div></div>
+    </div>
+    <div class="cards-grid">
+        <div class="card" id="profile-card">
+            <div class="icon-circle"><i class="fas fa-id-card"></i></div>
+            <h3>ملفي الشخصي</h3>
+            <p><strong>الاسم:</strong> <span id="card-name">...</span></p>
+            <p><strong>المحافظة:</strong> <span id="card-gov">...</span></p>
+            <p><strong>المدرسة:</strong> <span id="card-school">...</span></p>
+            <button id="edit-profile-btn" class="edit-profile-btn"><i class="fas fa-user-edit"></i> تحرير الملف</button>
+        </div>
+        <a href="admin_dashboard.html" id="admin-card" class="card" style="display: none;"><div class="icon-circle"><i class="fa-solid fa-user-tie"></i></div><h3>مركز الإدارة</h3><p>التحكم الكامل بالمحتوى والمستخدمين</p></a>
+        <a href="lectures.html" class="card"><div class="icon-circle"><i class="fa-solid fa-video"></i></div><h3>محاضرات</h3><p>حصص مسجلة وملخصات تفاعلية للمراجعة</p></a>
+        <a href="exams.html" class="card"><div class="icon-circle"><i class="fas fa-tasks"></i></div><h3>الامتحانات</h3><p>امتحانات فصلية</p></a>
+        <a href="schedule.html" class="card"><div class="icon-circle"><i class="fas fa-calendar-week"></i></div><h3>جدول دروس اسبوعي</h3><p>جدول أسبوعي منظم مع إشعارات لحظية</p></a>
+        <a href="results.html" class="card"><div class="icon-circle"><i class="fas fa-chart-bar"></i></div><h3>تقارير الأداء</h3><p>رسوم بيانية وملخص تقدمك في المواد</p></a>
+        <a href="leaderboard.html" class="card"><div class="icon-circle"><i class="fas fa-crown"></i></div><h3>تصنيف الطلاب 🏅</h3><p>تنافس مع زملائك وتصدر الترتيب</p></a>
+        <a href="flashcard.html" class="card"><div class="icon-circle"><i class="fas fa-memory"></i></div><h3>بطاقات التذكر</h3><p>طريقة مبتكرة لحفظ المعلومات بسرعة</p></a>
+        <a href="Mindmaps.html" class="card"><div class="icon-circle"><i class="fas fa-project-diagram"></i></div><h3>خرائط ذهنية</h3><p>نظم أفكارك بصرية بشكل احترافي</p></a>
+        <a href="Studytimer.html" class="card"><div class="icon-circle"><i class="fas fa-hourglass-start"></i></div><h3>⏳ مؤقت الدراسة</h3><p>تحكم بجلساتك، موسيقى هادئة وإحصائيات</p></a>
+        <a href="https://t.me/manasasad" target="_blank" class="card"><div class="icon-circle"><i class="fab fa-telegram"></i></div><h3>مجتمع التلغرام</h3><p>انضم إلى آلاف الطلاب وتبادل المعرفة</p></a>
+        <a href="mlazem.html" class="card"><div class="icon-circle"><i class="fas fa-book-open"></i></div><h3>ملازم السادس</h3><p>جميع ملازم الصف السادس العلمي PDF + روابط تليغرام</p></a>
+    </div>
+</div>
+
+<script>
+(function() {
+    const SUPABASE_URL = 'https://kuepdppngskwkmhyhohq.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI';
+    if (typeof supabase === 'undefined') { alert('خطأ في تحميل المكتبة'); return; }
+    const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    let redirecting = false;
+
+    async function checkSession() {
+        const { data: { session } } = await _sb.auth.getSession();
+        if (!session && !redirecting) { redirecting = true; window.location.href = "index.html"; return false; }
+        return true;
+    }
+
+    async function checkProfileComplete() {
+        const { data: { user } } = await _sb.auth.getUser();
+        if (!user) return false;
+        const { data: profile, error } = await _sb.from('profiles').select('full_name, governorate, school_name, date_of_birth').eq('id', user.id).maybeSingle();
+        if (error || !profile) return false;
+        const isComplete = profile.full_name?.trim() && profile.governorate?.trim() && profile.school_name?.trim() && profile.date_of_birth;
+        if (!isComplete && !redirecting) {
+            redirecting = true;
+            sessionStorage.setItem('redirectAfterProfile', window.location.pathname.split('/').pop());
+            window.location.href = 'profile.html';
+            return false;
+        }
+        return true;
+    }
+
+    async function loadData() {
+        const { data: { user } } = await _sb.auth.getUser();
+        if (!user) return;
+        const { data: profile } = await _sb.from('profiles').select('full_name, governorate, school_name, points, level').eq('id', user.id).single();
+        if (profile) {
+            document.getElementById('card-name').innerText = profile.full_name || 'غير محدد';
+            document.getElementById('card-gov').innerText = profile.governorate || 'غير محدد';
+            document.getElementById('card-school').innerText = profile.school_name || 'غير محدد';
+            document.getElementById('userPoints').innerHTML = `${profile.points || 0} نقطة`;
+            let levelText = profile.level || 'مبتدئ';
+            let icon = levelText === 'خبير' ? '🏅' : (levelText === 'متقدم' ? '⭐' : (levelText === 'متوسط' ? '🌟' : '✨'));
+            document.getElementById('userLevel').innerHTML = `${icon} ${levelText}`;
+        }
+        const { data: profileRole } = await _sb.from('profiles').select('role').eq('id', user.id).single();
+        if (profileRole?.role === 'admin') document.getElementById('admin-card').style.display = 'block';
+
+        const { data: announcements } = await _sb.from('announcements').select('*').eq('is_visible', true).order('created_at', { ascending: false });
+        const container = document.getElementById('announcementsContainer');
+        if (!announcements || announcements.length === 0) {
+            container.innerHTML = `<div class="no-announcements"><i class="fas fa-newspaper"></i> لا توجد إعلانات حالياً</div>`;
+            return;
+        }
+        let html = '';
+        for (let ann of announcements) {
+            const date = new Date(ann.created_at).toLocaleDateString('ar-IQ', { year: 'numeric', month: 'long', day: 'numeric' });
+            const imageHtml = ann.image_url ? `<img src="${ann.image_url}" class="announcement-img" alt="صورة الإعلان" onerror="this.style.display='none'">` : '';
+            html += `<div class="announcement-card">${imageHtml}<div class="announcement-content"><div class="announcement-title"><i class="fas fa-bullhorn"></i> ${escapeHtml(ann.title)}</div><div class="announcement-text">${escapeHtml(ann.content)}</div><div class="announcement-date"><i class="far fa-calendar-alt"></i> ${date}</div></div></div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
+
+    async function logout() { await _sb.auth.signOut(); window.location.href = "index.html"; }
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('edit-profile-btn')?.addEventListener('click', () => { window.location.href = 'profile.html'; });
+
+    (async () => {
+        if (!(await checkSession())) return;
+        if (!(await checkProfileComplete())) return;
+        await loadData();
+    })();
+
+    const now = new Date();
+    document.getElementById('currentDate').innerText = now.toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const hour = now.getHours();
+    let greetingText = hour < 12 ? '<i class="fas fa-sun"></i> صباح النشاط والتفوق' : (hour < 18 ? '<i class="fas fa-cloud-sun"></i> ظهر مليء بالعلم' : '<i class="fas fa-moon"></i> مساء التميز والإبداع');
+    document.getElementById('greeting').innerHTML = greetingText;
+})();
+</script>
+</body>
+</html>

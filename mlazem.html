@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملازم السادس العلمي - منصة عمران</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff8c42'%3E%3Cpath d='M12 3L1 9l11 6 11-6-11-6zm0 11.5L5.5 12 12 8.5 18.5 12 12 14.5zM5 13.5v4L12 22l7-4.5v-4L12 18l-7-4.5z'/%3E%3C/svg%3E">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(145deg, #fdf8f0 0%, #f0ebe1 100%);
+            color: #2d3436;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+        }
+        .container { max-width: 1300px; margin: 0 auto; }
+        .header-bar {
+            background: linear-gradient(135deg, #fff5e6, #ffeedd);
+            border-radius: 80px;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border: 1px solid #ffddb0;
+        }
+        .back-btn {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 60px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .search-box {
+            flex: 2;
+            display: flex;
+            background: #fef6e8;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ffd5b5;
+        }
+        .search-box input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-family: 'Tajawal', sans-serif;
+            padding: 0.5rem;
+        }
+        .filter-select {
+            background: #fef6e8;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ffd5b5;
+        }
+        .add-btn {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .book-card {
+            background: white;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border-bottom: 4px solid #e67e22;
+            transition: 0.2s;
+        }
+        .book-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .book-icon { background: #fff0e0; text-align: center; padding: 1.5rem; font-size: 2.5rem; color: #e67e22; }
+        .book-info { padding: 1.2rem; }
+        .book-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 0.3rem; color: #b6490e; }
+        .book-subject { display: inline-block; background: #ffedd5; padding: 0.2rem 0.8rem; border-radius: 30px; font-size: 0.7rem; font-weight: bold; margin: 0.5rem 0; }
+        .telegram-link { background: #e67e22; color: white; padding: 0.4rem 1rem; border-radius: 40px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; margin-top: 0.8rem; }
+        .empty-state { text-align: center; padding: 3rem; background: white; border-radius: 2rem; color: #b6490e; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            border-top: 8px solid #e67e22;
+        }
+        .modal-content input, .modal-content select, .modal-content textarea {
+            width: 100%;
+            padding: 0.6rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ffd5b5;
+            border-radius: 1rem;
+            font-family: 'Tajawal', sans-serif;
+        }
+        .modal-content button {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 0.7rem;
+            width: 100%;
+            border-radius: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-modal { float: left; font-size: 1.5rem; cursor: pointer; color: #e67e22; }
+        footer { text-align: center; margin-top: 2rem; color: #d35400; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-bar">
+        <a href="javascript:history.back()" class="back-btn"><i class="fas fa-arrow-right"></i> العودة</a>
+        <h2 style="color:#e67e22;"><i class="fas fa-book-open"></i> ملازم السادس العلمي</h2>
+        <div></div>
+    </div>
+
+    <div class="action-bar">
+        <div class="search-box">
+            <i class="fas fa-search" style="color:#e67e22;"></i>
+            <input type="text" id="searchInput" placeholder="بحث بالعنوان أو المادة...">
+        </div>
+        <div class="filter-select">
+            <i class="fas fa-filter"></i>
+            <select id="subjectFilter">
+                <option value="all">جميع المواد</option>
+                <option value="رياضيات">رياضيات</option>
+                <option value="فيزياء">فيزياء</option>
+                <option value="كيمياء">كيمياء</option>
+                <option value="أحياء">أحياء</option>
+                <option value="عربي">عربي</option>
+                <option value="إسلامية">إسلامية</option>
+                <option value="انكليزي">انكليزي</option>
+                <option value="أدب">أدب</option>
+            </select>
+        </div>
+        <button class="add-btn" id="openAddModal"><i class="fab fa-telegram"></i> إضافة ملزمة</button>
+        <button class="add-btn" id="resetBtn" style="background:#b0a790;"><i class="fas fa-sync-alt"></i> عرض الكل</button>
+    </div>
+
+    <div id="resultsInfo" style="margin-right:1rem; font-weight:500;"></div>
+    <div id="booksGrid" class="books-grid"><div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> جاري التحميل...</div></div>
+
+    <footer><i class="fab fa-telegram"></i> جميع الملازم من خلال روابط تليغرام</footer>
+</div>
+
+<!-- المودال -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <h3 style="color:#e67e22;"><i class="fab fa-telegram"></i> إضافة ملزمة جديدة</h3>
+        <input type="text" id="newTitle" placeholder="عنوان الملزمة" required>
+        <select id="newSubject">
+            <option value="رياضيات">رياضيات</option>
+            <option value="فيزياء">فيزياء</option>
+            <option value="كيمياء">كيمياء</option>
+            <option value="أحياء">أحياء</option>
+            <option value="عربي">عربي</option>
+            <option value="إسلامية">إسلامية</option>
+            <option value="انكليزي">انكليزي</option>
+            <option value="أدب">أدب</option>
+        </select>
+        <textarea id="newDesc" rows="2" placeholder="وصف قصير (اختياري)"></textarea>
+        <input type="url" id="newTelegramLink" placeholder="رابط التليغرام (https://t.me/...)" required>
+        <button id="saveBookBtn">💾 حفظ الملزمة</button>
+    </div>
+</div>
+
+<script>
+    // ===== تجنب التصريح المكرر: نستخدم IIFE أو نتحقق من وجود المتغير =====
+    (function() {
+        // إعدادات Supabase (نفس المشروع)
+        const SUPABASE_URL = 'https://kuepdppngskwkmhyhohq.supabase.co';
+        const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI';
+        
+        // إنشاء كائن supabase داخل النطاق المحلي (لن يتعارض مع أي شيء خارجي)
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+        
+        let allBooks = [];
+        
+        // عناصر DOM
+        const booksGrid = document.getElementById('booksGrid');
+        const resultsInfo = document.getElementById('resultsInfo');
+        const searchInput = document.getElementById('searchInput');
+        const subjectFilter = document.getElementById('subjectFilter');
+        const resetBtn = document.getElementById('resetBtn');
+        const openModalBtn = document.getElementById('openAddModal');
+        const modal = document.getElementById('addModal');
+        const closeModal = document.getElementById('closeModal');
+        const saveBtn = document.getElementById('saveBookBtn');
+        
+        // تحميل البيانات
+        async function fetchBooks() {
+            booksGrid.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-pulse"></i> جاري التحميل...</div>';
+            try {
+                const { data, error } = await _supabase
+                    .from('books')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                if (error) throw error;
+                allBooks = data || [];
+                renderBooks();
+            } catch(err) {
+                booksGrid.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i> خطأ: ${err.message}</div>`;
+            }
+        }
+        
+        // عرض البيانات مع فلترة
+        function renderBooks() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            const subjectVal = subjectFilter.value;
+            let filtered = allBooks.filter(book => {
+                if (subjectVal !== 'all' && book.subject !== subjectVal) return false;
+                if (searchTerm) {
+                    return book.title.toLowerCase().includes(searchTerm) ||
+                           book.subject.toLowerCase().includes(searchTerm) ||
+                           (book.description && book.description.toLowerCase().includes(searchTerm));
+                }
+                return true;
+            });
+            
+            if (allBooks.length === 0) {
+                resultsInfo.innerHTML = '📭 لا توجد ملازم بعد';
+                booksGrid.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><br />أضف أول ملزمة عبر الزر أعلاه</div>`;
+                return;
+            }
+            if (filtered.length === 0) {
+                resultsInfo.innerHTML = '⚠️ لا توجد نتائج';
+                booksGrid.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><br />لا توجد ملازم تطابق البحث</div>`;
+                return;
+            }
+            resultsInfo.innerHTML = `📚 عدد الملازم: ${filtered.length}`;
+            let html = '';
+            filtered.forEach(book => {
+                html += `
+                    <div class="book-card">
+                        <div class="book-icon"><i class="fab fa-telegram fa-2x"></i></div>
+                        <div class="book-info">
+                            <div class="book-title">${escapeHtml(book.title)}</div>
+                            <div class="book-subject">${escapeHtml(book.subject)}</div>
+                            <div class="book-desc" style="color:#5a4a3a;">${escapeHtml(book.description || '')}</div>
+                            <a href="${book.telegram_link}" target="_blank" class="telegram-link"><i class="fab fa-telegram"></i> فتح على تليغرام</a>
+                        </div>
+                    </div>
+                `;
+            });
+            booksGrid.innerHTML = html;
+        }
+        
+        function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+        
+        // إضافة ملزمة جديدة
+        async function addNewBook(title, subject, desc, telegramLink) {
+            const newBook = {
+                title: title.trim(),
+                subject: subject,
+                description: desc.trim() || "ملزمة للسادس العلمي",
+                telegram_link: telegramLink.trim()
+            };
+            try {
+                const { error } = await _supabase.from('books').insert([newBook]);
+                if (error) throw error;
+                await fetchBooks();
+                return true;
+            } catch(err) {
+                alert('خطأ في الحفظ: ' + err.message);
+                return false;
+            }
+        }
+        
+        // أحداث المودال
+        openModalBtn.onclick = () => modal.style.display = 'flex';
+        closeModal.onclick = () => modal.style.display = 'none';
+        window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+        
+        saveBtn.onclick = async () => {
+            const title = document.getElementById('newTitle').value;
+            const subject = document.getElementById('newSubject').value;
+            const desc = document.getElementById('newDesc').value;
+            const link = document.getElementById('newTelegramLink').value;
+            if (!title || !link) { alert('الرجاء إدخال العنوان ورابط التليغرام'); return; }
+            if (!link.includes('t.me')) { alert('الرابط يجب أن يحتوي على t.me'); return; }
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'جاري الحفظ...';
+            const success = await addNewBook(title, subject, desc, link);
+            saveBtn.disabled = false;
+            saveBtn.innerText = '💾 حفظ الملزمة';
+            if (success) {
+                modal.style.display = 'none';
+                document.getElementById('newTitle').value = '';
+                document.getElementById('newDesc').value = '';
+                document.getElementById('newTelegramLink').value = '';
+                alert('✅ تمت الإضافة بنجاح');
+            }
+        };
+        
+        // أحداث البحث والفلترة
+        searchInput.addEventListener('input', renderBooks);
+        subjectFilter.addEventListener('change', renderBooks);
+        resetBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            subjectFilter.value = 'all';
+            renderBooks();
+        });
+        
+        // بدء التحميل
+        fetchBooks();
+    })();
+</script>
+</body>
+</html>

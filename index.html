@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>ديموفر | بوابة بابل التعليمية</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23c49a3b'%3E%3Cpath d='M12 3L1 9l11 6 11-6-11-6zm0 11.5L5.5 12 12 8.5 18.5 12 12 14.5zM5 13.5v4L12 22l7-4.5v-4L12 18l-7-4.5z'/%3E%3C/svg%3E">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .bg-cuneiform {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.12"><path fill="none" stroke="%23d4af37" stroke-width="1.2" d="M30 40 L45 35 L45 50 Z M80 70 L95 65 L95 80 Z M140 100 L155 95 L155 110 Z M50 140 L65 135 L65 150 Z M170 30 L185 25 L185 40 Z M110 160 L125 155 L125 170 Z"/><path fill="none" stroke="%23e0b354" stroke-width="0.8" d="M10 80 L22 76 L22 88 Z M60 20 L72 16 L72 28 Z M160 150 L172 146 L172 158 Z"/><text x="15" y="190" font-size="22" fill="%23d4af37" opacity="0.3">𒀭𒂗𒆤</text><text x="140" y="30" font-size="18" fill="%23d4af37" opacity="0.3">𒈨𒌍</text></svg>');
+            background-repeat: repeat;
+            background-size: 180px 180px;
+        }
+        .ziggurat-corner {
+            position: fixed;
+            width: 150px;
+            height: 150px;
+            z-index: 0;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+        .ziggurat-corner::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 65%, #e9b35f 65%, #e9b35f 70%, transparent 70%),
+                        linear-gradient(-45deg, transparent 65%, #b97f2e 65%, #b97f2e 70%, transparent 70%);
+            background-size: 30px 30px;
+        }
+        .zig-top-left { top: 0; left: 0; transform: rotate(0deg); }
+        .zig-bottom-right { bottom: 0; right: 0; transform: rotate(180deg); }
+        .babylon-card {
+            background: rgba(255, 255, 255, 0.94);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px 32px;
+            position: relative;
+            z-index: 10;
+            box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.4);
+        }
+       
+        
+      
+        .title { text-align: center; font-size: 28px; font-weight: 800; margin: 10px 0 5px; background: linear-gradient(135deg, #2b4f6e, #1a3348); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .input-group { margin-bottom: 22px; }
+        .input-field {
+            width: 100%;
+            padding: 14px 20px;
+            background: #fef7e8;
+            border: 2px solid #cb9e5c;
+            border-radius: 48px;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .input-field:focus { border-color: #e7b757; background: #fffef7; box-shadow: 0 0 0 4px rgba(203, 158, 92, 0.3); }
+        .password-wrapper { position: relative; }
+        .toggle-pw {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #b38f4a;
+            cursor: pointer;
+        }
+        .btn-babylon {
+            background: linear-gradient(105deg, #b48b3a, #e0b15c, #c49a3b);
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 56px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #2a241a;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 12px 22px -6px rgba(0, 0, 0, 0.4);
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .btn-babylon:active { transform: scale(0.96); }
+        .action-links { display: flex; justify-content: space-between; margin-top: 28px; gap: 12px; flex-wrap: wrap; }
+        .action-link {
+            background: rgba(180, 139, 58, 0.15);
+            padding: 8px 18px;
+            border-radius: 48px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #b48b3a;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            border: 1px solid rgba(180, 139, 58, 0.4);
+        }
+        .action-link:hover { background: #b48b3a; color: #1e2a2f; }
+        .support-block { margin-top: 32px; padding-top: 20px; border-top: 1px dashed #cb9e5c; }
+      
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 48px;
+            font-weight: 600;
+            background: #577ce2;
+            color: #ff0000;
+            font-size: 14px;
+            border-right: 4px solid #d43737;
+        }
+        .message-success { background: #dfe6d8 !important; color: #2a5e3b !important; border-right-color: #4c9f70; }
+        .hidden { display: none; }
+       
+    </style>
+</head>
+
+
+<body>
+
+
+<div class="babylon-card">
+    
+    <div class="title" id="dynamicTitle">تسجيل الدخول</div>
+
+    <div class="input-group">
+        <input type="email" id="email" class="input-field" placeholder="البريد الإلكتروني" autocomplete="email">
+    </div>
+    <div class="input-group" id="passwordGroup">
+        <div class="password-wrapper">
+            <input type="password" id="password" class="input-field" placeholder="كلمة المرور" autocomplete="current-password">
+            <button type="button" class="toggle-pw" id="togglePasswordBtn"><i class="far fa-eye-slash"></i></button>
+        </div>
+    </div>
+    <button id="actionBtn" class="btn-babylon"><i class="fas fa-arrow-left"></i> دخول</button>
+    <div id="message"></div>
+    <div class="action-links">
+        <a id="toggleModeLink" class="action-link"><i class="fas fa-user-plus"></i> حساب جديد</a>
+        <a id="forgotLink" class="action-link"><i class="fas fa-key"></i> نسيت كلمة المرور</a>
+    </div>
+  
+</div>
+
+<script>
+(function() {
+    // تجنب التصريح المزدوج للمتغير العام supabase - استخدم نطاق محلي
+    const SUPABASE_URL = 'https://kuepdppngskwkmhyhohq.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI';
+    if (typeof supabase === 'undefined') {
+        document.getElementById('message').innerHTML = 'خطأ في تحميل المكتبة';
+        return;
+    }
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const titleEl = document.getElementById('dynamicTitle');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const passwordGroup = document.getElementById('passwordGroup');
+    const actionBtn = document.getElementById('actionBtn');
+    const toggleModeLink = document.getElementById('toggleModeLink');
+    const forgotLink = document.getElementById('forgotLink');
+    const messageDiv = document.getElementById('message');
+    const togglePwBtn = document.getElementById('togglePasswordBtn');
+
+    let currentMode = 'login';
+
+    function showMessage(msg, isSuccess = false) {
+        messageDiv.textContent = msg;
+        messageDiv.classList.toggle('message-success', isSuccess);
+        if (!isSuccess) messageDiv.style.background = "#f3e5c9";
+        else messageDiv.style.background = "#dfe6d8";
+    }
+
+    function updateUIMode() {
+        if (currentMode === 'login') {
+            titleEl.textContent = 'تسجيل الدخول';
+            actionBtn.innerHTML = '<i class="fas fa-arrow-left"></i> دخول';
+            toggleModeLink.innerHTML = '<i class="fas fa-user-plus"></i> حساب جديد';
+            forgotLink.classList.remove('hidden');
+            passwordGroup.classList.remove('hidden');
+        } else if (currentMode === 'signup') {
+            titleEl.textContent = 'إنشاء حساب';
+            actionBtn.innerHTML = '<i class="fas fa-user-check"></i> تسجيل';
+            toggleModeLink.innerHTML = '<i class="fas fa-sign-in-alt"></i> لدي حساب بالفعل';
+            forgotLink.classList.add('hidden');
+            passwordGroup.classList.remove('hidden');
+        } else if (currentMode === 'forgot') {
+            titleEl.textContent = 'استعادة كلمة المرور';
+            actionBtn.innerHTML = '<i class="fas fa-envelope"></i> إرسال رابط الاستعادة';
+            toggleModeLink.innerHTML = '<i class="fas fa-arrow-right"></i> العودة للدخول';
+            forgotLink.classList.add('hidden');
+            passwordGroup.classList.add('hidden');
+        }
+        if (currentMode === 'forgot') passwordInput.value = '';
+        showMessage('');
+    }
+
+    if (togglePwBtn && passwordInput) {
+        togglePwBtn.addEventListener('click', () => {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            const icon = togglePwBtn.querySelector('i');
+            if (type === 'text') {
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        });
+    }
+
+    window.toggleMode = function() {
+        if (currentMode === 'login') currentMode = 'signup';
+        else if (currentMode === 'signup') currentMode = 'login';
+        else if (currentMode === 'forgot') currentMode = 'login';
+        updateUIMode();
+    };
+    window.goForgot = function() {
+        currentMode = 'forgot';
+        updateUIMode();
+    };
+    toggleModeLink.onclick = (e) => {
+        e.preventDefault();
+        if (currentMode === 'forgot') { currentMode = 'login'; updateUIMode(); }
+        else window.toggleMode();
+    };
+    forgotLink.onclick = (e) => { e.preventDefault(); window.goForgot(); };
+
+    async function checkSessionAndRedirect() {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) window.location.href = "dashbord.html";
+    }
+    sb.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) window.location.href = "dashbord.html";
+    });
+
+    window.handleAuth = async function() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email) { showMessage(' الرجاء إدخال البريد الإلكتروني'); return; }
+        actionBtn.disabled = true;
+        actionBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> جاري ...';
+        try {
+            if (currentMode === 'signup') {
+                if (!password || password.length < 6) throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                const { error } = await sb.auth.signUp({ email, password });
+                if (error) throw error;
+                showMessage(' تم إنشاء الحساب!    .', true);
+                setTimeout(() => {
+                    currentMode = 'login';
+                    updateUIMode();
+                    emailInput.value = '';
+                    passwordInput.value = '';
+                    showMessage('');
+                }, 2200);
+            } else if (currentMode === 'login') {
+                if (!password) throw new Error('أدخل كلمة المرور');
+                const { error } = await sb.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                showMessage('✅ مرحباً بك! جاري التوجيه...', true);
+                window.location.href = "dashbord.html";
+            } else if (currentMode === 'forgot') {
+                const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/reset-password.html' });
+                if (error) throw error;
+                showMessage('📬 تم إرسال رابط الاستعادة إلى بريدك.', true);
+                setTimeout(() => { currentMode = 'login'; updateUIMode(); emailInput.value = ''; }, 2500);
+            }
+        } catch (err) {
+            let errorMsg = err.message;
+            if (errorMsg.includes('Invalid login credentials')) errorMsg = '❌ البريد أو كلمة المرور غير صحيحة';
+            else if (errorMsg.includes('User already registered')) errorMsg = '⚠️ هذا البريد مسجل مسبقاً';
+            else if (errorMsg.includes('Password should be at least 6 characters')) errorMsg = 'كلمة المرور 6 أحرف فأكثر';
+            else if (errorMsg.includes('Email not confirmed')) errorMsg = 'يرجى تأكيد البريد الإلكتروني أولاً';
+            showMessage(errorMsg);
+        } finally {
+            actionBtn.disabled = false;
+            if (currentMode === 'login') actionBtn.innerHTML = '<i class="fas fa-arrow-left"></i> دخول';
+            else if (currentMode === 'signup') actionBtn.innerHTML = '<i class="fas fa-user-check"></i> تسجيل';
+            else actionBtn.innerHTML = '<i class="fas fa-envelope"></i> إرسال رابط الاستعادة';
+        }
+    };
+    actionBtn.onclick = window.handleAuth;
+    checkSessionAndRedirect();
+    updateUIMode();
+    if (passwordInput) passwordInput.type = 'password';
+    const eyeIcon = togglePwBtn?.querySelector('i');
+    if (eyeIcon) { eyeIcon.classList.remove('fa-eye'); eyeIcon.classList.add('fa-eye-slash'); }
+})();
+</script>
+</body>
+</html>

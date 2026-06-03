@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>تصنيف الطلاب | منصة الاستاذ محمد</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --card-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
+            --hover-transform: translateY(-4px);
+        }
+
+        body {
+            font-family: 'Tajawal', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            padding: 25px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* زر العودة */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 700;
+            margin-bottom: 25px;
+            padding: 10px 22px;
+            border-radius: 60px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .back-link:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+
+        /* الهيدر */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(125deg, #1e4b6e, #2c7da0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header h1 i {
+            background: none;
+            color: #2c7da0;
+            font-size: 2rem;
+        }
+        .header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* شريط النقاط الشخصي */
+        .my-stats {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .my-rank-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .my-rank-box i {
+            font-size: 2rem;
+            color: #f59e0b;
+        }
+        .my-rank-box .rank-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #92400e;
+        }
+        .my-points-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+        }
+        .my-points-box i {
+            color: #f59e0b;
+            font-size: 1.2rem;
+        }
+        .my-points-box span {
+            font-weight: 800;
+            color: #92400e;
+        }
+
+        /* بحث */
+        .search-box {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        .search-box i {
+            position: absolute;
+            right: 18px;
+            top: 16px;
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 14px 45px 14px 18px;
+            border-radius: 60px;
+            border: 1.5px solid #e2e8f0;
+            background: white;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .search-box input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+        }
+
+        /* قائمة الترتيب */
+        .leaderboard-list {
+            background: var(--card-bg);
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        .leaderboard-header {
+            display: grid;
+            grid-template-columns: 70px 1fr 100px;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            padding: 15px 20px;
+            font-weight: 800;
+            color: var(--text-muted);
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .leaderboard-item {
+            display: grid;
+            grid-template-columns: 70px 1fr 100px;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f2f8;
+            transition: all 0.2s;
+        }
+        .leaderboard-item:hover {
+            background: #fefce8;
+            transform: translateX(-5px);
+        }
+        .leaderboard-item.my-row {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-left: 4px solid #3b82f6;
+        }
+        .rank-cell {
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        .rank-cell .medal {
+            font-size: 1.5rem;
+        }
+        .name-cell {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .level-badge {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 30px;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .points-cell {
+            font-weight: 800;
+            color: #f59e0b;
+            text-align: left;
+        }
+        .my-badge {
+            background: #3b82f6;
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 30px;
+        }
+
+        /* تحميل */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        /* إحصائيات */
+        .stats-footer {
+            margin-top: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            padding: 15px;
+        }
+
+        @media (max-width: 560px) {
+            .leaderboard-header, .leaderboard-item {
+                grid-template-columns: 50px 1fr 70px;
+                gap: 5px;
+                padding: 12px 15px;
+            }
+            .rank-cell { font-size: 1rem; }
+            .points-cell { font-size: 0.9rem; }
+            .name-cell { font-size: 0.85rem; }
+            .my-stats { flex-direction: column; text-align: center; }
+            .header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <a href="dashbord.html" class="back-link">
+            <i class="fas fa-arrow-right"></i> العودة للرئيسية
+        </a>
+
+        <div class="header">
+            <h1><i class="fas fa-trophy"></i> تصنيف الطلاب</h1>
+            <p>ترتيب الطلاب حسب النقاط - من الأعلى إلى الأقل</p>
+        </div>
+
+        <!-- إحصائياتي الشخصية -->
+        <div id="myStats" class="my-stats" style="display: none;">
+            <div class="my-rank-box">
+                <i class="fas fa-crown"></i>
+                <div>
+                    <div style="font-size: 0.8rem; color: #92400e;">مركزك</div>
+                    <div class="rank-number" id="myRank">-</div>
+                </div>
+            </div>
+            <div class="my-points-box">
+                <i class="fas fa-star"></i>
+                <span id="myPoints">0 نقطة</span>
+            </div>
+            <div class="my-points-box">
+                <i class="fas fa-chart-line"></i>
+                <span id="myLevel">مبتدئ</span>
+            </div>
+        </div>
+
+        <!-- بحث -->
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="ابحث عن طالب بالاسم..." onkeyup="filterLeaderboard()">
+        </div>
+
+        <!-- قائمة الترتيب -->
+        <div class="leaderboard-list" id="leaderboardContainer">
+            <div class="leaderboard-header">
+                <div>الترتيب</div>
+                <div>الطالب</div>
+                <div>النقاط</div>
+            </div>
+            <div id="leaderboardBody">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-pulse"></i> جاري تحميل الترتيب...
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-footer" id="statsFooter"></div>
+    </div>
+
+    <script>
+        const sb = supabase.createClient('https://kuepdppngskwkmhyhohq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI');
+
+        let allStudents = [];
+        let currentUserId = null;
+
+        async function loadLeaderboard() {
+            // جلب المستخدم الحالي
+            const { data: { user } } = await sb.auth.getUser();
+            if (user) {
+                currentUserId = user.id;
+            }
+
+            // جلب جميع الطلاب مرتبين حسب النقاط
+            const { data: students } = await sb
+                .from('profiles')
+                .select('id, full_name, points, level')
+                .order('points', { ascending: false });
+
+            if (!students || students.length === 0) {
+                document.getElementById('leaderboardBody').innerHTML = '<div class="loading">لا يوجد طلاب بعد</div>';
+                return;
+            }
+
+            allStudents = students;
+            renderLeaderboard(students);
+
+            // عرض إحصائياتي الشخصية
+            if (user) {
+                const myIndex = students.findIndex(s => s.id === user.id);
+                if (myIndex !== -1) {
+                    const myData = students[myIndex];
+                    document.getElementById('myStats').style.display = 'flex';
+                    document.getElementById('myRank').textContent = myIndex + 1;
+                    document.getElementById('myPoints').innerHTML = `${myData.points || 0} نقطة`;
+                    
+                    let levelText = myData.level || 'مبتدئ';
+                    let levelIcon = '';
+                    if (levelText === 'خبير') levelIcon = '🏅';
+                    else if (levelText === 'متقدم') levelIcon = '⭐';
+                    else if (levelText === 'متوسط') levelIcon = '🌟';
+                    else levelIcon = '✨';
+                    document.getElementById('myLevel').innerHTML = `${levelIcon} ${levelText}`;
+                }
+            }
+
+            // إحصائيات عامة
+            document.getElementById('statsFooter').innerHTML = `📊 إجمالي الطلاب: ${students.length} | 🏆 أعلى نقاط: ${students[0]?.points || 0} نقطة`;
+        }
+
+        function renderLeaderboard(students) {
+            const container = document.getElementById('leaderboardBody');
+            
+            let html = '';
+            students.forEach((student, index) => {
+                const rank = index + 1;
+                let rankDisplay = '';
+                let medalIcon = '';
+                
+                if (rank === 1) {
+                    medalIcon = '🏆';
+                    rankDisplay = `<span class="medal">🥇</span>`;
+                } else if (rank === 2) {
+                    rankDisplay = `<span class="medal">🥈</span>`;
+                } else if (rank === 3) {
+                    rankDisplay = `<span class="medal">🥉</span>`;
+                } else {
+                    rankDisplay = rank;
+                }
+                
+                let levelIcon = '';
+                if (student.level === 'خبير') levelIcon = '🏅';
+                else if (student.level === 'متقدم') levelIcon = '⭐';
+                else if (student.level === 'متوسط') levelIcon = '🌟';
+                else levelIcon = '✨';
+                
+                const isMe = (currentUserId && student.id === currentUserId);
+                const myClass = isMe ? 'my-row' : '';
+                
+                html += `
+                    <div class="leaderboard-item ${myClass}">
+                        <div class="rank-cell">
+                            ${medalIcon} ${rankDisplay}
+                        </div>
+                        <div class="name-cell">
+                            ${escapeHtml(student.full_name || 'بدون اسم')}
+                            <span class="level-badge">${levelIcon} ${student.level || 'مبتدئ'}</span>
+                            ${isMe ? '<span class="my-badge">أنت</span>' : ''}
+                        </div>
+                        <div class="points-cell">
+                            ⭐ ${student.points || 0}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function filterLeaderboard() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (!searchTerm) {
+                renderLeaderboard(allStudents);
+                return;
+            }
+            
+            const filtered = allStudents.filter(student => 
+                (student.full_name || '').toLowerCase().includes(searchTerm)
+            );
+            renderLeaderboard(filtered);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // التحقق من تسجيل الدخول
+        async function checkSession() {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) {
+                window.location.href = "index.html";
+            } else {
+                loadLeaderboard();
+            }
+        }
+
+        checkSession();
+    </script>
+</body>
+</html>
