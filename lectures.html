@@ -163,7 +163,6 @@
             object-fit: cover;
         }
 
-        /* اسم المدرس - واضح بلون غامق */
         .teacher-card .teacher-name {
             font-weight: 800;
             font-size: 1.3rem;
@@ -521,18 +520,29 @@
         container.innerHTML = `<div class="progress-stats"><i class="fas fa-chart-line" style="color:#e8be6e;"></i> نسبة الإنجاز: ${completedLectures}/${totalLectures} (${percent}%) &nbsp; <i class="fas fa-check-circle" style="color:#2e7d32;"></i></div>`;
     }
     
+    // === دالة تشغيل الفيديو المُحسَّنة ===
     window.playLecture = (url) => {
-        let videoId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=))([^"&?\/\s]{11})/)?.[1];
-        if (videoId) {
-            document.getElementById('videoIframe').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-            document.getElementById('videoModal').style.display = 'flex';
-        } else {
-            alert("رابط الفيديو غير صالح");
+        if (!url) {
+            alert("رابط الفيديو غير موجود");
+            return;
         }
+        // استخراج معرف الفيديو من جميع صيغ يوتيوب المعروفة
+        let videoId = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)?.[1];
+        if (!videoId) {
+            alert("لم نتمكن من استخراج معرف الفيديو. تأكد من أن الرابط صحيح من يوتيوب.");
+            return;
+        }
+        const iframe = document.getElementById('videoIframe');
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+        document.getElementById('videoModal').style.display = 'flex';
     };
+    
+    // === إغلاق الفيديو مع مسح المصدر ===
     window.closeVideo = () => { 
-        document.getElementById('videoModal').style.display = 'none'; 
-        document.getElementById('videoIframe').src = ''; 
+        const modal = document.getElementById('videoModal');
+        const iframe = document.getElementById('videoIframe');
+        iframe.src = '';   // إيقاف الفيديو بشكل كامل
+        modal.style.display = 'none'; 
     };
     
     async function loadTeachers() {
@@ -588,9 +598,10 @@
             const completedClass = completed ? 'completed' : '';
             const checkIcon = completed ? 'fa-check-circle' : 'fa-circle';
             const btnCompletedClass = completed ? 'completed' : '';
+            // مهم: استخدام JSON.stringify لتمرير الرابط بدون إفساده
             html += `
                 <div class="lecture-item ${completedClass}" data-lecture-id="${lecId}">
-                    <div class="lecture-title" onclick="playLecture('${escapeHtml(lec.youtube_url)}')">
+                    <div class="lecture-title" onclick="playLecture(${JSON.stringify(lec.youtube_url)})">
                         <span class="play-icon"><i class="fas fa-play"></i></span>
                         <span>${escapeHtml(lec.title)}</span>
                     </div>
