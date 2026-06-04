@@ -118,6 +118,51 @@
             font-weight: 500;
         }
 
+        /* ===== شريط البحث ===== */
+        .search-wrapper {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: center;
+        }
+        .search-box {
+            background: rgba(255, 250, 235, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 80px;
+            padding: 6px 20px 6px 28px;
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid #d4af37;
+            transition: all 0.25s;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+        }
+        .search-box i {
+            color: #c49a3b;
+            font-size: 1.3rem;
+        }
+        .search-box input {
+            background: transparent;
+            border: none;
+            padding: 14px 0;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 500;
+            width: 100%;
+            outline: none;
+            color: #2c2418;
+        }
+        .search-box input::placeholder {
+            color: #b48b3a;
+            font-weight: 500;
+        }
+        .search-box:focus-within {
+            border-color: #e8be6e;
+            background: #fffef7;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+        }
+
         .teachers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -344,6 +389,7 @@
             .points-bar { justify-content: center; }
             .points-box, .level-box { font-size: 0.9rem; padding: 6px 20px; }
             .teacher-avatar-wrapper { width: 80px; height: 80px; }
+            .search-box { max-width: 100%; }
         }
 
         .footer-note {
@@ -352,6 +398,17 @@
             color: #e8be6e;
             font-weight: 500;
             opacity: 0.8;
+        }
+        
+        /* رسالة عدم وجود نتائج */
+        .no-results {
+            text-align: center;
+            padding: 50px 20px;
+            background: rgba(255,250,235,0.8);
+            border-radius: 48px;
+            margin-top: 20px;
+            color: #b48b3a;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -387,6 +444,10 @@
     let currentTeacherId = null, currentClassroomId = null;
     let currentUserId = null;
     let watchedMap = new Map();
+    
+    // متغيرات التخزين للبحث
+    let allTeachersData = [];          // تخزين جميع المدرسين من قاعدة البيانات
+    let currentFilterText = '';        // النص الحالي للبحث
     
     // تحميل الحضور من قاعدة البيانات
     async function loadWatchedFromSupabase() {
@@ -527,13 +588,12 @@
         container.innerHTML = `<div class="progress-stats"><i class="fas fa-chart-line" style="color:#e8be6e;"></i> نسبة الإنجاز: ${completedLectures}/${totalLectures} (${percent}%) &nbsp; <i class="fas fa-check-circle" style="color:#2e7d32;"></i></div>`;
     }
     
-    // ** دالة تشغيل الفيديو المُحسّنة والخالية من أخطاء الـ Syntax **
+    // تشغيل الفيديو
     window.playLecture = function(url) {
         if (!url) {
             alert("رابط الفيديو غير موجود");
             return;
         }
-        // استخراج معرف الفيديو باستخدام تعبير عادي عادي بدون optional chaining
         var match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
         var videoId = match ? match[1] : null;
         if (!videoId) {
@@ -553,29 +613,86 @@
         modal.style.display = 'none';
     };
     
-    // تحميل قائمة المعلمين
+    // دالة تصفية المدرسين بناءً على النص المدخل
+    function filterTeachers() {
+        const searchInput = document.getElementById('teacherSearchInput');
+        if (!searchInput) return;
+        const filterValue = searchInput.value.trim();
+        currentFilterText = filterValue;
+        renderFilteredTeachers();
+    }
+    
+    // عرض المدرسين بعد التصفية
+    function renderFilteredTeachers() {
+        if (!allTeachersData.length) {
+            document.getElementById('contentArea').innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-chalkboard-user fa-3x" style="color:#e8be6e;"></i><br>لا يوجد مدرسون حالياً</div>';
+            return;
+        }
+        
+        let filtered = [...allTeachersData];
+        if (currentFilterText !== '') {
+            const lowerFilter = currentFilterText.toLowerCase();
+            filtered = filtered.filter(teacher => 
+                (teacher.name && teacher.name.toLowerCase().includes(lowerFilter)) ||
+                (teacher.bio && teacher.bio.toLowerCase().includes(lowerFilter))
+            );
+        }
+        
+        // بناء HTML مع شريط البحث + الشبكة
+        let html = `
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="teacherSearchInput" placeholder="ابحث عن مدرس بالاسم أو السيرة..." autocomplete="off" value="${escapeHtml(currentFilterText)}">
+                </div>
+            </div>
+            <div class="teachers-grid" id="teachersGrid">
+        `;
+        
+        if (filtered.length === 0) {
+            html += `<div class="no-results"><i class="fas fa-filter"></i> لا يوجد مدرسون مطابقون لـ "${escapeHtml(currentFilterText)}"</div>`;
+        } else {
+            filtered.forEach(t => {
+                const avatarHtml = t.avatar_url 
+                    ? '<img src="' + escapeHtml(t.avatar_url) + '" class="teacher-avatar-img" alt="' + escapeHtml(t.name) + '">'
+                    : '<div style="font-size: 52px; color:#c49a3b;"><i class="fas fa-user-graduate"></i></div>';
+                html += `
+                    <div class="teacher-card" onclick="selectTeacher('${t.id}')">
+                        <div class="teacher-avatar-wrapper">${avatarHtml}</div>
+                        <div class="teacher-name">${escapeHtml(t.name)}</div>
+                        <div class="teacher-bio">${escapeHtml(t.bio) || 'متميز في التدريس'}</div>
+                    </div>
+                `;
+            });
+        }
+        
+        html += `</div>`;
+        document.getElementById('contentArea').innerHTML = html;
+        document.getElementById('progressArea').innerHTML = '';
+        
+        // ربط حدث البحث مرة أخرى (بعد إعادة إنشاء DOM)
+        const searchField = document.getElementById('teacherSearchInput');
+        if (searchField) {
+            searchField.addEventListener('input', function() {
+                currentFilterText = this.value;
+                renderFilteredTeachers();
+            });
+        }
+    }
+    
+    // تحميل قائمة المعلمين (مع شريط البحث والتصفية)
     async function loadTeachers() {
+        currentTeacherId = null;
+        currentClassroomId = null;
         const { data: teachers, error } = await supabaseClient.from('teachers').select('*').order('name');
         if (error || !teachers || teachers.length === 0) {
             document.getElementById('contentArea').innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-chalkboard-user fa-3x" style="color:#e8be6e;"></i><br>لا يوجد مدرسون حالياً</div>';
             return;
         }
-        let html = '<div class="teachers-grid">';
-        teachers.forEach(t => {
-            const avatarHtml = t.avatar_url 
-                ? '<img src="' + escapeHtml(t.avatar_url) + '" class="teacher-avatar-img" alt="' + escapeHtml(t.name) + '">'
-                : '<div style="font-size: 52px; color:#c49a3b;"><i class="fas fa-user-graduate"></i></div>';
-            html += `
-                <div class="teacher-card" onclick="selectTeacher('${t.id}')">
-                    <div class="teacher-avatar-wrapper">${avatarHtml}</div>
-                    <div class="teacher-name">${escapeHtml(t.name)}</div>
-                    <div class="teacher-bio">${escapeHtml(t.bio) || 'متميز في التدريس'}</div>
-                </div>
-            `;
-        });
-        html += '</div>';
-        document.getElementById('contentArea').innerHTML = html;
-        document.getElementById('progressArea').innerHTML = '';
+        // تخزين البيانات الأساسية للتصفية
+        allTeachersData = teachers;
+        currentFilterText = '';
+        renderFilteredTeachers();
     }
     
     // اختيار معلم وعرض فصوله
@@ -610,7 +727,6 @@
             const checkIcon = completed ? 'fa-check-circle' : 'fa-circle';
             const btnCompletedClass = completed ? 'completed' : '';
             const videoUrl = lec.youtube_url ? lec.youtube_url : '';
-            // استخدام JSON.stringify لنقل الرابط بشكل آمن
             html += `
                 <div class="lecture-item ${completedClass}" data-lecture-id="${lecId}">
                     <div class="lecture-title" onclick='playLecture(${JSON.stringify(videoUrl)})'>
@@ -638,6 +754,8 @@
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
             return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
         });
     }
     
