@@ -118,7 +118,7 @@
             font-weight: 500;
         }
 
-        /* ===== شريط البحث ===== */
+        /* شريط البحث ثابت لا يُعاد بناؤه */
         .search-wrapper {
             margin-bottom: 32px;
             display: flex;
@@ -400,7 +400,6 @@
             opacity: 0.8;
         }
         
-        /* رسالة عدم وجود نتائج */
         .no-results {
             text-align: center;
             padding: 50px 20px;
@@ -424,6 +423,15 @@
         <h1><i class="fas fa-graduation-cap" style="color: #e8be6e;"></i> 𒈨𒌍 المكتبة التعليمية البابلية 𒀭</h1>
         <p>اكتشف دروسك من كبار المعلمين، سجل إنجازك واحصل على نقاط التميز ✨</p>
     </div>
+    
+    <!-- شريط البحث الثابت الذي لن يُعاد إنشاؤه أبدًا -->
+    <div class="search-wrapper" id="searchWrapper" style="display: none;">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="teacherSearchInput" placeholder="ابحث عن مدرس بالاسم أو السيرة..." autocomplete="off">
+        </div>
+    </div>
+    
     <div id="contentArea"><div style="text-align:center; padding:60px;"><i class="fas fa-spinner fa-pulse fa-2x" style="color:#e8be6e;"></i><br>جاري تحميل المحتوى...</div></div>
     <div style="text-align: center; margin-top: 25px;" id="progressArea"></div>
     <div class="footer-note">⭐ أكمل المحاضرة بالضغط على زر الدائرة — كل مشاهدة تمنحك 10 نقاط وخبرة</div>
@@ -445,9 +453,9 @@
     let currentUserId = null;
     let watchedMap = new Map();
     
-    // متغيرات التخزين للبحث
-    let allTeachersData = [];          // تخزين جميع المدرسين من قاعدة البيانات
-    let currentFilterText = '';        // النص الحالي للبحث
+    // بيانات المدرسين
+    let allTeachersData = [];
+    let currentFilterText = '';
     
     // تحميل الحضور من قاعدة البيانات
     async function loadWatchedFromSupabase() {
@@ -613,24 +621,24 @@
         modal.style.display = 'none';
     };
     
-    // دالة تصفية المدرسين بناءً على النص المدخل
-    function filterTeachers() {
+    // تصفية المدرسين بناءً على النص المدخل وتحديث الشبكة فقط (دون إعادة بناء شريط البحث)
+    function updateFilterAndRender() {
         const searchInput = document.getElementById('teacherSearchInput');
-        if (!searchInput) return;
-        const filterValue = searchInput.value.trim();
-        currentFilterText = filterValue;
-        renderFilteredTeachers();
+        if (searchInput) {
+            currentFilterText = searchInput.value;
+        }
+        renderTeachersGrid();
     }
     
-    // عرض المدرسين بعد التصفية
-    function renderFilteredTeachers() {
+    // عرض شبكة المدرسين بناءً على currentFilterText
+    function renderTeachersGrid() {
         if (!allTeachersData.length) {
-            document.getElementById('contentArea').innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-chalkboard-user fa-3x" style="color:#e8be6e;"></i><br>لا يوجد مدرسون حالياً</div>';
+            document.getElementById('teachersGridContainer').innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-chalkboard-user fa-3x" style="color:#e8be6e;"></i><br>لا يوجد مدرسون حالياً</div>';
             return;
         }
         
         let filtered = [...allTeachersData];
-        if (currentFilterText !== '') {
+        if (currentFilterText.trim() !== '') {
             const lowerFilter = currentFilterText.toLowerCase();
             filtered = filtered.filter(teacher => 
                 (teacher.name && teacher.name.toLowerCase().includes(lowerFilter)) ||
@@ -638,17 +646,7 @@
             );
         }
         
-        // بناء HTML مع شريط البحث + الشبكة
-        let html = `
-            <div class="search-wrapper">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="teacherSearchInput" placeholder="ابحث عن مدرس بالاسم أو السيرة..." autocomplete="off" value="${escapeHtml(currentFilterText)}">
-                </div>
-            </div>
-            <div class="teachers-grid" id="teachersGrid">
-        `;
-        
+        let html = `<div class="teachers-grid" id="teachersGrid">`;
         if (filtered.length === 0) {
             html += `<div class="no-results"><i class="fas fa-filter"></i> لا يوجد مدرسون مطابقون لـ "${escapeHtml(currentFilterText)}"</div>`;
         } else {
@@ -665,50 +663,69 @@
                 `;
             });
         }
-        
         html += `</div>`;
-        document.getElementById('contentArea').innerHTML = html;
-        document.getElementById('progressArea').innerHTML = '';
-        
-        // ربط حدث البحث مرة أخرى (بعد إعادة إنشاء DOM)
-        const searchField = document.getElementById('teacherSearchInput');
-        if (searchField) {
-            searchField.addEventListener('input', function() {
-                currentFilterText = this.value;
-                renderFilteredTeachers();
-            });
-        }
+        document.getElementById('teachersGridContainer').innerHTML = html;
     }
     
-    // تحميل قائمة المعلمين (مع شريط البحث والتصفية)
+    // تحميل قائمة المعلمين (مرة واحدة فقط) وإظهار شريط البحث الثابت
     async function loadTeachers() {
         currentTeacherId = null;
         currentClassroomId = null;
         const { data: teachers, error } = await supabaseClient.from('teachers').select('*').order('name');
         if (error || !teachers || teachers.length === 0) {
             document.getElementById('contentArea').innerHTML = '<div style="text-align:center; padding:40px;"><i class="fas fa-chalkboard-user fa-3x" style="color:#e8be6e;"></i><br>لا يوجد مدرسون حالياً</div>';
+            document.getElementById('searchWrapper').style.display = 'none';
             return;
         }
-        // تخزين البيانات الأساسية للتصفية
         allTeachersData = teachers;
         currentFilterText = '';
-        renderFilteredTeachers();
+        
+        // إظهار شريط البحث
+        document.getElementById('searchWrapper').style.display = 'flex';
+        
+        // إنشاء حاوية الشبكة داخل contentArea
+        document.getElementById('contentArea').innerHTML = `<div id="teachersGridContainer"></div>`;
+        
+        // عرض الشبكة الأولية
+        renderTeachersGrid();
+        
+        // ربط حدث البحث مرة واحدة فقط (لا يُعاد ربطه أبداً)
+        const searchInput = document.getElementById('teacherSearchInput');
+        if (searchInput) {
+            // إزالة أي مستمع قديم لتجنب التكرار
+            searchInput.removeEventListener('input', updateFilterAndRender);
+            searchInput.addEventListener('input', updateFilterAndRender);
+            // محاذاة القيمة الأولية
+            searchInput.value = '';
+        }
+        
+        document.getElementById('progressArea').innerHTML = '';
     }
     
     // اختيار معلم وعرض فصوله
     window.selectTeacher = async function(teacherId) {
         currentTeacherId = teacherId;
+        // إخفاء شريط البحث في وضع عرض الفصول
+        document.getElementById('searchWrapper').style.display = 'none';
+        
         const { data: classrooms } = await supabaseClient.from('classrooms').select('*').eq('teacher_id', teacherId).order('order_index');
         if (!classrooms || classrooms.length === 0) {
-            document.getElementById('contentArea').innerHTML = '<button class="back-step" onclick="loadTeachers()"><i class="fas fa-arrow-right"></i> العودة للمدرسين</button><div style="text-align:center; padding:40px;"><i class="fas fa-folder-open"></i> لا توجد فصول لهذا المدرس</div>';
+            document.getElementById('contentArea').innerHTML = '<button class="back-step" onclick="backToTeachers()"><i class="fas fa-arrow-right"></i> العودة للمدرسين</button><div style="text-align:center; padding:40px;"><i class="fas fa-folder-open"></i> لا توجد فصول لهذا المدرس</div>';
             return;
         }
-        let html = '<button class="back-step" onclick="loadTeachers()"><i class="fas fa-arrow-right"></i> المدرسين</button>';
+        let html = '<button class="back-step" onclick="backToTeachers()"><i class="fas fa-arrow-right"></i> المدرسين</button>';
         classrooms.forEach(cls => { 
             html += '<div class="class-item" onclick="selectClass(\'' + cls.id + '\')"><span><i class="fas fa-layer-group" style="color:#c49a3b;"></i> ' + escapeHtml(cls.name) + '</span> <i class="fas fa-chevron-left"></i></div>';
         });
         document.getElementById('contentArea').innerHTML = html;
         document.getElementById('progressArea').innerHTML = '';
+    };
+    
+    // العودة إلى قائمة المدرسين مع إظهار شريط البحث مرة أخرى
+    window.backToTeachers = function() {
+        document.getElementById('searchWrapper').style.display = 'flex';
+        // إعادة بناء شبكة المدرسين مع الحفاظ على حالة البحث الحالية
+        renderTeachersGrid();
     };
     
     // اختيار فصل وعرض محاضراته
@@ -754,8 +771,6 @@
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
             return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
         });
     }
     
