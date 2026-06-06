@@ -1,307 +1,885 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>وزاريات السادس العلمي | روابط يدوية</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>دي موافر | منصة الاختبارات المرنة</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, 'Tahoma', sans-serif;
+        }
 
-    body {
-      background: linear-gradient(145deg, #f3e8ff 0%, #ffffff 100%);
-      font-family: 'Cairo', sans-serif;
-      padding: 16px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+        :root {
+            --main-gradient: linear-gradient(135deg, #0b1120 0%, #1a1a2e 50%, #1e1b3a 100%);
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-hover: rgba(255, 255, 255, 0.09);
+            --glass-selected: rgba(99, 102, 241, 0.25);
+            --accent: #818cf8;
+            --accent-glow: #a855f7;
+            --text-light: #f1f5f9;
+            --text-dim: #94a3b8;
+        }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
-      flex: 1;
-    }
+        body {
+            background: var(--main-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
 
-    /* الهيدر */
-    .hero {
-      text-align: center;
-      margin-bottom: 32px;
-    }
+        /* الحاوية الرئيسية */
+        .exam-hub {
+            width: 100%;
+            max-width: 1280px;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            border-radius: 2rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
 
-    .badge {
-      background: #8b5cf6;
-      color: white;
-      display: inline-block;
-      padding: 6px 16px;
-      border-radius: 40px;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 10px rgba(139, 92, 246, 0.25);
-    }
+        /* تخطيط مرن: عمودي للموبايل / أفقي للحاسوب */
+        .dashboard-layout {
+            display: flex;
+            flex-direction: column;
+        }
 
-    h1 {
-      font-size: clamp(1.8rem, 6vw, 2.6rem);
-      font-weight: 800;
-      background: linear-gradient(135deg, #6d28d9, #c084fc);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      margin-bottom: 8px;
-    }
+        @media (min-width: 992px) {
+            .dashboard-layout {
+                flex-direction: row;
+                min-height: 85vh;
+            }
+        }
 
-    .subhead {
-      font-size: clamp(0.9rem, 4vw, 1.2rem);
-      color: #4c1d95;
-      font-weight: 600;
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(4px);
-      display: inline-block;
-      padding: 4px 16px;
-      border-radius: 30px;
-    }
+        /* ========= الشريط الجانبي ========= */
+        .side-nav {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+        }
 
-    /* شبكة البطاقات المتجاوبة */
-    .subjects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-      margin: 28px 0 20px;
-    }
+        @media (min-width: 992px) {
+            .side-nav {
+                width: 280px;
+                border-left: 1px solid var(--glass-border);
+                border-bottom: none;
+            }
+        }
 
-    /* البطاقة */
-    .card {
-      background: white;
-      border-radius: 28px;
-      padding: 24px 16px;
-      transition: all 0.25s ease;
-      border: 1px solid #ede9fe;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(120deg, #ffffff, var(--accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
 
-    .card:hover {
-      transform: translateY(-5px);
-      border-color: #c084fc;
-      box-shadow: 0 20px 30px -12px rgba(139, 92, 246, 0.2);
-    }
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 0.7rem;
+            display: block;
+        }
 
-    /* أيقونة دائرية */
-    .card-icon {
-      background: #f5f0ff;
-      width: 80px;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      font-size: 2.2rem;
-      color: #7e22ce;
-      margin-bottom: 16px;
-      transition: 0.2s;
-    }
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+            gap: 0.6rem;
+        }
 
-    .card h3 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #3b0764;
-      margin-bottom: 20px;
-      word-break: keep-all;
-    }
+        @media (min-width: 992px) {
+            .subjects-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 0.6rem;
+            }
+        }
 
-    /* زر التلغرام */
-    .btn-telegram {
-      background: linear-gradient(95deg, #6d28d9, #a855f7);
-      border: none;
-      color: white;
-      font-family: 'Cairo', sans-serif;
-      font-weight: 700;
-      font-size: 1rem;
-      padding: 14px 0;
-      border-radius: 60px;
-      width: 100%;
-      cursor: pointer;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      box-shadow: 0 6px 14px rgba(107, 33, 168, 0.25);
-    }
+        .subject-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 0.65rem 0.8rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            text-align: right;
+        }
 
-    .btn-telegram:active {
-      transform: scale(0.97);
-    }
+        .subject-btn i { width: 1.2rem; font-size: 1rem; }
 
-    /* تذييل الحقوق */
-    .footer-copyright {
-      text-align: center;
-      margin-top: 40px;
-      padding: 16px;
-      font-size: 0.85rem;
-      color: #6b21a5;
-      border-top: 1px solid #e9d5ff;
-      background: transparent;
-    }
+        .subject-btn:hover {
+            background: var(--glass-hover);
+            color: var(--text-light);
+        }
 
-    /* تحسينات مخصصة للهواتف الصغيرة */
-    @media (max-width: 640px) {
-      body {
-        padding: 12px;
-      }
+        .subject-btn.active {
+            background: var(--glass-selected);
+            color: white;
+            border-color: rgba(129, 140, 248, 0.5);
+        }
 
-      .hero {
-        margin-bottom: 24px;
-      }
+        /* حاوية القوائم المنسدلة */
+        .config-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--glass-border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
 
-      .badge {
-        font-size: 11px;
-        padding: 4px 12px;
-      }
+        @media (min-width: 992px) {
+            .config-panel {
+                grid-template-columns: 1fr;
+                margin-top: auto;
+            }
+        }
 
-      .subjects-grid {
-        gap: 16px;
-        grid-template-columns: 1fr; /* عمود واحد في الهواتف الصغيرة */
-      }
+        .config-item label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            display: block;
+            margin-bottom: 6px;
+        }
 
-      .card {
-        padding: 20px 12px;
-        border-radius: 24px;
-      }
+        .modern-select {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid var(--glass-border);
+            padding: 8px 12px;
+            border-radius: 12px;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 0.8rem;
+            outline: none;
+            cursor: pointer;
+        }
 
-      .card-icon {
-        width: 70px;
-        height: 70px;
-        font-size: 2rem;
-      }
+        /* ========= منطقة العمل ========= */
+        .work-area {
+            flex: 1;
+            padding: 1.8rem;
+            display: flex;
+            flex-direction: column;
+        }
 
-      .card h3 {
-        font-size: 1.4rem;
-        margin-bottom: 16px;
-      }
+        @media (min-width: 768px) {
+            .work-area { padding: 2rem; }
+        }
 
-      .btn-telegram {
-        padding: 12px 0;
-        font-size: 0.9rem;
-      }
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
 
-      .footer-copyright {
-        margin-top: 30px;
-        font-size: 0.75rem;
-      }
-    }
+        .title-section h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+        .title-section p {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
 
-    /* للشاشات المتوسطة (تابلت) */
-    @media (min-width: 641px) and (max-width: 900px) {
-      .subjects-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 18px;
-      }
-    }
+        .timer-badge {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #f87171;
+        }
 
-    /* للشاشات الكبيرة */
-    @media (min-width: 1200px) {
-      .subjects-grid {
-        gap: 28px;
-      }
-      .card {
-        padding: 28px 20px;
-      }
-    }
+        .progress-wrapper {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1.8rem;
+        }
 
-    /* تحسين اللمس على الهواتف */
-    @media (hover: none) and (pointer: coarse) {
-      .btn-telegram {
-        padding: 14px 0;
-      }
-      .card:hover {
-        transform: none;
-      }
-    }
-  </style>
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .progress-track {
+            background: #1e293b;
+            height: 6px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #c084fc);
+            border-radius: 8px;
+            transition: width 0.25s ease;
+        }
+
+        /* بطاقة السؤال */
+        .question-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.55;
+            margin-bottom: 1.4rem;
+        }
+
+        .answers-pool {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .choice-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 0.9rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.15s;
+            font-weight: 500;
+        }
+
+        .choice-item input {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--text-dim);
+            border-radius: 50%;
+            margin: 0;
+            position: relative;
+        }
+
+        .choice-item input:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: inset 0 0 0 3px #0f172a;
+        }
+
+        .choice-item.selected {
+            background: var(--glass-selected);
+            border-color: var(--accent);
+        }
+
+        .essay-textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            resize: vertical;
+            min-height: 130px;
+            outline: none;
+        }
+
+        .hint-box {
+            background: rgba(129, 140, 248, 0.08);
+            border-right: 3px solid var(--accent);
+            padding: 0.7rem;
+            border-radius: 0.8rem;
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* أزرار التنقل */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 0.7rem 1.4rem;
+            border-radius: 1rem;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+            border: none;
+            box-shadow: 0 0 8px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-submit {
+            background: #10b981;
+            border: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* نتائج */
+        .results-panel {
+            display: none;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .score-globe {
+            background: rgba(168, 85, 247, 0.1);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid #c084fc;
+            margin: 1rem auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .score-globe span:first-child {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #f472b6;
+        }
+
+        .review-list {
+            max-height: 320px;
+            overflow-y: auto;
+            text-align: right;
+            margin-top: 1rem;
+        }
+
+        .review-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            padding: 0.9rem;
+            border-radius: 1rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .review-correct {
+            border-right: 4px solid #34d399;
+        }
+
+        .review-wrong {
+            border-right: 4px solid #f87171;
+        }
+
+        .review-essay {
+            border-right: 4px solid #fbbf24;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <div class="hero">
-    <div class="badge"><i class="fas fa-graduation-cap"></i> السادس العلمي – العراق</div>
-    <h1><i class="fas fa-file-alt"></i> الأسئلة الوزارية</h1>
-    <div class="subhead">جميع المواد · جميع الفصول</div>
-  </div>
-  <div class="subjects-grid" id="subjectsGrid"></div>
-</div>
-<div class="footer-copyright">
-  <i class="fas fa-copyright"></i> جميع الحقوق محفوظة لـ عمران
+
+<div class="exam-hub">
+    <div class="dashboard-layout">
+        <!-- الشريط الجانبي -->
+        <aside class="side-nav">
+            <div class="brand-logo">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <span>دي موافر | الامتحان المرن</span>
+            </div>
+
+            <div>
+                <div class="section-label"><i class="fa-regular fa-folder-open"></i> المواد الدراسية</div>
+                <div class="subjects-grid" id="subjectsContainer">
+                    <!-- مواد ديناميكية عبر JS -->
+                </div>
+            </div>
+
+            <div class="config-panel">
+                <div class="config-item">
+                    <label><i class="fa-regular fa-copy"></i> الفصل الدراسي</label>
+                    <select id="chapterSelect" class="modern-select"></select>
+                </div>
+                <div class="config-item">
+                    <label><i class="fa-regular fa-hourglass-half"></i> زمن الاختبار</label>
+                    <select id="timeSelect" class="modern-select">
+                        <option value="5">5 دقائق</option>
+                        <option value="10" selected>10 دقائق</option>
+                        <option value="20">20 دقيقة</option>
+                        <option value="30">30 دقيقة</option>
+                    </select>
+                </div>
+            </div>
+        </aside>
+
+        <!-- منطقة الأسئلة والنتائج -->
+        <main class="work-area">
+            <div id="quizZone">
+                <div class="exam-header">
+                    <div class="title-section">
+                        <h2 id="dynamicSubjectTitle">الكيمياء المتقدمة</h2>
+                        <p>أسئلة تفاعلية بنظام التقييم الذكي</p>
+                    </div>
+                    <div class="timer-badge"><i class="fa-regular fa-clock"></i> <span id="timerDisplay">10:00</span></div>
+                </div>
+
+                <div class="progress-wrapper">
+                    <div class="progress-stats">
+                        <span id="qCounter">السؤال 0 / 0</span>
+                        <span id="percentProgress">0%</span>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+                </div>
+
+                <div id="questionRenderer">
+                    <div class="question-card">
+                        <div class="question-text" id="questionText">جاري تجهيز الأسئلة النموذجية...</div>
+                        <div id="answersContainer"></div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button class="btn" id="prevBtn"><i class="fa-solid fa-chevron-right"></i> السابق</button>
+                    <button class="btn btn-primary" id="nextBtn">التالي <i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="btn btn-submit" id="submitBtn" style="display: none;">إنهاء <i class="fa-regular fa-circle-check"></i></button>
+                </div>
+            </div>
+
+            <div id="resultsZone" class="results-panel">
+                <i class="fa-regular fa-star" style="font-size: 2.5rem; color: #facc15;"></i>
+                <h3 style="margin: 10px 0 5px;">📊 نتيجة الاختبار</h3>
+                <div class="score-globe">
+                    <span id="finalScoreSpan">0/0</span>
+                    <span style="font-size: 0.7rem;">التقدير</span>
+                </div>
+                <div class="review-list" id="reviewContainer"></div>
+                <button class="btn" id="restartBtn" style="margin-top: 20px; background: #334155;"><i class="fa-regular fa-rotate-right"></i> اختبار جديد</button>
+            </div>
+        </main>
+    </div>
 </div>
 
 <script>
-  // ============================================================
-  // 🔹 قم بتعديل الروابط التالية يدوياً 🔹
-  // ضع رابط Telegram الخاص بكل مادة
-  // ============================================================
-  const telegramLinks = {
-    الرياضيات: "https://t.me/c/3984623664/15/16",
-    الاحياء: "https://t.me/c/3984623664/3/4",
-    الكيمياء: "https://t.me/c/3984623664/1/13",
-    الفيزياء: "https://t.me/c/3984623664/5/6",
-    العربية: "https://t.me/c/3984623664/7/8",
-    الانكليزي: "https://t.me/c/3984623664/9/10",
-    الاسلامية: "https://t.me/c/3984623664/11/12"
-  };
-  // ============================================================
+    // ---------------------------- قاعدة بيانات وهمية متكاملة لجميع المواد والفصول -----------------------------
+    const subjectsCatalog = [
+        { id: "chemistry", name: "الكيمياء", icon: "fa-flask" },
+        { id: "biology", name: "الأحياء", icon: "fa-dna" },
+        { id: "physics", name: "الفيزياء", icon: "fa-atom" },
+        { id: "math", name: "الرياضيات", icon: "fa-calculator" },
+        { id: "english", name: "الإنكليزي", icon: "fa-language" },
+        { id: "arabic", name: "اللغة العربية", icon: "fa-pen-nib" },
+        { id: "literature", name: "الأدب", icon: "fa-book-open" },
+        { id: "islamic", name: "التربية الإسلامية", icon: "fa-mosque" }
+    ];
 
-  const subjects = [
-    { name: "الرياضيات", icon: "fas fa-calculator" },
-    { name: "الاحياء", icon: "fas fa-dna" },
-    { name: "الكيمياء", icon: "fas fa-flask" },
-    { name: "الفيزياء", icon: "fas fa-atom" },
-    { name: "اللغة العربية", icon: "fas fa-book-open" },
-    { name: "اللغة الانكليزية", icon: "fas fa-language" },
-    { name: "التربية الإسلامية", icon: "fas fa-mosque" }
-  ];
+    // الفصول حسب المادة
+    const chaptersMap = {
+        chemistry: ["الفصل 1: الثرموداينمك", "الفصل 2: الاتزان الكيميائي", "الفصل 3: الأحماض والقواعد"],
+        biology: ["الفصل 1: الخلية ووظائفها", "الفصل 2: الوراثة", "الفصل 3: التصنيف الحديث"],
+        physics: ["الفصل 1: الكهرباء الساكنة", "الفصل 2: المجالات المغناطيسية", "الفصل 3: الفيزياء الحديثة"],
+        math: ["الفصل 1: الأعداد المركبة", "الفصل 2: المصفوفات", "الفصل 3: النهايات والتفاضل"],
+        english: ["Unit 1: Grammar", "Unit 2: Reading", "Unit 3: Writing"],
+        arabic: ["النحو: المبتدأ والخبر", "البلاغة: التشبيه", "الإملاء: الهمزة"],
+        literature: ["الشعر الجاهلي", "العصر العباسي", "الأدب الحديث"],
+        islamic: ["سورة الكهف", "فقه الطهارة", "سيرة النبي"]
+    };
 
-  const container = document.getElementById("subjectsGrid");
+    // توليد أسئلة نموذجية لكل مادة + فصل (ديناميكي)
+    function generateQuestionsFor(subjectId, chapterIdx) {
+        const chapterNumber = chapterIdx + 1;
+        const subjectName = subjectsCatalog.find(s => s.id === subjectId)?.name || subjectId;
+        // 3-4 أسئلة متنوعة (اختياري، مقالي)
+        if (subjectId === "chemistry") {
+            if (chapterIdx === 0) return [
+                { type: "choice", question: "قانون حفظ الطاقة في التفاعلات الكيميائية يُعرف بـ:", options: ["قانون هس", "قانون بويل", "قانون جاي-لوساك", "قانون أفوجادرو"], correct: 0, hint: "يرتبط بالإنثالبي" },
+                { type: "choice", question: "أي من التالي يعتبر عملية ماصة للحرارة؟", options: ["الاحتراق", "التبخر", "التكثف", "التجمد"], correct: 1 },
+                { type: "essay", question: "اشرح نظرية الاتزان الكيميائي مع ذكر مثال.", correct_keywords: ["اتزان", "متفاعلات", "نواتج", "ثابت"], hint: "ركز على قانون فعل الكتلة" }
+            ];
+            if (chapterIdx === 1) return [
+                { type: "choice", question: "ثابت الاتزان Kc يتأثر بـ:", options: ["التركيز", "الضغط", "درجة الحرارة", "المحفز"], correct: 2 },
+                { type: "essay", question: "مبدأ لوشاتيليه: وضح تأثيره على زيادة الضغط.", correct_keywords: ["ضغط", "اتزان", "اتجاه", "الجهة"], hint: "التوازن يتحرك نحو تقليل الضغط" }
+            ];
+        }
+        if (subjectId === "biology") {
+            if (chapterIdx === 0) return [
+                { type: "choice", question: "العضية المسؤولة عن إنتاج ATP في الخلية:", options: ["النواة", "الميتوكوندريا", "الرايبوسوم", "الجسيم الحال"], correct: 1 },
+                { type: "essay", question: "ما الفرق بين الخلايا بدائية النواة وحقيقية النواة؟", correct_keywords: ["نواة", "غشاء", "عضيات", "ريبوسوم"], hint: "اذكر ثلاثة فروق" }
+            ];
+        }
+        if (subjectId === "physics") {
+            if (chapterIdx === 0) return [
+                { type: "choice", question: "وحدة قياس المجال الكهربائي:", options: ["فولت", "نيوتن/كولوم", "تسلا", "واط"], correct: 1 },
+                { type: "boolean", question: "الجسم المشحون بشحنة موجبة يكتسب إلكترونات.", options: ["صحيح", "خاطئ"], correct: 1, hint: "الشحنة الموجبة تعني نقص الإلكترونات" }
+            ];
+        }
+        if (subjectId === "math") {
+            return [
+                { type: "choice", question: `قيمة i^2 في الأعداد المركبة تساوي:`, options: ["1", "-1", "i", "-i"], correct: 1 },
+                { type: "essay", question: "حل المعادلة: x² + 4 = 0 في مجموعة الأعداد المركبة.", correct_keywords: ["2i", "-2i", "i", "تخيلية"], hint: "استخدم مفهوم i² = -1" }
+            ];
+        }
+        if (subjectId === "english") {
+            return [
+                { type: "choice", question: "Choose the correct passive: 'They built this bridge' →", options: ["This bridge built", "This bridge was built", "This bridge is built", "This bridge were built"], correct: 1 },
+                { type: "essay", question: "Write a short paragraph about environmental protection.", correct_keywords: ["environment", "protect", "recycle", "future"], hint: "استخدم كلمات مفتاحية" }
+            ];
+        }
+        if (subjectId === "arabic") {
+            return [
+                { type: "choice", question: "مثال على أسلوب الاستفهام:", options: ["ما أجمل السماء!", "هل ذاكرت الدرس؟", "لا تهمل واجبك", "سافر مبكرًا"], correct: 1 },
+                { type: "essay", question: "أعرب الجملة: 'العلمُ نورٌ'.", correct_keywords: ["مبتدأ", "خبر", "مرفوع", "نور"], hint: "حدد علامات الإعراب" }
+            ];
+        }
+        if (subjectId === "literature") {
+            return [
+                { type: "choice", question: "من شعراء المعلقات:", options: ["أبو نواس", "امرؤ القيس", "المتنبي", "أحمد شوقي"], correct: 1 },
+                { type: "essay", question: "ما خصائص الشعر الجاهلي؟", correct_keywords: ["فخر", "وصف", "خمر", "حكمة"], hint: "اذكر ثلاث خصائص" }
+            ];
+        }
+        if (subjectId === "islamic") {
+            return [
+                { type: "choice", question: "أول ما نزل من القرآن:", options: ["سورة الفاتحة", "العلق", "الإخلاص", "الناس"], correct: 1 },
+                { type: "essay", question: "ما حكم الصلاة؟ واذكر دليلاً.", correct_keywords: ["فرض", "دليل", "الصلوات", "ركن"], hint: "الدليل من القرآن أو السنة" }
+            ];
+        }
+        // أسئلة عامة احتياطية
+        return [
+            { type: "choice", question: `سؤال عام في ${subjectName} الفصل ${chapterNumber}`, options: ["خيار أ", "خيار ب", "خيار ج", "خيار د"], correct: 0 },
+            { type: "essay", question: "ناقش الموضوع بإيجاز.", correct_keywords: ["نقاط", "محاور"], hint: "أجب حسب فهمك" }
+        ];
+    }
 
-  subjects.forEach(sub => {
-    const card = document.createElement("div");
-    card.className = "card";
+    // --------------------- متغيرات المنصة -----------------------
+    let currentSubject = "chemistry";
+    let currentChapterIdx = 0;
+    let questionsBank = [];
+    let userAnswers = [];
+    let currentQIndex = 0;
+    let timeLeft = 600; // 10 دقائق بالثواني
+    let timerInterval = null;
+    let examActive = true;
 
-    const iconDiv = document.createElement("div");
-    iconDiv.className = "card-icon";
-    iconDiv.innerHTML = `<i class="${sub.icon}"></i>`;
-    card.appendChild(iconDiv);
+    // عناصر DOM
+    const subjectsContainer = document.getElementById("subjectsContainer");
+    const chapterSelect = document.getElementById("chapterSelect");
+    const timeSelect = document.getElementById("timeSelect");
+    const dynamicTitle = document.getElementById("dynamicSubjectTitle");
+    const timerSpan = document.getElementById("timerDisplay");
+    const qCounterSpan = document.getElementById("qCounter");
+    const percentSpan = document.getElementById("percentProgress");
+    const progressFill = document.getElementById("progressFill");
+    const questionTextDiv = document.getElementById("questionText");
+    const answersContainer = document.getElementById("answersContainer");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const submitBtn = document.getElementById("submitBtn");
+    const quizZone = document.getElementById("quizZone");
+    const resultsZone = document.getElementById("resultsZone");
+    const reviewContainer = document.getElementById("reviewContainer");
+    const finalScoreSpan = document.getElementById("finalScoreSpan");
+    const restartBtn = document.getElementById("restartBtn");
 
-    const title = document.createElement("h3");
-    title.textContent = sub.name;
-    card.appendChild(title);
+    // --- بناء قائمة المواد ---
+    function buildSubjectsUI() {
+        subjectsContainer.innerHTML = "";
+        subjectsCatalog.forEach(sub => {
+            const btn = document.createElement("button");
+            btn.className = `subject-btn ${currentSubject === sub.id ? "active" : ""}`;
+            btn.innerHTML = `<i class="fa-solid ${sub.icon}"></i> ${sub.name}`;
+            btn.onclick = () => {
+                if (timerInterval) clearInterval(timerInterval);
+                currentSubject = sub.id;
+                currentChapterIdx = 0;
+                document.querySelectorAll(".subject-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                dynamicTitle.innerText = sub.name;
+                populateChaptersSelect();
+                resetExamState();
+                loadQuestionsForCurrent();
+                restartTimerFromSelect();
+            };
+            subjectsContainer.appendChild(btn);
+        });
+    }
 
-    const btn = document.createElement("button");
-    btn.className = "btn-telegram";
-    btn.innerHTML = '<i class="fab fa-telegram-plane"></i> عرض الأسئلة على تلغرام';
-    
-    let linkKey = sub.name;
-    if (sub.name === "التربية الإسلامية") linkKey = "الاسلامية";
-    const link = telegramLinks[linkKey] || "#";
-    
-    btn.addEventListener("click", () => {
-      if (link && link !== "#") {
-        window.open(link, "_blank");
-      } else {
-        alert("لم يتم تعيين رابط لهذه المادة بعد. الرجاء إضافة الرابط في الكود.");
-      }
+    function populateChaptersSelect() {
+        chapterSelect.innerHTML = "";
+        const chapters = chaptersMap[currentSubject] || ["الفصل الأساسي"];
+        chapters.forEach((chap, idx) => {
+            const option = document.createElement("option");
+            option.value = idx;
+            option.textContent = chap;
+            if (idx === currentChapterIdx) option.selected = true;
+            chapterSelect.appendChild(option);
+        });
+    }
+
+    function resetExamState() {
+        if (timerInterval) clearInterval(timerInterval);
+        questionsBank = [];
+        userAnswers = [];
+        currentQIndex = 0;
+        examActive = true;
+        quizZone.style.display = "block";
+        resultsZone.style.display = "none";
+        document.getElementById("submitBtn").style.display = "none";
+        nextBtn.style.display = "flex";
+    }
+
+    function restartTimerFromSelect() {
+        const mins = parseInt(timeSelect.value);
+        timeLeft = mins * 60;
+        updateTimerDisplay();
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (!examActive) return;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitExam();
+            } else {
+                timeLeft--;
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerSpan.innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+    }
+
+    function loadQuestionsForCurrent() {
+        const chapterIdx = parseInt(chapterSelect.value);
+        currentChapterIdx = chapterIdx;
+        let generated = generateQuestionsFor(currentSubject, currentChapterIdx);
+        // إضافة id محاكاة
+        questionsBank = generated.map((q, i) => ({ ...q, tempId: i }));
+        if (questionsBank.length === 0) {
+            questionTextDiv.innerText = "⚠️ لا توجد أسئلة لهذا الفصل حالياً.";
+            answersContainer.innerHTML = "";
+            return;
+        }
+        userAnswers = new Array(questionsBank.length).fill("");
+        currentQIndex = 0;
+        renderCurrentQuestion();
+        updateProgress();
+    }
+
+    function renderCurrentQuestion() {
+        if (!questionsBank.length) return;
+        const q = questionsBank[currentQIndex];
+        questionTextDiv.innerText = q.question;
+        answersContainer.innerHTML = "";
+        
+        if (q.type === "choice" || q.type === "boolean") {
+            const options = q.options;
+            const containerDiv = document.createElement("div");
+            containerDiv.className = "answers-pool";
+            options.forEach((opt, idx) => {
+                const label = document.createElement("label");
+                label.className = "choice-item";
+                const radio = document.createElement("input");
+                radio.type = "radio";
+                radio.name = "questionOption";
+                radio.value = idx;
+                if (userAnswers[currentQIndex] === idx) {
+                    radio.checked = true;
+                    label.classList.add("selected");
+                }
+                radio.onchange = () => {
+                    userAnswers[currentQIndex] = idx;
+                    document.querySelectorAll(".choice-item").forEach(el => el.classList.remove("selected"));
+                    label.classList.add("selected");
+                };
+                label.appendChild(radio);
+                label.appendChild(document.createTextNode(opt));
+                containerDiv.appendChild(label);
+            });
+            answersContainer.appendChild(containerDiv);
+        } 
+        else if (q.type === "essay") {
+            const textarea = document.createElement("textarea");
+            textarea.className = "essay-textarea";
+            textarea.placeholder = "اكتب إجابتك المفصلة هنا ...";
+            textarea.value = userAnswers[currentQIndex] || "";
+            textarea.oninput = (e) => { userAnswers[currentQIndex] = e.target.value; };
+            answersContainer.appendChild(textarea);
+            if (q.hint) {
+                const hintDiv = document.createElement("div");
+                hintDiv.className = "hint-box";
+                hintDiv.innerHTML = `<i class="fa-regular fa-lightbulb"></i> تلميذ: ${q.hint}`;
+                answersContainer.appendChild(hintDiv);
+            }
+        }
+        
+        // أزرار التنقل
+        prevBtn.disabled = (currentQIndex === 0);
+        if (currentQIndex === questionsBank.length - 1) {
+            nextBtn.style.display = "none";
+            submitBtn.style.display = "flex";
+        } else {
+            nextBtn.style.display = "flex";
+            submitBtn.style.display = "none";
+        }
+        updateProgress();
+    }
+
+    function updateProgress() {
+        if (!questionsBank.length) {
+            qCounterSpan.innerText = `السؤال 0 / 0`;
+            percentSpan.innerText = "0%";
+            progressFill.style.width = "0%";
+            return;
+        }
+        const currentNum = currentQIndex + 1;
+        const percent = Math.round((currentNum / questionsBank.length) * 100);
+        qCounterSpan.innerText = `السؤال ${currentNum} / ${questionsBank.length}`;
+        percentSpan.innerText = `${percent}%`;
+        progressFill.style.width = `${percent}%`;
+    }
+
+    function nextQuestion() {
+        if (currentQIndex < questionsBank.length - 1) {
+            currentQIndex++;
+            renderCurrentQuestion();
+        }
+    }
+    function prevQuestion() {
+        if (currentQIndex > 0) {
+            currentQIndex--;
+            renderCurrentQuestion();
+        }
+    }
+
+    function submitExam() {
+        if (timerInterval) clearInterval(timerInterval);
+        examActive = false;
+        let totalScore = 0;
+        const reviewHtml = [];
+        questionsBank.forEach((q, idx) => {
+            const userAns = userAnswers[idx];
+            let isCorrect = false;
+            let explanation = "";
+            if (q.type === "choice" || q.type === "boolean") {
+                const correctIdx = q.correct;
+                isCorrect = (userAns === correctIdx);
+                if (isCorrect) totalScore++;
+                const userChoice = (userAns !== undefined && userAns !== "") ? q.options[userAns] : "لم يتم الاختيار";
+                explanation = `<div style="font-size:0.75rem;">✅ إجابتك: ${userChoice}<br>📘 الصحيح: ${q.options[correctIdx]}</div>`;
+            } 
+            else if (q.type === "essay") {
+                if (userAns && q.correct_keywords) {
+                    const keywordsMatched = q.correct_keywords.filter(kw => userAns.includes(kw)).length;
+                    const required = q.correct_keywords.length / 2;
+                    isCorrect = (keywordsMatched >= required);
+                } else { isCorrect = false; }
+                if (isCorrect) totalScore++;
+                explanation = `<div style="font-size:0.75rem;">✍️ إجابتك: ${userAns || "(فارغة)"}<br>${isCorrect ? "✓ استوفت الكلمات المفتاحية" : "❌ لم تستوف المعايير"}</div>`;
+            }
+            let statusClass = "review-wrong";
+            if (isCorrect) statusClass = "review-correct";
+            if (q.type === "essay") statusClass = "review-essay";
+            reviewHtml.push(`
+                <div class="review-card ${statusClass}">
+                    <strong>س${idx+1}: ${q.question}</strong><br>
+                    ${explanation}
+                </div>
+            `);
+        });
+        reviewContainer.innerHTML = reviewHtml.join("");
+        finalScoreSpan.innerText = `${totalScore} / ${questionsBank.length}`;
+        quizZone.style.display = "none";
+        resultsZone.style.display = "block";
+    }
+
+    function changeChapterOrTime() {
+        if (timerInterval) clearInterval(timerInterval);
+        currentChapterIdx = parseInt(chapterSelect.value);
+        loadQuestionsForCurrent();
+        restartTimerFromSelect();
+    }
+
+    // احداثيات التغيير
+    chapterSelect.addEventListener("change", changeChapterOrTime);
+    timeSelect.addEventListener("change", () => {
+        if (timerInterval) clearInterval(timerInterval);
+        restartTimerFromSelect();
     });
-    card.appendChild(btn);
-    container.appendChild(card);
-  });
+    prevBtn.addEventListener("click", prevQuestion);
+    nextBtn.addEventListener("click", nextQuestion);
+    submitBtn.addEventListener("click", submitExam);
+    restartBtn.addEventListener("click", () => {
+        resetExamState();
+        loadQuestionsForCurrent();
+        restartTimerFromSelect();
+    });
+
+    // بدء التشغيل
+    function init() {
+        buildSubjectsUI();
+        populateChaptersSelect();
+        loadQuestionsForCurrent();
+        restartTimerFromSelect();
+    }
+    init();
 </script>
 </body>
 </html>
