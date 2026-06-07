@@ -225,4 +225,96 @@
                 .from('profiles')
                 .insert({
                     id: userId,
-                   
+                    full_name: '',
+                    governorate: '',
+                    school_name: '',
+                    role: 'user'
+                });
+            if (error) console.error('خطأ في إنشاء البروفايل:', error);
+        }
+    }
+
+    async function loadProfile() {
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) { 
+            window.location.href = "index.html"; 
+            return; 
+        }
+        
+        // تأكد من وجود بروفايل للمستخدم
+        await ensureProfileExists(user.id);
+        
+        // جلب البيانات
+        const { data: profile } = await sb
+            .from('profiles')
+            .select('full_name, governorate, school_name, date_of_birth')
+            .eq('id', user.id)
+            .maybeSingle();
+        
+        if (profile) {
+            document.getElementById('fullName').value = profile.full_name || '';
+            document.getElementById('governorate').value = profile.governorate || '';
+            document.getElementById('school').value = profile.school_name || '';
+            if (profile.date_of_birth) setDateSelectsFromISO(profile.date_of_birth);
+        }
+        
+        // عرض نقاط ومستوى افتراضية
+        document.getElementById('displayPoints').textContent = '0';
+        document.getElementById('displayLevel').textContent = 'مبتدئ';
+    }
+
+    async function saveProfile() {
+        const btn = document.getElementById('saveBtn');
+        const originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> جاري الحفظ ...';
+        const msgDiv = document.getElementById('msg');
+        msgDiv.innerHTML = '';
+        
+        try {
+            const { data: { user } } = await sb.auth.getUser();
+            if (!user) throw new Error('يجب تسجيل الدخول أولاً');
+            
+            const fullName = document.getElementById('fullName').value.trim();
+            const governorate = document.getElementById('governorate').value.trim();
+            const schoolName = document.getElementById('school').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const dateOfBirth = getDateFromSelects();
+            
+            if (!fullName || !governorate || !schoolName || !dateOfBirth) {
+                throw new Error('الاسم، المحافظة، المدرسة، وتاريخ الميلاد إجبارية');
+            }
+            
+            const { error } = await sb.from('profiles').upsert({
+                id: user.id,
+                full_name: fullName,
+                governorate: governorate,
+                school_name: schoolName,
+                date_of_birth: dateOfBirth
+            }, { onConflict: 'id' });
+            
+            if (error) throw error;
+            
+            msgDiv.innerHTML = '<span class="success"><i class="fas fa-check-circle"></i> تم حفظ البيانات! جاري التوجيه...</span>';
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 1500);
+        } catch (err) {
+            msgDiv.innerHTML = `<span class="error"><i class="fas fa-exclamation-circle"></i> ${err.message}</span>`;
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
+    }
+
+    async function logout() {
+        await sb.auth.signOut();
+        window.location.href = "index.html";
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', saveProfile);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    loadProfile();
+})();
+</script>
+</body>
+</html>
