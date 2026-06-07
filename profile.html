@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>ديموفر | أكمل بياناتك البابلية</title>
+    <title>ديموفر | بوابة بابل التعليمية</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23c49a3b'%3E%3Cpath d='M12 3L1 9l11 6 11-6-11-6zm0 11.5L5.5 12 12 8.5 18.5 12 12 14.5zM5 13.5v4L12 22l7-4.5v-4L12 18l-7-4.5z'/%3E%3C/svg%3E">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -30,81 +30,44 @@
             background-repeat: repeat;
             background-size: 180px 180px;
         }
-        .ziggurat-corner {
-            position: fixed;
-            width: 150px;
-            height: 150px;
-            z-index: 0;
-            opacity: 0.2;
-            pointer-events: none;
-        }
-        .ziggurat-corner::before {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent 65%, #e9b35f 65%, #e9b35f 70%, transparent 70%),
-                        linear-gradient(-45deg, transparent 65%, #b97f2e 65%, #b97f2e 70%, transparent 70%);
-            background-size: 30px 30px;
-        }
-        .zig-top-left { top: 0; left: 0; transform: rotate(0deg); }
-        .zig-bottom-right { bottom: 0; right: 0; transform: rotate(180deg); }
         .babylon-card {
             background: rgba(245, 240, 230, 0.94);
             backdrop-filter: blur(12px);
             border-radius: 48px;
             width: 100%;
-            max-width: 580px;
+            max-width: 500px;
             padding: 40px 34px;
             position: relative;
             z-index: 10;
-            transition: transform 0.3s ease, box-shadow 0.4s;
-            box-shadow: 0 35px 55px -15px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(212, 175, 55, 0.6), 0 0 0 6px rgba(10, 50, 80, 0.3);
+            box-shadow: 0 35px 55px -15px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(212, 175, 55, 0.6);
             border: 1px solid rgba(212, 175, 55, 0.7);
         }
-        .babylon-card:hover { transform: translateY(-6px); box-shadow: 0 45px 65px -18px black, 0 0 0 3px #e0b354, 0 0 0 10px rgba(10, 47, 75, 0.4); }
-        .logo-area { text-align: center; margin-bottom: 20px; }
-        .logo {
-            font-family: 'Cairo', 'Tajawal', serif;
-            font-size: 52px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #c49a3b, #e8be6e, #a57c2c);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-            letter-spacing: 2px;
-        }
-        .logo::before { content: "𒀭"; font-size: 34px; color: #c49a3b; margin-left: 6px; display: inline-block; opacity: 0.7; background: none; }
-        .logo::after { content: "𒈨𒌍"; font-size: 30px; color: #c49a3b; margin-right: 6px; display: inline-block; opacity: 0.7; }
-        .tagline { font-size: 14px; color: #7a5d3c; margin-top: 6px; font-weight: 600; background: rgba(0,0,0,0.05); display: inline-block; padding: 4px 16px; border-radius: 40px; }
-        .title { text-align: center; font-size: 28px; font-weight: 800; margin: 10px 0 5px; background: linear-gradient(135deg, #2b4f6e, #1a3348); background-clip: text; -webkit-background-clip: text; color: transparent; }
-        .sub { text-align: center; font-size: 13px; color: #7a6a5a; margin-bottom: 28px; font-weight: 500; border-bottom: 1px dashed #d4af37; display: inline-block; width: auto; margin-left: auto; margin-right: auto; padding-bottom: 6px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 32px; }
-        .stat-card { background: rgba(255, 250, 235, 0.8); padding: 18px 12px; border-radius: 28px; text-align: center; border: 1px solid rgba(212, 175, 55, 0.4); backdrop-filter: blur(4px); }
-        .stat-card span { display: block; font-size: 0.85rem; font-weight: 600; color: #8b6b3d; margin-bottom: 8px; }
-        .stat-card b { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #c49a3b, #e0b15c); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .input-group { margin-bottom: 22px; text-align: right; }
-        .input-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; margin-right: 8px; color: #7a5d3c; }
-        .input-group label i { margin-left: 6px; color: #c49a3b; }
-        input, select {
+        .title { text-align: center; font-size: 28px; font-weight: 800; margin-bottom: 30px; background: linear-gradient(135deg, #2b4f6e, #1a3348); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .input-group { margin-bottom: 22px; }
+        .input-field {
             width: 100%;
-            padding: 14px 18px;
+            padding: 14px 20px;
+            background: #fef7e8;
             border: 2px solid #cb9e5c;
             border-radius: 48px;
-            background-color: #fef7e8;
             font-size: 1rem;
             font-family: 'Cairo', sans-serif;
             outline: none;
             transition: all 0.2s;
-            color: #2c2418;
-            font-weight: 500;
         }
-        input:focus, select:focus { border-color: #e7b757; background: #fffef7; box-shadow: 0 0 0 4px rgba(203, 158, 92, 0.3); }
-        .dob-group { display: flex; gap: 12px; flex-wrap: wrap; }
-        .dob-group select { flex: 1; min-width: 90px; cursor: pointer; }
+        .input-field:focus { border-color: #e7b757; background: #fffef7; box-shadow: 0 0 0 4px rgba(203, 158, 92, 0.3); }
+        .password-wrapper { position: relative; }
+        .toggle-pw {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #b38f4a;
+            cursor: pointer;
+        }
         .btn-babylon {
             background: linear-gradient(105deg, #b48b3a, #e0b15c, #c49a3b);
             border: none;
@@ -123,140 +86,234 @@
             justify-content: center;
             gap: 12px;
         }
-        .btn-babylon:disabled { background: linear-gradient(105deg, #94845c, #ad9a6b); cursor: not-allowed; opacity: 0.7; }
-        .btn-babylon:not(:disabled):active { transform: scale(0.96); }
-        #msg { text-align: center; margin-top: 20px; padding: 10px; border-radius: 48px; font-weight: 600; background: #f3e5c9; color: #9e6b2c; font-size: 14px; border-right: 4px solid #d4af37; }
-        .success { background: #dfe6d8 !important; color: #2a5e3b !important; border-right-color: #4c9f70; }
-        .error { background: #ffeded !important; color: #b13e3e !important; border-right-color: #b13e3e; }
-        @media (max-width: 550px) { .babylon-card { padding: 28px 20px; } .logo { font-size: 42px; } .logo::before, .logo::after { font-size: 26px; } .dob-group { flex-direction: column; gap: 8px; } }
+        .btn-babylon:active { transform: scale(0.96); }
+        .action-links { display: flex; justify-content: space-between; margin-top: 28px; gap: 12px; flex-wrap: wrap; }
+        .action-link {
+            background: rgba(180, 139, 58, 0.15);
+            padding: 8px 18px;
+            border-radius: 48px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #b48b3a;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            border: 1px solid rgba(180, 139, 58, 0.4);
+        }
+        .action-link:hover { background: #b48b3a; color: #1e2a2f; }
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 48px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .message-success { background: #dfe6d8 !important; color: #2a5e3b !important; border-right: 4px solid #4c9f70; }
+        .message-error { background: #ffeded !important; color: #b13e3e !important; border-right: 4px solid #b13e3e; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
+
 <div class="bg-cuneiform"></div>
-<div class="ziggurat-corner zig-top-left"></div>
-<div class="ziggurat-corner zig-bottom-right"></div>
-
 <div class="babylon-card">
-    <div class="logo-area"><div class="logo">ديموفر</div><div class="tagline">𒀭 𒅎 𒅗 𒌦 | سجل بياناتك البابلية</div></div>
-    <div class="title">أكمل بياناتك</div>
-    <div class="sub">من أجل رحلة تعليمية خالدة</div>
+    <div class="title" id="dynamicTitle">تسجيل الدخول</div>
 
-    <div class="stats-grid">
-        <div class="stat-card"><span><i class="fas fa-coins"></i> النقاط</span><b id="displayPoints">0</b></div>
-        <div class="stat-card"><span><i class="fas fa-chart-line"></i> المستوى</span><b id="displayLevel">مبتدئ</b></div>
+    <div class="input-group">
+        <input type="email" id="email" class="input-field" placeholder="البريد الإلكتروني" autocomplete="email">
     </div>
-
-    <div class="input-group"><label><i class="fas fa-user"></i> الاسم الكامل (ثلاثي)</label><input type="text" id="fullName" placeholder="مثال: أحمد محمد علي"></div>
-    <div class="input-group"><label><i class="fas fa-map-marker-alt"></i> المحافظة</label><input type="text" id="governorate" placeholder="المحافظة"></div>
-    <div class="input-group"><label><i class="fas fa-school"></i> المدرسة</label><input type="text" id="school" placeholder="اسم مدرستك"></div>
-
-    <div class="input-group"><label><i class="fas fa-calendar-alt"></i> تاريخ الميلاد (يوم / شهر / سنة)</label>
-        <div class="dob-group">
-            <select id="dobDay"><option value="">اليوم</option></select>
-            <select id="dobMonth"><option value="">الشهر</option></select>
-            <select id="dobYear"><option value="">السنة</option></select>
+    <div class="input-group" id="passwordGroup">
+        <div class="password-wrapper">
+            <input type="password" id="password" class="input-field" placeholder="كلمة المرور" autocomplete="current-password">
+            <button type="button" class="toggle-pw" id="togglePasswordBtn"><i class="far fa-eye-slash"></i></button>
         </div>
     </div>
-
-    <div class="input-group"><label><i class="fas fa-phone-alt"></i> رقم الهاتف (اختياري)</label><input type="tel" id="phone" placeholder="07XXXXXXXX"></div>
-
-    <button class="btn-babylon" id="saveBtn"><i class="fas fa-save"></i> حفظ ومتابعة</button>
-    <div id="msg"></div>
+    <button id="actionBtn" class="btn-babylon"><i class="fas fa-arrow-left"></i> دخول</button>
+    <div id="message"></div>
+    <div class="action-links">
+        <a id="toggleModeLink" class="action-link"><i class="fas fa-user-plus"></i> حساب جديد</a>
+        <a id="forgotLink" class="action-link"><i class="fas fa-key"></i> نسيت كلمة المرور</a>
+    </div>
 </div>
 
 <script>
 (function() {
     const SUPABASE_URL = 'https://kuepdppngskwkmhyhohq.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI';
-    if (typeof supabase === 'undefined') { document.getElementById('msg').innerHTML = 'خطأ في تحميل المكتبة'; return; }
+    
+    if (typeof supabase === 'undefined') {
+        document.getElementById('message').innerHTML = 'خطأ في تحميل المكتبة';
+        return;
+    }
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // ملء القوائم
-    function populateDateSelects() {
-        const daySel = document.getElementById('dobDay');
-        for (let i=1; i<=31; i++) { let opt = document.createElement('option'); opt.value=i; opt.textContent=i; daySel.appendChild(opt); }
-        const monthSel = document.getElementById('dobMonth');
-        for (let i=1; i<=12; i++) { let opt = document.createElement('option'); opt.value=i; opt.textContent=i; monthSel.appendChild(opt); }
-        const yearSel = document.getElementById('dobYear');
-        for (let i=1990; i<=2026; i++) { let opt = document.createElement('option'); opt.value=i; opt.textContent=i; yearSel.appendChild(opt); }
-    }
-    populateDateSelects();
+    const titleEl = document.getElementById('dynamicTitle');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const passwordGroup = document.getElementById('passwordGroup');
+    const actionBtn = document.getElementById('actionBtn');
+    const toggleModeLink = document.getElementById('toggleModeLink');
+    const forgotLink = document.getElementById('forgotLink');
+    const messageDiv = document.getElementById('message');
+    const togglePwBtn = document.getElementById('togglePasswordBtn');
 
-    function getDateFromSelects() {
-        const day = document.getElementById('dobDay').value;
-        const month = document.getElementById('dobMonth').value;
-        const year = document.getElementById('dobYear').value;
-        if (day && month && year) return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        return null;
+    let currentMode = 'login';
+
+    function showMessage(msg, isSuccess = false) {
+        messageDiv.textContent = msg;
+        messageDiv.className = `message-${isSuccess ? 'success' : 'error'}`;
     }
 
-    function setDateSelectsFromISO(dateStr) {
-        if (!dateStr) return;
-        const [year, month, day] = dateStr.split('-');
-        if (year && month && day) {
-            if (document.getElementById('dobYear').querySelector(`option[value="${year}"]`)) document.getElementById('dobYear').value = year;
-            if (document.getElementById('dobMonth').querySelector(`option[value="${parseInt(month)}"]`)) document.getElementById('dobMonth').value = parseInt(month);
-            if (document.getElementById('dobDay').querySelector(`option[value="${parseInt(day)}"]`)) document.getElementById('dobDay').value = parseInt(day);
+    function updateUIMode() {
+        if (currentMode === 'login') {
+            titleEl.textContent = 'تسجيل الدخول';
+            actionBtn.innerHTML = '<i class="fas fa-arrow-left"></i> دخول';
+            toggleModeLink.innerHTML = '<i class="fas fa-user-plus"></i> حساب جديد';
+            forgotLink.classList.remove('hidden');
+            passwordGroup.classList.remove('hidden');
+        } else if (currentMode === 'signup') {
+            titleEl.textContent = 'إنشاء حساب';
+            actionBtn.innerHTML = '<i class="fas fa-user-check"></i> تسجيل';
+            toggleModeLink.innerHTML = '<i class="fas fa-sign-in-alt"></i> لدي حساب بالفعل';
+            forgotLink.classList.add('hidden');
+            passwordGroup.classList.remove('hidden');
+        } else if (currentMode === 'forgot') {
+            titleEl.textContent = 'استعادة كلمة المرور';
+            actionBtn.innerHTML = '<i class="fas fa-envelope"></i> إرسال رابط الاستعادة';
+            toggleModeLink.innerHTML = '<i class="fas fa-arrow-right"></i> العودة للدخول';
+            forgotLink.classList.add('hidden');
+            passwordGroup.classList.add('hidden');
+        }
+        showMessage('');
+    }
+
+    // إظهار/إخفاء كلمة المرور
+    if (togglePwBtn && passwordInput) {
+        togglePwBtn.addEventListener('click', () => {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            const icon = togglePwBtn.querySelector('i');
+            if (type === 'text') {
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        });
+    }
+
+    // دالة إنشاء بروفايل تلقائي للمستخدم الجديد
+    async function ensureProfileExists(userId, email) {
+        const { data: existingProfile } = await sb
+            .from('profiles')
+            .select('id')
+            .eq('id', userId)
+            .maybeSingle();
+        
+        if (!existingProfile) {
+            const { error } = await sb
+                .from('profiles')
+                .insert({
+                    id: userId,
+                    full_name: email.split('@')[0] || 'مستخدم جديد',
+                    role: 'user',
+                    points: 0,
+                    level: 'مبتدئ'
+                });
+            if (error) console.error('خطأ في إنشاء البروفايل:', error);
         }
     }
 
-    async function loadProfile() {
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) { window.location.href = "index.html"; return; }
-        const { data: profile } = await sb.from('profiles').select('full_name, governorate, school_name, date_of_birth, points, level, phone_number').eq('id', user.id).maybeSingle();
-        if (profile) {
-            document.getElementById('fullName').value = profile.full_name || '';
-            document.getElementById('governorate').value = profile.governorate || '';
-            document.getElementById('school').value = profile.school_name || '';
-            document.getElementById('phone').value = profile.phone_number || '';
-            document.getElementById('displayPoints').textContent = profile.points || 0;
-            document.getElementById('displayLevel').textContent = profile.level || 'مبتدئ';
-            if (profile.date_of_birth) setDateSelectsFromISO(profile.date_of_birth);
-        }
+    // التحقق من الجلسة والتوجيه
+    async function checkSessionAndRedirect() {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) window.location.href = "profile.html";
     }
 
-    async function saveProfile() {
-        const btn = document.getElementById('saveBtn');
-        const originalHtml = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> جاري الحفظ ...';
-        const msgDiv = document.getElementById('msg');
-        msgDiv.innerHTML = '';
+    sb.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+            await ensureProfileExists(session.user.id, session.user.email);
+            window.location.href = "profile.html";
+        }
+    });
+
+    // معالج النموذج
+    window.handleAuth = async function() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        
+        if (!email) { showMessage('الرجاء إدخال البريد الإلكتروني', false); return; }
+        
+        actionBtn.disabled = true;
+        actionBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> جاري ...';
+        
         try {
-            const { data: { user } } = await sb.auth.getUser();
-            if (!user) throw new Error('يجب تسجيل الدخول أولاً');
-            const fullName = document.getElementById('fullName').value.trim();
-            const governorate = document.getElementById('governorate').value.trim();
-            const schoolName = document.getElementById('school').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const dateOfBirth = getDateFromSelects();
-            if (!fullName || !governorate || !schoolName || !dateOfBirth) throw new Error('الاسم، المحافظة، المدرسة، وتاريخ الميلاد إجبارية');
-            const { error } = await sb.from('profiles').upsert({
-                id: user.id,
-                full_name: fullName,
-                governorate: governorate,
-                school_name: schoolName,
-                date_of_birth: dateOfBirth,
-                phone_number: phone || null,
-                points: 0,
-                level: 'مبتدئ'
-            }, { onConflict: 'id' });
-            if (error) throw error;
-            msgDiv.innerHTML = '<span class="success"><i class="fas fa-check-circle"></i> تم حفظ البيانات! جاري التوجيه...</span>';
-            setTimeout(() => {
-                const redirectTo = sessionStorage.getItem('redirectAfterProfile') || 'dashbord.html';
-                sessionStorage.removeItem('redirectAfterProfile');
-                window.location.href = redirectTo;
-            }, 1500);
+            if (currentMode === 'signup') {
+                if (!password || password.length < 6) throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                const { data, error } = await sb.auth.signUp({ email, password });
+                if (error) throw error;
+                showMessage('✅ تم إنشاء الحساب! يمكنك الآن تسجيل الدخول', true);
+                setTimeout(() => {
+                    currentMode = 'login';
+                    updateUIMode();
+                    emailInput.value = '';
+                    passwordInput.value = '';
+                }, 2200);
+            } else if (currentMode === 'login') {
+                if (!password) throw new Error('أدخل كلمة المرور');
+                const { data, error } = await sb.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                await ensureProfileExists(data.user.id, email);
+                showMessage('✅ مرحباً بك! جاري التوجيه...', true);
+                window.location.href = "profile.html";
+            } else if (currentMode === 'forgot') {
+                const { error } = await sb.auth.resetPasswordForEmail(email, { 
+                    redirectTo: window.location.origin + '/reset-password.html' 
+                });
+                if (error) throw error;
+                showMessage('📬 تم إرسال رابط الاستعادة إلى بريدك.', true);
+                setTimeout(() => { 
+                    currentMode = 'login'; 
+                    updateUIMode(); 
+                    emailInput.value = ''; 
+                }, 2500);
+            }
         } catch (err) {
-            msgDiv.innerHTML = `<span class="error"><i class="fas fa-exclamation-circle"></i> ${err.message}</span>`;
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
+            let errorMsg = err.message;
+            if (errorMsg.includes('Invalid login credentials')) errorMsg = '❌ البريد أو كلمة المرور غير صحيحة';
+            else if (errorMsg.includes('User already registered')) errorMsg = '⚠️ هذا البريد مسجل مسبقاً';
+            else if (errorMsg.includes('Password should be at least 6 characters')) errorMsg = 'كلمة المرور 6 أحرف فأكثر';
+            showMessage(errorMsg, false);
+        } finally {
+            actionBtn.disabled = false;
+            updateUIMode();
         }
-    }
+    };
 
-    document.getElementById('saveBtn').addEventListener('click', saveProfile);
-    loadProfile();
+    // الأحداث
+    toggleModeLink.onclick = (e) => {
+        e.preventDefault();
+        if (currentMode === 'forgot') { currentMode = 'login'; updateUIMode(); }
+        else if (currentMode === 'login') { currentMode = 'signup'; updateUIMode(); }
+        else if (currentMode === 'signup') { currentMode = 'login'; updateUIMode(); }
+    };
+    
+    forgotLink.onclick = (e) => { 
+        e.preventDefault(); 
+        currentMode = 'forgot'; 
+        updateUIMode(); 
+    };
+    
+    actionBtn.onclick = window.handleAuth;
+    
+    // مفتاح Enter
+    emailInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') window.handleAuth(); });
+    passwordInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') window.handleAuth(); });
+    
+    checkSessionAndRedirect();
+    updateUIMode();
 })();
 </script>
 </body>
