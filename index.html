@@ -11,7 +11,6 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-
             font-family: 'Cairo', 'Tajawal', sans-serif;
             min-height: 100vh;
             display: flex;
@@ -19,6 +18,7 @@
             justify-content: center;
             padding: 20px;
             position: relative;
+            background: radial-gradient(circle at 10% 20%, #2c1a0f, #1a2a3a);
             overflow-x: hidden;
         }
         .bg-cuneiform {
@@ -30,41 +30,19 @@
             background-repeat: repeat;
             background-size: 180px 180px;
         }
-        .ziggurat-corner {
-            position: fixed;
-            width: 150px;
-            height: 150px;
-            z-index: 0;
-            opacity: 0.2;
-            pointer-events: none;
-        }
-        .ziggurat-corner::before {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent 65%, #e9b35f 65%, #e9b35f 70%, transparent 70%),
-                        linear-gradient(-45deg, transparent 65%, #b97f2e 65%, #b97f2e 70%, transparent 70%);
-            background-size: 30px 30px;
-        }
-        .zig-top-left { top: 0; left: 0; transform: rotate(0deg); }
-        .zig-bottom-right { bottom: 0; right: 0; transform: rotate(180deg); }
         .babylon-card {
-            background: rgba(255, 255, 255, 0.94);
-            border-radius: 20px;
+            background: rgba(245, 240, 230, 0.94);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
             width: 100%;
             max-width: 500px;
-            padding: 40px 32px;
+            padding: 40px 34px;
             position: relative;
             z-index: 10;
-            box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 35px 55px -15px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(212, 175, 55, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.7);
         }
-       
-        
-      
-        .title { text-align: center; font-size: 28px; font-weight: 800; margin: 10px 0 5px; background: linear-gradient(135deg, #2b4f6e, #1a3348); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .title { text-align: center; font-size: 28px; font-weight: 800; margin-bottom: 30px; background: linear-gradient(135deg, #2b4f6e, #1a3348); background-clip: text; -webkit-background-clip: text; color: transparent; }
         .input-group { margin-bottom: 22px; }
         .input-field {
             width: 100%;
@@ -123,31 +101,23 @@
             border: 1px solid rgba(180, 139, 58, 0.4);
         }
         .action-link:hover { background: #b48b3a; color: #1e2a2f; }
-        .support-block { margin-top: 32px; padding-top: 20px; border-top: 1px dashed #cb9e5c; }
-      
         #message {
             margin-top: 20px;
             text-align: center;
             padding: 10px;
             border-radius: 48px;
             font-weight: 600;
-            background: #577ce2;
-            color: #ff0000;
             font-size: 14px;
-            border-right: 4px solid #d43737;
         }
-        .message-success { background: #dfe6d8 !important; color: #2a5e3b !important; border-right-color: #4c9f70; }
+        .message-success { background: #dfe6d8 !important; color: #2a5e3b !important; border-right: 4px solid #4c9f70; }
+        .message-error { background: #ffeded !important; color: #b13e3e !important; border-right: 4px solid #b13e3e; }
         .hidden { display: none; }
-       
     </style>
 </head>
-
-
 <body>
 
-
+<div class="bg-cuneiform"></div>
 <div class="babylon-card">
-    
     <div class="title" id="dynamicTitle">تسجيل الدخول</div>
 
     <div class="input-group">
@@ -165,14 +135,13 @@
         <a id="toggleModeLink" class="action-link"><i class="fas fa-user-plus"></i> حساب جديد</a>
         <a id="forgotLink" class="action-link"><i class="fas fa-key"></i> نسيت كلمة المرور</a>
     </div>
-  
 </div>
 
 <script>
 (function() {
-    // تجنب التصريح المزدوج للمتغير العام supabase - استخدم نطاق محلي
     const SUPABASE_URL = 'https://kuepdppngskwkmhyhohq.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI';
+    
     if (typeof supabase === 'undefined') {
         document.getElementById('message').innerHTML = 'خطأ في تحميل المكتبة';
         return;
@@ -193,9 +162,7 @@
 
     function showMessage(msg, isSuccess = false) {
         messageDiv.textContent = msg;
-        messageDiv.classList.toggle('message-success', isSuccess);
-        if (!isSuccess) messageDiv.style.background = "#f3e5c9";
-        else messageDiv.style.background = "#dfe6d8";
+        messageDiv.className = `message-${isSuccess ? 'success' : 'error'}`;
     }
 
     function updateUIMode() {
@@ -218,10 +185,10 @@
             forgotLink.classList.add('hidden');
             passwordGroup.classList.add('hidden');
         }
-        if (currentMode === 'forgot') passwordInput.value = '';
         showMessage('');
     }
 
+    // إظهار/إخفاء كلمة المرور
     if (togglePwBtn && passwordInput) {
         togglePwBtn.addEventListener('click', () => {
             const type = passwordInput.type === 'password' ? 'text' : 'password';
@@ -237,82 +204,116 @@
         });
     }
 
-    window.toggleMode = function() {
-        if (currentMode === 'login') currentMode = 'signup';
-        else if (currentMode === 'signup') currentMode = 'login';
-        else if (currentMode === 'forgot') currentMode = 'login';
-        updateUIMode();
-    };
-    window.goForgot = function() {
-        currentMode = 'forgot';
-        updateUIMode();
-    };
-    toggleModeLink.onclick = (e) => {
-        e.preventDefault();
-        if (currentMode === 'forgot') { currentMode = 'login'; updateUIMode(); }
-        else window.toggleMode();
-    };
-    forgotLink.onclick = (e) => { e.preventDefault(); window.goForgot(); };
+    // دالة إنشاء بروفايل تلقائي للمستخدم الجديد
+    async function ensureProfileExists(userId, email) {
+        const { data: existingProfile } = await sb
+            .from('profiles')
+            .select('id')
+            .eq('id', userId)
+            .maybeSingle();
+        
+        if (!existingProfile) {
+            const { error } = await sb
+                .from('profiles')
+                .insert({
+                    id: userId,
+                    full_name: email.split('@')[0] || 'مستخدم جديد',
+                    role: 'user',
+                    points: 0,
+                    level: 'مبتدئ'
+                });
+            if (error) console.error('خطأ في إنشاء البروفايل:', error);
+        }
+    }
 
+    // التحقق من الجلسة والتوجيه
     async function checkSessionAndRedirect() {
         const { data: { session } } = await sb.auth.getSession();
-        if (session) window.location.href = "dashbord.html";
+        if (session) window.location.href = "profile.html";
     }
-    sb.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN' && session) window.location.href = "dashbord.html";
+
+    sb.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+            await ensureProfileExists(session.user.id, session.user.email);
+            window.location.href = "profile.html";
+        }
     });
 
+    // معالج النموذج
     window.handleAuth = async function() {
         const email = emailInput.value.trim();
         const password = passwordInput.value;
-        if (!email) { showMessage(' الرجاء إدخال البريد الإلكتروني'); return; }
+        
+        if (!email) { showMessage('الرجاء إدخال البريد الإلكتروني', false); return; }
+        
         actionBtn.disabled = true;
         actionBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> جاري ...';
+        
         try {
             if (currentMode === 'signup') {
                 if (!password || password.length < 6) throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
-                const { error } = await sb.auth.signUp({ email, password });
+                const { data, error } = await sb.auth.signUp({ email, password });
                 if (error) throw error;
-                showMessage(' تم إنشاء الحساب!    .', true);
+                showMessage('✅ تم إنشاء الحساب! يمكنك الآن تسجيل الدخول', true);
                 setTimeout(() => {
                     currentMode = 'login';
                     updateUIMode();
                     emailInput.value = '';
                     passwordInput.value = '';
-                    showMessage('');
                 }, 2200);
             } else if (currentMode === 'login') {
                 if (!password) throw new Error('أدخل كلمة المرور');
-                const { error } = await sb.auth.signInWithPassword({ email, password });
+                const { data, error } = await sb.auth.signInWithPassword({ email, password });
                 if (error) throw error;
+                await ensureProfileExists(data.user.id, email);
                 showMessage('✅ مرحباً بك! جاري التوجيه...', true);
-                window.location.href = "dashbord.html";
+                window.location.href = "profile.html";
             } else if (currentMode === 'forgot') {
-                const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/reset-password.html' });
+                const { error } = await sb.auth.resetPasswordForEmail(email, { 
+                    redirectTo: window.location.origin + '/reset-password.html' 
+                });
                 if (error) throw error;
                 showMessage('📬 تم إرسال رابط الاستعادة إلى بريدك.', true);
-                setTimeout(() => { currentMode = 'login'; updateUIMode(); emailInput.value = ''; }, 2500);
+                setTimeout(() => { 
+                    currentMode = 'login'; 
+                    updateUIMode(); 
+                    emailInput.value = ''; 
+                }, 2500);
             }
         } catch (err) {
             let errorMsg = err.message;
             if (errorMsg.includes('Invalid login credentials')) errorMsg = '❌ البريد أو كلمة المرور غير صحيحة';
             else if (errorMsg.includes('User already registered')) errorMsg = '⚠️ هذا البريد مسجل مسبقاً';
             else if (errorMsg.includes('Password should be at least 6 characters')) errorMsg = 'كلمة المرور 6 أحرف فأكثر';
-            else if (errorMsg.includes('Email not confirmed')) errorMsg = 'يرجى تأكيد البريد الإلكتروني أولاً';
-            showMessage(errorMsg);
+            showMessage(errorMsg, false);
         } finally {
             actionBtn.disabled = false;
-            if (currentMode === 'login') actionBtn.innerHTML = '<i class="fas fa-arrow-left"></i> دخول';
-            else if (currentMode === 'signup') actionBtn.innerHTML = '<i class="fas fa-user-check"></i> تسجيل';
-            else actionBtn.innerHTML = '<i class="fas fa-envelope"></i> إرسال رابط الاستعادة';
+            updateUIMode();
         }
     };
+
+    // الأحداث
+    toggleModeLink.onclick = (e) => {
+        e.preventDefault();
+        if (currentMode === 'forgot') { currentMode = 'login'; updateUIMode(); }
+        else if (currentMode === 'login') { currentMode = 'signup'; updateUIMode(); }
+        else if (currentMode === 'signup') { currentMode = 'login'; updateUIMode(); }
+    };
+    
+    forgotLink.onclick = (e) => { 
+        e.preventDefault(); 
+        currentMode = 'forgot'; 
+        updateUIMode(); 
+    };
+    
     actionBtn.onclick = window.handleAuth;
+    
+    // مفتاح Enter
+    emailInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') window.handleAuth(); });
+    passwordInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') window.handleAuth(); });
+    
     checkSessionAndRedirect();
     updateUIMode();
-    if (passwordInput) passwordInput.type = 'password';
-    const eyeIcon = togglePwBtn?.querySelector('i');
-    if (eyeIcon) { eyeIcon.classList.remove('fa-eye'); eyeIcon.classList.add('fa-eye-slash'); }
 })();
 </script>
 </body>
