@@ -139,14 +139,20 @@
 
 <script>
 (function() {
+    console.log("✅ بدء تشغيل الصفحة");
+    
     const SUPABASE_URL = 'https://kuepdppngskwkmhyhohq.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI';
     
     if (typeof supabase === 'undefined') {
+        console.error("❌ Supabase غير محمل");
         document.getElementById('message').innerHTML = 'خطأ في تحميل المكتبة';
         return;
     }
+    console.log("✅ Supabase محمل بنجاح");
+    
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log("✅ تم إنشاء عميل Supabase");
 
     const titleEl = document.getElementById('dynamicTitle');
     const emailInput = document.getElementById('email');
@@ -161,11 +167,13 @@
     let currentMode = 'login';
 
     function showMessage(msg, isSuccess = false) {
+        console.log("📢 رسالة:", msg, isSuccess ? "(نجاح)" : "(خطأ)");
         messageDiv.textContent = msg;
         messageDiv.className = `message-${isSuccess ? 'success' : 'error'}`;
     }
 
     function updateUIMode() {
+        console.log("🔄 تغيير الوضع إلى:", currentMode);
         if (currentMode === 'login') {
             titleEl.textContent = 'تسجيل الدخول';
             actionBtn.innerHTML = '<i class="fas fa-arrow-left"></i> دخول';
@@ -204,76 +212,119 @@
         });
     }
 
-    // دالة إنشاء بروفايل تلقائي للمستخدم الجديد
+    // دالة إنشاء بروفايل تلقائي
     async function ensureProfileExists(userId, email) {
-        const { data: existingProfile } = await sb
-            .from('profiles')
-            .select('id')
-            .eq('id', userId)
-            .maybeSingle();
-        
-        if (!existingProfile) {
-            const { error } = await sb
+        console.log("📝 التحقق من وجود بروفايل للمستخدم:", userId);
+        try {
+            const { data: existingProfile } = await sb
                 .from('profiles')
-                .insert({
-                    id: userId,
-                    full_name: email.split('@')[0] || 'مستخدم جديد',
-                    role: 'user',
-                    points: 0,
-                    level: 'مبتدئ'
-                });
-            if (error) console.error('خطأ في إنشاء البروفايل:', error);
+                .select('id')
+                .eq('id', userId)
+                .maybeSingle();
+            
+            if (!existingProfile) {
+                console.log("📝 إنشاء بروفايل جديد");
+                const { error } = await sb
+                    .from('profiles')
+                    .insert({
+                        id: userId,
+                        full_name: email.split('@')[0] || 'مستخدم جديد',
+                        role: 'user'
+                    });
+                if (error) console.error("❌ خطأ في إنشاء البروفايل:", error);
+                else console.log("✅ تم إنشاء البروفايل بنجاح");
+            } else {
+                console.log("✅ البروفايل موجود مسبقاً");
+            }
+        } catch (err) {
+            console.error("❌ خطأ في ensureProfileExists:", err);
         }
     }
 
-    // التحقق من الجلسة والتوجيه
-    async function checkSessionAndRedirect() {
-        const { data: { session } } = await sb.auth.getSession();
-        if (session) window.location.href = "profile.html";
-    }
-
-    sb.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-            await ensureProfileExists(session.user.id, session.user.email);
-            window.location.href = "profile.html";
-        }
-    });
-
-    // معالج النموذج
+    // معالج النموذج الرئيسي
     window.handleAuth = async function() {
+        console.log("🔘 تم الضغط على زر", currentMode);
+        
         const email = emailInput.value.trim();
         const password = passwordInput.value;
         
-        if (!email) { showMessage('الرجاء إدخال البريد الإلكتروني', false); return; }
+        console.log("📧 البريد:", email);
+        console.log("🔑 كلمة المرور:", password ? "تم إدخالها" : "فارغة");
+        
+        if (!email) { 
+            console.log("⚠️ البريد فارغ");
+            showMessage('الرجاء إدخال البريد الإلكتروني', false); 
+            return; 
+        }
         
         actionBtn.disabled = true;
         actionBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> جاري ...';
         
         try {
             if (currentMode === 'signup') {
-                if (!password || password.length < 6) throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
-                const { data, error } = await sb.auth.signUp({ email, password });
-                if (error) throw error;
+                console.log("📝 محاولة إنشاء حساب جديد...");
+                if (!password || password.length < 6) {
+                    throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                }
+                
+                const { data, error } = await sb.auth.signUp({ 
+                    email, 
+                    password
+                });
+                
+                if (error) {
+                    console.error("❌ خطأ في التسجيل:", error);
+                    throw error;
+                }
+                
+                console.log("✅ تم إنشاء الحساب:", data);
                 showMessage('✅ تم إنشاء الحساب! يمكنك الآن تسجيل الدخول', true);
+                
                 setTimeout(() => {
                     currentMode = 'login';
                     updateUIMode();
                     emailInput.value = '';
                     passwordInput.value = '';
                 }, 2200);
+                
             } else if (currentMode === 'login') {
-                if (!password) throw new Error('أدخل كلمة المرور');
-                const { data, error } = await sb.auth.signInWithPassword({ email, password });
-                if (error) throw error;
+                console.log("🔐 محاولة تسجيل الدخول...");
+                if (!password) {
+                    throw new Error('أدخل كلمة المرور');
+                }
+                
+                const { data, error } = await sb.auth.signInWithPassword({ 
+                    email, 
+                    password 
+                });
+                
+                if (error) {
+                    console.error("❌ خطأ في تسجيل الدخول:", error);
+                    throw error;
+                }
+                
+                console.log("✅ تم تسجيل الدخول بنجاح:", data.user);
                 await ensureProfileExists(data.user.id, email);
                 showMessage('✅ مرحباً بك! جاري التوجيه...', true);
-                window.location.href = "profile.html";
+                
+                setTimeout(() => {
+                    window.location.href = "profile.html";
+                }, 1000);
+                
             } else if (currentMode === 'forgot') {
+                console.log("📧 طلب استعادة كلمة المرور...");
                 const { error } = await sb.auth.resetPasswordForEmail(email, { 
-                    redirectTo: window.location.origin + '/reset-password.html' 
+                    redirectTo: window.location.origin + '/profile.html'
                 });
-                if (error) throw error;
+                
+                if (error) {
+                    console.error("❌ خطأ في استعادة كلمة المرور:", error);
+                    throw error;
+                }
+                
+                console.log("✅ تم إرسال رابط الاستعادة");
                 showMessage('📬 تم إرسال رابط الاستعادة إلى بريدك.', true);
+                
                 setTimeout(() => { 
                     currentMode = 'login'; 
                     updateUIMode(); 
@@ -281,27 +332,59 @@
                 }, 2500);
             }
         } catch (err) {
+            console.error("❌ خطأ عام:", err);
             let errorMsg = err.message;
             if (errorMsg.includes('Invalid login credentials')) errorMsg = '❌ البريد أو كلمة المرور غير صحيحة';
             else if (errorMsg.includes('User already registered')) errorMsg = '⚠️ هذا البريد مسجل مسبقاً';
             else if (errorMsg.includes('Password should be at least 6 characters')) errorMsg = 'كلمة المرور 6 أحرف فأكثر';
+            else if (errorMsg.includes('Database error')) errorMsg = '⚠️ خطأ في قاعدة البيانات، حاول مرة أخرى';
             showMessage(errorMsg, false);
         } finally {
             actionBtn.disabled = false;
-            updateUIMode();
+            if (currentMode === 'login') actionBtn.innerHTML = '<i class="fas fa-arrow-left"></i> دخول';
+            else if (currentMode === 'signup') actionBtn.innerHTML = '<i class="fas fa-user-check"></i> تسجيل';
+            else actionBtn.innerHTML = '<i class="fas fa-envelope"></i> إرسال رابط الاستعادة';
         }
     };
 
-    // الأحداث
+    // التحقق من الجلسة الحالية
+    async function checkSessionAndRedirect() {
+        console.log("🔍 التحقق من الجلسة الحالية...");
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) {
+            console.log("✅ جلسة موجودة، التوجيه إلى profile.html");
+            window.location.href = "profile.html";
+        } else {
+            console.log("❌ لا توجد جلسة");
+        }
+    }
+
+    // مراقبة تغييرات المصادقة
+    sb.auth.onAuthStateChange((event, session) => {
+        console.log("🔄 تغيير في حالة المصادقة:", event);
+        if (event === 'SIGNED_IN' && session) {
+            console.log("✅ تم تسجيل الدخول، التوجيه...");
+            window.location.href = "profile.html";
+        }
+    });
+
+    // ربط الأحداث
     toggleModeLink.onclick = (e) => {
         e.preventDefault();
-        if (currentMode === 'forgot') { currentMode = 'login'; updateUIMode(); }
-        else if (currentMode === 'login') { currentMode = 'signup'; updateUIMode(); }
-        else if (currentMode === 'signup') { currentMode = 'login'; updateUIMode(); }
+        console.log("🔄 تبديل الوضع");
+        if (currentMode === 'forgot') { 
+            currentMode = 'login'; 
+        } else if (currentMode === 'login') { 
+            currentMode = 'signup'; 
+        } else if (currentMode === 'signup') { 
+            currentMode = 'login'; 
+        }
+        updateUIMode();
     };
     
     forgotLink.onclick = (e) => { 
         e.preventDefault(); 
+        console.log("🔑 الانتقال لوضع استعادة كلمة المرور");
         currentMode = 'forgot'; 
         updateUIMode(); 
     };
@@ -309,12 +392,27 @@
     actionBtn.onclick = window.handleAuth;
     
     // مفتاح Enter
-    emailInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') window.handleAuth(); });
-    passwordInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') window.handleAuth(); });
+    emailInput.addEventListener('keypress', (e) => { 
+        if(e.key === 'Enter') {
+            console.log("⌨️ Enter على البريد الإلكتروني");
+            window.handleAuth(); 
+        }
+    });
     
+    passwordInput.addEventListener('keypress', (e) => { 
+        if(e.key === 'Enter') {
+            console.log("⌨️ Enter على كلمة المرور");
+            window.handleAuth(); 
+        }
+    });
+    
+    // بدء التشغيل
     checkSessionAndRedirect();
     updateUIMode();
+    
+    console.log("✅ تم تهيئة الصفحة بالكامل");
 })();
 </script>
+
 </body>
 </html>
