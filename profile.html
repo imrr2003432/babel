@@ -3,191 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>ديموفر | أكمل بياناتك البابلية</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23c49a3b'%3E%3Cpath d='M12 3L1 9l11 6 11-6-11-6zm0 11.5L5.5 12 12 8.5 18.5 12 12 14.5zM5 13.5v4L12 22l7-4.5v-4L12 18l-7-4.5z'/%3E%3C/svg%3E">
+    <title>ديموفر | إكمال البيانات</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'%3E%3Cpath d='M12 3L1 9l11 6 11-6-11-6zm0 11.5L5.5 12 12 8.5 18.5 12 12 14.5zM5 13.5v4L12 22l7-4.5v-4L12 18l-7-4.5z'/%3E%3C/svg%3E">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { 
+                    fontFamily: { sans: ['Cairo', 'sans-serif'] }, 
+                    colors: { primary: '#2563eb', secondary: '#f97316' } 
+                }
+            }
+        }
+    </script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Cairo', 'Tajawal', sans-serif;
+            font-family: 'Cairo', sans-serif;
+            background: #f8fafc;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            position: relative;
-            background: radial-gradient(circle at 10% 20%, #2c1a0f, #1a2a3a);
-            overflow-x: hidden;
         }
-        .bg-cuneiform {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.12"><path fill="none" stroke="%23d4af37" stroke-width="1.2" d="M30 40 L45 35 L45 50 Z M80 70 L95 65 L95 80 Z M140 100 L155 95 L155 110 Z M50 140 L65 135 L65 150 Z M170 30 L185 25 L185 40 Z M110 160 L125 155 L125 170 Z"/><path fill="none" stroke="%23e0b354" stroke-width="0.8" d="M10 80 L22 76 L22 88 Z M60 20 L72 16 L72 28 Z M160 150 L172 146 L172 158 Z"/><text x="15" y="190" font-size="22" fill="%23d4af37" opacity="0.3">𒀭𒂗𒆤</text><text x="140" y="30" font-size="18" fill="%23d4af37" opacity="0.3">𒈨𒌍</text></svg>');
-            background-repeat: repeat;
-            background-size: 180px 180px;
-        }
-        .ziggurat-corner {
-            position: fixed;
-            width: 150px;
-            height: 150px;
-            z-index: 0;
-            opacity: 0.2;
-            pointer-events: none;
-        }
-        .ziggurat-corner::before {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent 65%, #e9b35f 65%, #e9b35f 70%, transparent 70%),
-                        linear-gradient(-45deg, transparent 65%, #b97f2e 65%, #b97f2e 70%, transparent 70%);
-            background-size: 30px 30px;
-        }
-        .zig-top-left { top: 0; left: 0; transform: rotate(0deg); }
-        .zig-bottom-right { bottom: 0; right: 0; transform: rotate(180deg); }
-        .babylon-card {
-            background: rgba(245, 240, 230, 0.94);
-            backdrop-filter: blur(12px);
-            border-radius: 48px;
+        .profile-card {
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 15px 40px -12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f1f5f9;
             width: 100%;
             max-width: 580px;
-            padding: 40px 34px;
-            position: relative;
-            z-index: 10;
-            transition: transform 0.3s ease, box-shadow 0.4s;
-            box-shadow: 0 35px 55px -15px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(212, 175, 55, 0.6), 0 0 0 6px rgba(10, 50, 80, 0.3);
-            border: 1px solid rgba(212, 175, 55, 0.7);
+            padding: 2.5rem 2rem;
+            transition: all 0.2s ease;
         }
-        .babylon-card:hover { transform: translateY(-6px); box-shadow: 0 45px 65px -18px black, 0 0 0 3px #e0b354, 0 0 0 10px rgba(10, 47, 75, 0.4); }
-        .logo-area { text-align: center; margin-bottom: 20px; }
-        .logo {
-            font-family: 'Cairo', 'Tajawal', serif;
-            font-size: 52px;
+        .profile-card:hover {
+            box-shadow: 0 20px 50px -15px rgba(37, 99, 235, 0.15);
+        }
+        .brand {
+            font-size: 2.2rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #c49a3b, #e8be6e, #a57c2c);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
-            letter-spacing: 2px;
-        }
-        .logo::before { content: "𒀭"; font-size: 34px; color: #c49a3b; margin-left: 6px; display: inline-block; opacity: 0.7; background: none; }
-        .logo::after { content: "𒈨𒌍"; font-size: 30px; color: #c49a3b; margin-right: 6px; display: inline-block; opacity: 0.7; }
-        .tagline { font-size: 14px; color: #7a5d3c; margin-top: 6px; font-weight: 600; background: rgba(0,0,0,0.05); display: inline-block; padding: 4px 16px; border-radius: 40px; }
-        .title { text-align: center; font-size: 28px; font-weight: 800; margin: 10px 0 5px; background: linear-gradient(135deg, #2b4f6e, #1a3348); background-clip: text; -webkit-background-clip: text; color: transparent; }
-        .sub { text-align: center; font-size: 13px; color: #7a6a5a; margin-bottom: 28px; font-weight: 500; border-bottom: 1px dashed #d4af37; display: inline-block; width: auto; margin-left: auto; margin-right: auto; padding-bottom: 6px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 32px; }
-        .stat-card { background: rgba(255, 250, 235, 0.8); padding: 18px 12px; border-radius: 28px; text-align: center; border: 1px solid rgba(212, 175, 55, 0.4); backdrop-filter: blur(4px); }
-        .stat-card span { display: block; font-size: 0.85rem; font-weight: 600; color: #8b6b3d; margin-bottom: 8px; }
-        .stat-card b { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #c49a3b, #e0b15c); background-clip: text; color: transparent; }
-        .input-group { margin-bottom: 22px; text-align: right; }
-        .input-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; margin-right: 8px; color: #7a5d3c; }
-        .input-group label i { margin-left: 6px; color: #c49a3b; }
-        input, select {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #cb9e5c;
-            border-radius: 48px;
-            background-color: #fef7e8;
-            font-size: 1rem;
-            font-family: 'Cairo', sans-serif;
-            outline: none;
-            transition: all 0.2s;
-            color: #2c2418;
-            font-weight: 500;
-        }
-        input:focus, select:focus { border-color: #e7b757; background: #fffef7; box-shadow: 0 0 0 4px rgba(203, 158, 92, 0.3); }
-        .dob-group { display: flex; gap: 12px; flex-wrap: wrap; }
-        .dob-group select { flex: 1; min-width: 90px; cursor: pointer; }
-        .btn-babylon {
-            background: linear-gradient(105deg, #b48b3a, #e0b15c, #c49a3b);
-            border: none;
-            width: 100%;
-            padding: 16px;
-            border-radius: 56px;
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: #2a241a;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 12px 22px -6px rgba(0, 0, 0, 0.4);
-            margin-top: 12px;
+            color: #2563eb;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 0.6rem;
+            margin-bottom: 0.5rem;
         }
-        .btn-babylon:disabled { background: linear-gradient(105deg, #94845c, #ad9a6b); cursor: not-allowed; opacity: 0.7; }
-        .btn-babylon:not(:disabled):active { transform: scale(0.96); }
-        #msg { text-align: center; margin-top: 20px; padding: 10px; border-radius: 48px; font-weight: 600; background: #f3e5c9; color: #9e6b2c; font-size: 14px; border-right: 4px solid #d4af37; }
-        .success { background: #dfe6d8 !important; color: #2a5e3b !important; border-right-color: #4c9f70; }
-        .error { background: #ffeded !important; color: #b13e3e !important; border-right-color: #b13e3e; }
-        .logout-btn {
-            margin-top: 20px;
-            background: linear-gradient(105deg, #8b6b3d, #a57c2c, #8b6b3d);
+        .brand i {
+            font-size: 2.2rem;
         }
-        @media (max-width: 550px) { .babylon-card { padding: 28px 20px; } .logo { font-size: 42px; } .logo::before, .logo::after { font-size: 26px; } .dob-group { flex-direction: column; gap: 8px; } }
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 1.25rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-card span {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.3rem;
+        }
+        .stat-card b {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.4rem;
+        }
+        .input-group label i {
+            color: #2563eb;
+            margin-left: 0.4rem;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.85rem 1.25rem;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 1rem;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.2s ease;
+            outline: none;
+            color: #1e293b;
+        }
+        .input-field:focus {
+            border-color: #2563eb;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        .input-field::placeholder {
+            color: #94a3b8;
+        }
+        select.input-field {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: left 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em;
+            padding-left: 2.5rem;
+            cursor: pointer;
+        }
+        .dob-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .dob-group select {
+            flex: 1;
+            min-width: 80px;
+        }
+        .btn-primary {
+            background: #2563eb;
+            border: none;
+            width: 100%;
+            padding: 0.9rem;
+            border-radius: 1rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 20px -8px rgba(37, 99, 235, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px -10px rgba(37, 99, 235, 0.4);
+        }
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            color: #64748b;
+            margin-top: 0.75rem;
+            box-shadow: none;
+        }
+        .btn-outline:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+            transform: none;
+            box-shadow: none;
+        }
+        #msg {
+            margin-top: 1.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-align: center;
+            display: none;
+        }
+        #msg.show {
+            display: block;
+        }
+        .message-success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .message-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        @media (max-width: 480px) {
+            .profile-card {
+                padding: 1.75rem 1.25rem;
+            }
+            .brand {
+                font-size: 1.8rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="bg-cuneiform"></div>
-<div class="ziggurat-corner zig-top-left"></div>
-<div class="ziggurat-corner zig-bottom-right"></div>
 
-<div class="babylon-card">
-    <div class="logo-area"><div class="logo">ديموفر</div><div class="tagline">𒀭 𒅎 𒅗 𒌦 | سجل بياناتك البابلية</div></div>
-    <div class="title">أكمل بياناتك</div>
-    <div class="sub">من أجل رحلة تعليمية خالدة</div>
+<div class="profile-card">
+    <div class="brand">
+        <i class="fas fa-graduation-cap"></i>
+        <span>ديموفر</span>
+    </div>
+    <div class="subtitle">أكمل بياناتك البابلية لبدء الرحلة</div>
 
     <div class="stats-grid">
-        <div class="stat-card"><span><i class="fas fa-coins"></i> النقاط</span><b id="displayPoints">0</b></div>
-        <div class="stat-card"><span><i class="fas fa-chart-line"></i> المستوى</span><b id="displayLevel">مبتدئ</b></div>
-    </div>
-
-    <div class="input-group"><label><i class="fas fa-user"></i> الاسم الكامل (ثلاثي)</label><input type="text" id="fullName" placeholder="مثال: أحمد محمد علي"></div>
-    <div class="input-group"><label><i class="fas fa-map-marker-alt"></i> المحافظة</label><input type="text" id="governorate" placeholder="المحافظة"></div>
-    <div class="input-group"><label><i class="fas fa-school"></i> المدرسة</label><input type="text" id="school" placeholder="اسم مدرستك"></div>
-
-    <div class="input-group"><label><i class="fas fa-calendar-alt"></i> تاريخ الميلاد (يوم / شهر / سنة)</label>
-        <div class="dob-group">
-            <select id="dobDay"><option value="">اليوم</option></select>
-            <select id="dobMonth"><option value="">الشهر</option></select>
-            <select id="dobYear"><option value="">السنة</option></select>
+        <div class="stat-card">
+            <span><i class="fas fa-coins"></i> النقاط</span>
+            <b id="displayPoints">0</b>
+        </div>
+        <div class="stat-card">
+            <span><i class="fas fa-chart-line"></i> المستوى</span>
+            <b id="displayLevel">مبتدئ</b>
         </div>
     </div>
 
-    <div class="input-group"><label><i class="fas fa-phone-alt"></i> رقم الهاتف (اختياري)</label><input type="tel" id="phone" placeholder="07XXXXXXXX"></div>
+    <div class="input-group">
+        <label><i class="fas fa-user"></i> الاسم الكامل (ثلاثي)</label>
+        <input type="text" id="fullName" class="input-field" placeholder="مثال: أحمد محمد علي">
+    </div>
 
-    <button class="btn-babylon" id="saveBtn"><i class="fas fa-save"></i> حفظ ومتابعة</button>
-    <button class="btn-babylon logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+    <div class="input-group">
+        <label><i class="fas fa-map-marker-alt"></i> المحافظة</label>
+        <input type="text" id="governorate" class="input-field" placeholder="المحافظة">
+    </div>
+
+    <div class="input-group">
+        <label><i class="fas fa-school"></i> المدرسة</label>
+        <input type="text" id="school" class="input-field" placeholder="اسم مدرستك">
+    </div>
+
+    <div class="input-group">
+        <label><i class="fas fa-calendar-alt"></i> تاريخ الميلاد (يوم / شهر / سنة)</label>
+        <div class="dob-group">
+            <select id="dobDay" class="input-field"><option value="">اليوم</option></select>
+            <select id="dobMonth" class="input-field"><option value="">الشهر</option></select>
+            <select id="dobYear" class="input-field"><option value="">السنة</option></select>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label><i class="fas fa-phone-alt"></i> رقم الهاتف (اختياري)</label>
+        <input type="tel" id="phone" class="input-field" placeholder="07XXXXXXXX">
+    </div>
+
+    <button id="saveBtn" class="btn-primary"><i class="fas fa-save"></i> حفظ ومتابعة</button>
+    <button id="logoutBtn" class="btn-primary btn-outline"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+
     <div id="msg"></div>
 </div>
 
 <script>
 (function() {
+    console.log("✅ بدء تشغيل صفحة إكمال البيانات (ديموفر)");
+
     const SUPABASE_URL = 'https://kuepdppngskwkmhyhohq.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI';
-    
-    if (typeof supabase === 'undefined') { 
-        document.getElementById('msg').innerHTML = 'خطأ في تحميل المكتبة'; 
-        return; 
-    }
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // ملء القوائم
+    if (typeof supabase === 'undefined') {
+        document.getElementById('msg').textContent = 'خطأ في تحميل المكتبة';
+        document.getElementById('msg').className = 'show message-error';
+        return;
+    }
+
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let currentUser = null;
+
+    // ========== ملء قوائم التاريخ ==========
     function populateDateSelects() {
         const daySel = document.getElementById('dobDay');
-        for (let i=1; i<=31; i++) { let opt = document.createElement('option'); opt.value=i; opt.textContent=i; daySel.appendChild(opt); }
+        for (let i = 1; i <= 31; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = i;
+            daySel.appendChild(opt);
+        }
         const monthSel = document.getElementById('dobMonth');
-        for (let i=1; i<=12; i++) { let opt = document.createElement('option'); opt.value=i; opt.textContent=i; monthSel.appendChild(opt); }
+        for (let i = 1; i <= 12; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = i;
+            monthSel.appendChild(opt);
+        }
         const yearSel = document.getElementById('dobYear');
-        for (let i=1990; i<=2026; i++) { let opt = document.createElement('option'); opt.value=i; opt.textContent=i; yearSel.appendChild(opt); }
+        for (let i = 1990; i <= 2026; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = i;
+            yearSel.appendChild(opt);
+        }
     }
     populateDateSelects();
 
@@ -195,126 +322,168 @@
         const day = document.getElementById('dobDay').value;
         const month = document.getElementById('dobMonth').value;
         const year = document.getElementById('dobYear').value;
-        if (day && month && year) return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        if (day && month && year) {
+            return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        }
         return null;
     }
 
     function setDateSelectsFromISO(dateStr) {
         if (!dateStr) return;
-        const [year, month, day] = dateStr.split('-');
-        if (year && month && day) {
-            if (document.getElementById('dobYear').querySelector(`option[value="${year}"]`)) 
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            const [year, month, day] = parts;
+            if (document.getElementById('dobYear').querySelector(`option[value="${year}"]`))
                 document.getElementById('dobYear').value = year;
-            if (document.getElementById('dobMonth').querySelector(`option[value="${parseInt(month)}"]`)) 
+            if (document.getElementById('dobMonth').querySelector(`option[value="${parseInt(month)}"]`))
                 document.getElementById('dobMonth').value = parseInt(month);
-            if (document.getElementById('dobDay').querySelector(`option[value="${parseInt(day)}"]`)) 
+            if (document.getElementById('dobDay').querySelector(`option[value="${parseInt(day)}"]`))
                 document.getElementById('dobDay').value = parseInt(day);
         }
     }
 
-    // دالة للتأكد من وجود بروفايل وإنشائه إذا لم يوجد
-    async function ensureProfileExists(userId) {
-        const { data: existingProfile } = await sb
-            .from('profiles')
-            .select('id')
-            .eq('id', userId)
-            .maybeSingle();
-        
-        if (!existingProfile) {
-            const { error } = await sb
-                .from('profiles')
-                .insert({
-                    id: userId,
-                    full_name: '',
-                    governorate: '',
-                    school_name: '',
-                    role: 'user'
-                });
-            if (error) console.error('خطأ في إنشاء البروفايل:', error);
-        }
+    // ========== التحقق من اكتمال البيانات ==========
+    function isProfileComplete(profile) {
+        return profile &&
+               profile.full_name &&
+               profile.full_name.trim() !== '' &&
+               profile.governorate &&
+               profile.governorate.trim() !== '' &&
+               profile.school_name &&
+               profile.school_name.trim() !== '' &&
+               profile.date_of_birth;
     }
 
+    // ========== جلب البيانات والتحقق ==========
     async function loadProfile() {
-        const { data: { user } } = await sb.auth.getUser();
-        if (!user) { 
-            window.location.href = "index.html"; 
-            return; 
+        try {
+            const { data: { user } } = await sb.auth.getUser();
+            if (!user) {
+                window.location.href = "index.html";
+                return;
+            }
+            currentUser = user;
+
+            // جلب البروفايل
+            let { data: profile, error } = await sb
+                .from('profiles')
+                .select('full_name, governorate, school_name, date_of_birth, points, level')
+                .eq('id', user.id)
+                .maybeSingle();
+
+            // إذا لم يوجد بروفايل، ننشئ واحداً فارغاً
+            if (error || !profile) {
+                console.warn("البروفايل غير موجود، سننشئ واحداً.");
+                const { error: insertError } = await sb
+                    .from('profiles')
+                    .insert({
+                        id: user.id,
+                        full_name: '',
+                        governorate: '',
+                        school_name: '',
+                        role: 'user'
+                    });
+                if (insertError) console.error("خطأ في إنشاء البروفايل:", insertError);
+                // نعيد المحاولة لجلب البيانات بعد الإنشاء
+                const { data: newProfile } = await sb
+                    .from('profiles')
+                    .select('full_name, governorate, school_name, date_of_birth, points, level')
+                    .eq('id', user.id)
+                    .single();
+                profile = newProfile;
+            }
+
+            // التحقق من اكتمال البيانات
+            if (profile && isProfileComplete(profile)) {
+                console.log("✅ البيانات مكتملة، التوجيه إلى داشبورد");
+                window.location.href = "dashbord.html";
+                return;
+            }
+
+            // عرض البيانات في النموذج
+            if (profile) {
+                document.getElementById('fullName').value = profile.full_name || '';
+                document.getElementById('governorate').value = profile.governorate || '';
+                document.getElementById('school').value = profile.school_name || '';
+                if (profile.date_of_birth) setDateSelectsFromISO(profile.date_of_birth);
+                // عرض النقاط والمستوى
+                document.getElementById('displayPoints').textContent = profile.points || 0;
+                document.getElementById('displayLevel').textContent = profile.level || 'مبتدئ';
+            }
+
+        } catch (err) {
+            console.error("خطأ في loadProfile:", err);
         }
-        
-        // تأكد من وجود بروفايل للمستخدم
-        await ensureProfileExists(user.id);
-        
-        // جلب البيانات
-        const { data: profile } = await sb
-            .from('profiles')
-            .select('full_name, governorate, school_name, date_of_birth')
-            .eq('id', user.id)
-            .maybeSingle();
-        
-        if (profile) {
-            document.getElementById('fullName').value = profile.full_name || '';
-            document.getElementById('governorate').value = profile.governorate || '';
-            document.getElementById('school').value = profile.school_name || '';
-            if (profile.date_of_birth) setDateSelectsFromISO(profile.date_of_birth);
-        }
-        
-        // عرض نقاط ومستوى افتراضية
-        document.getElementById('displayPoints').textContent = '0';
-        document.getElementById('displayLevel').textContent = 'مبتدئ';
     }
 
+    // ========== حفظ البيانات ==========
     async function saveProfile() {
         const btn = document.getElementById('saveBtn');
         const originalHtml = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> جاري الحفظ ...';
+
         const msgDiv = document.getElementById('msg');
-        msgDiv.innerHTML = '';
-        
+        msgDiv.className = '';
+        msgDiv.textContent = '';
+
         try {
             const { data: { user } } = await sb.auth.getUser();
             if (!user) throw new Error('يجب تسجيل الدخول أولاً');
-            
+
             const fullName = document.getElementById('fullName').value.trim();
             const governorate = document.getElementById('governorate').value.trim();
             const schoolName = document.getElementById('school').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const dateOfBirth = getDateFromSelects();
-            
+
             if (!fullName || !governorate || !schoolName || !dateOfBirth) {
                 throw new Error('الاسم، المحافظة، المدرسة، وتاريخ الميلاد إجبارية');
             }
-            
-            const { error } = await sb.from('profiles').upsert({
-                id: user.id,
-                full_name: fullName,
-                governorate: governorate,
-                school_name: schoolName,
-                date_of_birth: dateOfBirth
-            }, { onConflict: 'id' });
-            
+
+            const { error } = await sb
+                .from('profiles')
+                .upsert({
+                    id: user.id,
+                    full_name: fullName,
+                    governorate: governorate,
+                    school_name: schoolName,
+                    date_of_birth: dateOfBirth,
+                    phone: phone || null
+                }, { onConflict: 'id' });
+
             if (error) throw error;
-            
-            msgDiv.innerHTML = '<span class="success"><i class="fas fa-check-circle"></i> تم حفظ البيانات! جاري التوجيه...</span>';
+
+            msgDiv.textContent = '✅ تم حفظ البيانات! جاري التوجيه...';
+            msgDiv.className = 'show message-success';
+
             setTimeout(() => {
                 window.location.href = "dashbord.html";
-            }, 1500);
+            }, 1200);
+
         } catch (err) {
-            msgDiv.innerHTML = `<span class="error"><i class="fas fa-exclamation-circle"></i> ${err.message}</span>`;
+            msgDiv.textContent = '❌ ' + err.message;
+            msgDiv.className = 'show message-error';
             btn.disabled = false;
             btn.innerHTML = originalHtml;
         }
     }
 
+    // ========== تسجيل الخروج ==========
     async function logout() {
         await sb.auth.signOut();
         window.location.href = "index.html";
     }
 
+    // ========== ربط الأحداث ==========
     document.getElementById('saveBtn').addEventListener('click', saveProfile);
     document.getElementById('logoutBtn').addEventListener('click', logout);
+
+    // ========== بدء التشغيل ==========
     loadProfile();
+
 })();
 </script>
+
 </body>
 </html>
