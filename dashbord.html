@@ -157,6 +157,137 @@
         .quick-link:hover .icon-wrap {
             transform: scale(1.1);
         }
+
+        /* ===== الوضع الليلي ===== */
+        body.dark-mode {
+            background-color: #0f172a !important;
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode .bg-white {
+            background-color: #1e293b !important;
+        }
+        body.dark-mode .bg-slate-50 {
+            background-color: #0f172a !important;
+        }
+        body.dark-mode .text-slate-800 {
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode .text-slate-600 {
+            color: #94a3b8 !important;
+        }
+        body.dark-mode .text-slate-500 {
+            color: #94a3b8 !important;
+        }
+        body.dark-mode .text-slate-400 {
+            color: #64748b !important;
+        }
+        body.dark-mode .border-gray-100,
+        body.dark-mode .border-gray-200 {
+            border-color: #334155 !important;
+        }
+        body.dark-mode .bg-slate-100 {
+            background-color: #1e293b !important;
+        }
+        body.dark-mode .bg-slate-200 {
+            background-color: #334155 !important;
+        }
+        body.dark-mode .bg-slate-50 {
+            background-color: #0f172a !important;
+        }
+        body.dark-mode .sidebar {
+            background-color: #1e293b !important;
+            border-left-color: #334155 !important;
+        }
+        body.dark-mode .sidebar-link:hover:not(.active) {
+            background-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode .sidebar-link.active {
+            background-color: #1e3a5f !important;
+            color: #60a5fa !important;
+        }
+        body.dark-mode .sidebar-link .icon-bg {
+            background-color: #334155 !important;
+        }
+        body.dark-mode .quick-link {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+        body.dark-mode .quick-link:hover {
+            border-color: #60a5fa !important;
+            background-color: #1e3a5f !important;
+        }
+        body.dark-mode .stat-card {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+        body.dark-mode .hero-title {
+            background: linear-gradient(135deg, #e2e8f0 0%, #60a5fa 50%, #e2e8f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        body.dark-mode .hero-subtitle {
+            color: #94a3b8 !important;
+        }
+        body.dark-mode .header {
+            background-color: #1e293b !important;
+            border-bottom-color: #334155 !important;
+        }
+        body.dark-mode .header .logo span,
+        body.dark-mode .header .logo i {
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode .header .email-badge {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+            color: #94a3b8 !important;
+        }
+        body.dark-mode .logout-btn-header {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.2) !important;
+            color: #f87171 !important;
+        }
+        body.dark-mode #notification-dropdown {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+        body.dark-mode #notification-dropdown .bg-slate-50 {
+            background-color: #0f172a !important;
+        }
+        body.dark-mode .notif-item:hover {
+            background-color: #334155 !important;
+        }
+        body.dark-mode .notif-item.unread {
+            background-color: #1e3a5f !important;
+        }
+        body.dark-mode .notif-item.unread:hover {
+            background-color: #1e4a7f !important;
+        }
+        body.dark-mode .modal-content {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+        body.dark-mode .modal-content .text-slate-800 {
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode .modal-content .text-slate-600 {
+            color: #94a3b8 !important;
+        }
+        body.dark-mode .modal-content .border-gray-100 {
+            border-color: #334155 !important;
+        }
+        body.dark-mode .modal-content .bg-slate-100 {
+            background-color: #0f172a !important;
+        }
+        body.dark-mode .footer {
+            background-color: #1e293b !important;
+            border-top-color: #334155 !important;
+            color: #64748b !important;
+        }
+        body.dark-mode .footer a {
+            color: #60a5fa !important;
+        }
     </style>
 </head>
 <body class="text-slate-800">
@@ -331,6 +462,11 @@
                         <i class="fas fa-chart-line text-primary"></i>
                         <span class="font-bold text-slate-700" id="header-level">مبتدئ</span>
                     </div>
+                    
+                    <!-- ===== زر تبديل الوضع (نهاري/ليلي) ===== -->
+                    <button id="themeToggleBtn" class="p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition" title="تبديل الوضع">
+                        <i class="fas fa-moon text-lg"></i>
+                    </button>
                 </div>
             </header>
 
@@ -405,7 +541,7 @@
                         </div>
                     </div>
 
-                    <!-- ===== إحصائيات سريعة (عدد الطلاب من profiles) ===== -->
+                    <!-- ===== إحصائيات سريعة ===== -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto mt-8">
                         <div class="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
                             <p class="text-2xl font-extrabold text-primary" id="statTeachers">0</p>
@@ -430,7 +566,7 @@
         </div>
     </div>
 
-    <!-- ===== مودال عرض الإعلان كاملاً ===== -->
+    <!-- ===== مودال عرض الإعلان ===== -->
     <div id="announcement-modal" class="fixed inset-0 flex items-center justify-center p-4">
         <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
         <div class="modal-card relative bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100">
@@ -492,6 +628,26 @@
             };
 
             // ==========================================
+            // 2.5 تبديل الوضع (نهاري/ليلي)
+            // ==========================================
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const themeIcon = themeToggleBtn.querySelector('i');
+
+            // تحميل التفضيل من localStorage
+            const savedTheme = localStorage.getItem('dashbord-theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeIcon.className = 'fas fa-sun';
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('dashbord-theme', isDark ? 'dark' : 'light');
+                themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            });
+
+            // ==========================================
             // 3. جلب بيانات المستخدم
             // ==========================================
             async function loadUserData() {
@@ -536,7 +692,7 @@
             }
 
             // ==========================================
-            // 4. جلب الإعلانات مع حالة القراءة
+            // 4. جلب الإعلانات
             // ==========================================
             async function loadAnnouncements() {
                 const container = document.getElementById('dropdown-announcements');
@@ -653,7 +809,7 @@
             }
 
             // ==========================================
-            // 6. المودال وعلامة القراءة الفردية
+            // 6. المودال
             // ==========================================
             window.openAnnouncementModal = function(announcement) {
                 const modal = document.getElementById('announcement-modal');
@@ -737,7 +893,7 @@
             };
 
             // ==========================================
-            // 8. جلب الإحصائيات (مع عدد الطلاب من profiles)
+            // 8. جلب الإحصائيات
             // ==========================================
             async function loadStats() {
                 try {
@@ -753,7 +909,6 @@
                         groupsCount = count || 0;
                     } catch (e) { /* تجاهل */ }
 
-                    // عدد الطلاب = عدد المستخدمين المسجلين في profiles
                     try {
                         const { count } = await supabaseClient.from('profiles').select('*', { count: 'exact', head: true });
                         studentsCount = count || 0;
@@ -833,5 +988,6 @@
             });
         })();
     </script>
+
 </body>
 </html>
