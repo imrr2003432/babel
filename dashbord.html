@@ -158,146 +158,65 @@
             transform: scale(1.1);
         }
 
-        /* ===== الوضع الليلي ===== */
+        /* ===== الوضع الليلي (معدل ومرتب باحترافية) ===== */
         body.dark-mode {
             background-color: #0f172a !important;
-            color: #e2e8f0 !important;
+            color: #f8fafc !important;
         }
-        body.dark-mode .bg-white {
-            background-color: #1e293b !important;
-        }
-        body.dark-mode .bg-slate-50 {
-            background-color: #0f172a !important;
-        }
-        body.dark-mode .text-slate-800 {
-            color: #e2e8f0 !important;
-        }
-        body.dark-mode .text-slate-600 {
-            color: #94a3b8 !important;
-        }
-        body.dark-mode .text-slate-500 {
-            color: #94a3b8 !important;
-        }
-        body.dark-mode .text-slate-400 {
-            color: #64748b !important;
-        }
+        body.dark-mode .bg-white { background-color: #1e293b !important; }
+        body.dark-mode .bg-slate-50 { background-color: #0f172a !important; }
+        body.dark-mode .bg-slate-100 { background-color: #334155 !important; }
+        body.dark-mode .text-slate-800 { color: #f8fafc !important; }
+        body.dark-mode .text-slate-700 { color: #e2e8f0 !important; }
+        body.dark-mode .text-slate-600 { color: #cbd5e1 !important; }
+        body.dark-mode .text-slate-500 { color: #94a3b8 !important; }
+        body.dark-mode .text-slate-400 { color: #64748b !important; }
         body.dark-mode .border-gray-100,
-        body.dark-mode .border-gray-200 {
-            border-color: #334155 !important;
-        }
-        body.dark-mode .bg-slate-100 {
-            background-color: #1e293b !important;
-        }
-        body.dark-mode .bg-slate-200 {
-            background-color: #334155 !important;
-        }
-        body.dark-mode .bg-slate-50 {
-            background-color: #0f172a !important;
-        }
-        body.dark-mode .sidebar {
-            background-color: #1e293b !important;
-            border-left-color: #334155 !important;
-        }
-        body.dark-mode .sidebar-link:hover:not(.active) {
-            background-color: #334155 !important;
-            color: #e2e8f0 !important;
-        }
-        body.dark-mode .sidebar-link.active {
-            background-color: #1e3a5f !important;
-            color: #60a5fa !important;
-        }
-        body.dark-mode .sidebar-link .icon-bg {
-            background-color: #334155 !important;
-        }
-        body.dark-mode .quick-link {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-        }
-        body.dark-mode .quick-link:hover {
-            border-color: #60a5fa !important;
-            background-color: #1e3a5f !important;
-        }
-        body.dark-mode .stat-card {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-        }
+        body.dark-mode .border-gray-200 { border-color: #334155 !important; }
+        body.dark-mode .sidebar { border-left-color: #334155 !important; }
+        body.dark-mode .sidebar-link:hover:not(.active) { background-color: #334155 !important; color: #f8fafc !important; }
+        body.dark-mode .sidebar-link.active { background-color: #1e3a8a !important; color: #60a5fa !important; }
+        body.dark-mode .sidebar-link .icon-bg { background-color: #334155 !important; color: #94a3b8 !important; }
+        body.dark-mode .sidebar-link.active .icon-bg { background-color: #2563eb !important; color: #ffffff !important; }
+        body.dark-mode .sidebar-link:hover:not(.active) .icon-bg { background-color: #475569 !important; color: #f8fafc !important; }
+        body.dark-mode .header { border-bottom-color: #334155 !important; }
+        body.dark-mode button:hover.bg-slate-100 { background-color: #334155 !important; }
+        body.dark-mode button:hover.bg-gray-50 { background-color: #334155 !important; }
+        body.dark-mode .quick-link { border-color: #334155 !important; }
+        body.dark-mode .quick-link:hover { border-color: #3b82f6 !important; background-color: #1e3a8a !important; }
+        body.dark-mode .quick-link .bg-primary\/10 { background-color: rgba(59, 130, 246, 0.2) !important; }
+        body.dark-mode .quick-link .bg-secondary\/10 { background-color: rgba(249, 115, 22, 0.2) !important; }
+        body.dark-mode .quick-link .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.2) !important; }
+        body.dark-mode .quick-link .bg-sky-50 { background-color: rgba(14, 165, 233, 0.2) !important; }
+        body.dark-mode #notification-dropdown { background-color: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .notif-item:hover { background-color: #334155 !important; }
+        body.dark-mode .notif-item.unread { background-color: #1e3a8a !important; }
+        body.dark-mode .notif-item.unread:hover { background-color: #1e40af !important; }
+        body.dark-mode .modal-card { background-color: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode #modal-image-wrapper { background-color: #0f172a !important; }
         body.dark-mode .hero-title {
-            background: linear-gradient(135deg, #e2e8f0 0%, #60a5fa 50%, #e2e8f0 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #60a5fa 50%, #f8fafc 100%);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
-        body.dark-mode .hero-subtitle {
-            color: #94a3b8 !important;
-        }
-        body.dark-mode .header {
-            background-color: #1e293b !important;
-            border-bottom-color: #334155 !important;
-        }
-        body.dark-mode .header .logo span,
-        body.dark-mode .header .logo i {
-            color: #e2e8f0 !important;
-        }
-        body.dark-mode .header .email-badge {
-            background-color: #0f172a !important;
-            border-color: #334155 !important;
-            color: #94a3b8 !important;
-        }
-        body.dark-mode .logout-btn-header {
-            background-color: rgba(239, 68, 68, 0.1) !important;
-            border-color: rgba(239, 68, 68, 0.2) !important;
-            color: #f87171 !important;
-        }
-        body.dark-mode #notification-dropdown {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-        }
-        body.dark-mode #notification-dropdown .bg-slate-50 {
-            background-color: #0f172a !important;
-        }
-        body.dark-mode .notif-item:hover {
-            background-color: #334155 !important;
-        }
-        body.dark-mode .notif-item.unread {
-            background-color: #1e3a5f !important;
-        }
-        body.dark-mode .notif-item.unread:hover {
-            background-color: #1e4a7f !important;
-        }
-        body.dark-mode .modal-content {
-            background-color: #1e293b !important;
-            border-color: #334155 !important;
-        }
-        body.dark-mode .modal-content .text-slate-800 {
-            color: #e2e8f0 !important;
-        }
-        body.dark-mode .modal-content .text-slate-600 {
-            color: #94a3b8 !important;
-        }
-        body.dark-mode .modal-content .border-gray-100 {
-            border-color: #334155 !important;
-        }
-        body.dark-mode .modal-content .bg-slate-100 {
-            background-color: #0f172a !important;
-        }
-        body.dark-mode .footer {
-            background-color: #1e293b !important;
-            border-top-color: #334155 !important;
-            color: #64748b !important;
-        }
-        body.dark-mode .footer a {
-            color: #60a5fa !important;
-        }
+        body.dark-mode #logoutBtn { background-color: rgba(239, 68, 68, 0.1) !important; border-color: rgba(239, 68, 68, 0.2) !important; color: #f87171 !important; }
+        body.dark-mode #logoutBtn:hover { background-color: rgba(239, 68, 68, 0.2) !important; }
+        /* تحسينات للتبديل داخل الإعدادات */
+        body.dark-mode .settings-card { background-color: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .settings-card .border-b { border-color: #334155 !important; }
+        body.dark-mode .settings-card .text-slate-600 { color: #cbd5e1 !important; }
+        body.dark-mode .settings-card .bg-slate-50 { background-color: #0f172a !important; }
+        body.dark-mode .settings-card .bg-gray-100 { background-color: #334155 !important; }
+        body.dark-mode .settings-card .text-slate-500 { color: #94a3b8 !important; }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-800 transition-colors duration-300">
 
-    <div class="flex h-screen bg-slate-50 w-full overflow-hidden relative">
+    <div class="flex h-screen bg-slate-50 w-full overflow-hidden relative transition-colors duration-300">
 
-        <!-- Sidebar Overlay (موبايل) -->
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900 bg-opacity-50 z-40 hidden md:hidden transition-opacity"></div>
 
-        <!-- ===== القائمة الجانبية ===== -->
         <aside id="sidebar" class="fixed inset-y-0 right-0 z-50 w-64 bg-white shadow-xl transform translate-x-full md:relative md:translate-x-0 transition-transform duration-300 flex flex-col border-l border-gray-100">
             
             <div class="flex items-center justify-between h-20 px-6 border-b border-gray-100 shrink-0">
@@ -395,6 +314,15 @@
                 </a>
 
                 <div id="admin-nav-item"></div>
+
+                <!-- قسم الإعدادات -->
+                <hr class="my-4 border-gray-100">
+                <a href="#" onclick="showSettingsView(); if(window.innerWidth < 768) toggleSidebar();" class="sidebar-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 rounded-xl font-semibold transition group">
+                    <div class="icon-bg bg-slate-100 p-1.5 rounded-lg group-hover:bg-white transition text-slate-500">
+                        <i class="fas fa-cog w-5 h-5 text-center"></i>
+                    </div>
+                    الإعدادات
+                </a>
             </nav>
 
             <div class="p-4 border-t border-gray-100 bg-slate-50 shrink-0">
@@ -418,9 +346,8 @@
             </div>
         </aside>
 
-        <!-- ===== المحتوى الرئيسي ===== -->
         <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-            <header class="bg-white border-b border-gray-100 shrink-0 h-20 flex items-center justify-between px-4 sm:px-8 z-30">
+            <header class="bg-white border-b border-gray-100 shrink-0 h-20 flex items-center justify-between px-4 sm:px-8 z-30 transition-colors duration-300">
                 <div class="flex items-center gap-4">
                     <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-primary focus:outline-none bg-slate-100 p-2.5 rounded-xl transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -433,21 +360,18 @@
                 </div>
                 
                 <div class="flex items-center gap-3">
-                    <!-- جرس الإشعارات -->
                     <div class="relative" id="notification-bell">
                         <button id="bell-btn" class="relative p-2 text-slate-500 hover:text-primary hover:bg-slate-100 rounded-full transition focus:outline-none">
                             <i class="fas fa-bell text-xl"></i>
                             <span id="notification-badge" class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center hidden badge-pulse">0</span>
                         </button>
-                        <!-- القائمة المنسدلة -->
                         <div id="notification-dropdown" class="absolute left-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
                             <div class="p-4 bg-slate-50 border-b border-gray-100 flex justify-between items-center">
                                 <h3 class="font-bold text-slate-800"><i class="fas fa-bell text-primary ml-2"></i>الإشعارات</h3>
                                 <span class="text-xs text-slate-400" id="notif-count-label">0 غير مقروء</span>
                             </div>
                             <div id="dropdown-announcements" class="max-h-96 overflow-y-auto hide-scrollbar divide-y divide-gray-100">
-                                <!-- سيتم حقن الإعلانات هنا -->
-                            </div>
+                                </div>
                             <div class="p-2 text-center bg-slate-50 border-t border-gray-100">
                                 <a href="#" class="text-xs text-primary font-semibold hover:underline" onclick="event.preventDefault(); closeNotificationDropdown();">عرض الكل</a>
                             </div>
@@ -463,7 +387,6 @@
                         <span class="font-bold text-slate-700" id="header-level">مبتدئ</span>
                     </div>
                     
-                    <!-- ===== زر تبديل الوضع (نهاري/ليلي) ===== -->
                     <button id="themeToggleBtn" class="p-2 rounded-full text-slate-500 hover:text-primary hover:bg-slate-100 transition" title="تبديل الوضع">
                         <i class="fas fa-moon text-lg"></i>
                     </button>
@@ -473,100 +396,134 @@
             <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 lg:p-8 hide-scrollbar">
                 <div id="home-view" class="block pb-10">
                     
-                    <!-- ===== قسم الهيرو الرئيسي ===== -->
-                    <div class="max-w-5xl mx-auto text-center pt-6 md:pt-10">
-                        
-                        <!-- الشعار الكبير -->
-                        <div class="mb-4">
-                            <span class="hero-title">ديموفر</span>
-                        </div>
-                        
-                        <!-- الوصف -->
-                        <p class="hero-subtitle text-slate-500 max-w-2xl mx-auto leading-relaxed">
-                            منصتك التعليمية المتكاملة للتعلم الذكي والتفاعلي. 
-                            وصول لا محدود إلى محاضرات، امتحانات، وأدوات تطويرية تساعدك على تحقيق أهدافك.
-                        </p>
-                        
-                        <!-- التاريخ والترحيب -->
-                        <p class="text-sm text-slate-400 mt-3" id="current-date-text"></p>
-                        
-                        <!-- ===== روابط سريعة ===== -->
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mt-8 max-w-2xl mx-auto">
-                            <a href="lectures.html" class="quick-link bg-white rounded-2xl p-4 text-center shadow-sm">
-                                <div class="icon-wrap w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto text-primary text-xl">
-                                    <i class="fas fa-video"></i>
-                                </div>
-                                <p class="font-bold text-sm text-slate-700 mt-2">محاضراتي</p>
-                            </a>
+                    <!-- المحتوى الرئيسي (الصفحة الرئيسية) -->
+                    <div id="main-content">
+                        <div class="max-w-5xl mx-auto text-center pt-6 md:pt-10">
                             
-                            <a href="exams.html" class="quick-link bg-white rounded-2xl p-4 text-center shadow-sm">
-                                <div class="icon-wrap w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mx-auto text-secondary text-xl">
-                                    <i class="fas fa-tasks"></i>
-                                </div>
-                                <p class="font-bold text-sm text-slate-700 mt-2">الامتحانات</p>
-                            </a>
+                            <div class="mb-4">
+                                <span class="hero-title">ديموفر</span>
+                            </div>
                             
-                            <a href="schedule.html" class="quick-link bg-white rounded-2xl p-4 text-center shadow-sm">
-                                <div class="icon-wrap w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto text-emerald-600 text-xl">
-                                    <i class="fas fa-calendar-week"></i>
-                                </div>
-                                <p class="font-bold text-sm text-slate-700 mt-2">الجدول</p>
-                            </a>
+                            <p class="hero-subtitle text-slate-500 max-w-2xl mx-auto leading-relaxed">
+                                منصتك التعليمية المتكاملة للتعلم الذكي والتفاعلي. 
+                                وصول لا محدود إلى محاضرات، امتحانات، وأدوات تطويرية تساعدك على تحقيق أهدافك.
+                            </p>
                             
-                            <a href="https://t.me/manasasad" target="_blank" class="quick-link bg-white rounded-2xl p-4 text-center shadow-sm">
-                                <div class="icon-wrap w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center mx-auto text-sky-600 text-xl">
-                                    <i class="fab fa-telegram"></i>
-                                </div>
-                                <p class="font-bold text-sm text-slate-700 mt-2">المجتمع</p>
-                            </a>
+                            <p class="text-sm text-slate-400 mt-3" id="current-date-text"></p>
+                            
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mt-8 max-w-2xl mx-auto">
+                                <a href="lectures.html" class="quick-link bg-white rounded-2xl p-4 text-center shadow-sm">
+                                    <div class="icon-wrap w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto text-primary text-xl">
+                                        <i class="fas fa-video"></i>
+                                    </div>
+                                    <p class="font-bold text-sm text-slate-700 mt-2">محاضراتي</p>
+                                </a>
+                                
+                                <a href="exams.html" class="quick-link bg-white rounded-2xl p-4 text-center shadow-sm">
+                                    <div class="icon-wrap w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mx-auto text-secondary text-xl">
+                                        <i class="fas fa-tasks"></i>
+                                    </div>
+                                    <p class="font-bold text-sm text-slate-700 mt-2">الامتحانات</p>
+                                </a>
+                                
+                                <a href="schedule.html" class="quick-link bg-white rounded-2xl p-4 text-center shadow-sm">
+                                    <div class="icon-wrap w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto text-emerald-600 text-xl">
+                                        <i class="fas fa-calendar-week"></i>
+                                    </div>
+                                    <p class="font-bold text-sm text-slate-700 mt-2">الجدول</p>
+                                </a>
+                                
+                                <a href="https://t.me/manasasad" target="_blank" class="quick-link bg-white rounded-2xl p-4 text-center shadow-sm">
+                                    <div class="icon-wrap w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center mx-auto text-sky-600 text-xl">
+                                        <i class="fab fa-telegram"></i>
+                                    </div>
+                                    <p class="font-bold text-sm text-slate-700 mt-2">المجتمع</p>
+                                </a>
+                            </div>
+
+                            <div class="flex flex-wrap items-center justify-center gap-2 mt-3 text-sm text-slate-500">
+                                <a href="results.html" class="hover:text-primary transition px-3 py-1 rounded-full hover:bg-primary/5">📊 تقارير الأداء</a>
+                                <span class="text-slate-300">|</span>
+                                <a href="leaderboard.html" class="hover:text-primary transition px-3 py-1 rounded-full hover:bg-primary/5">🏆 تصنيف الطلاب</a>
+                                <span class="text-slate-300">|</span>
+                                <a href="flashcard.html" class="hover:text-primary transition px-3 py-1 rounded-full hover:bg-primary/5">🧠 بطاقات التذكر</a>
+                                <span class="text-slate-300">|</span>
+                                <a href="Mindmaps.html" class="hover:text-primary transition px-3 py-1 rounded-full hover:bg-primary/5">🗺️ خرائط ذهنية</a>
+                            </div>
+
+                            <div class="mt-6">
+                                <a href="lectures.html" class="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white rounded-2xl font-bold hover:bg-primary/90 transition shadow-lg shadow-primary/25 text-base">
+                                    <i class="fas fa-rocket"></i>
+                                    ابدأ رحلتك التعليمية
+                                </a>
+                            </div>
                         </div>
 
-                        <!-- روابط إضافية -->
-                        <div class="flex flex-wrap items-center justify-center gap-2 mt-3 text-sm text-slate-500">
-                            <a href="results.html" class="hover:text-primary transition px-3 py-1 rounded-full hover:bg-primary/5">📊 تقارير الأداء</a>
-                            <span class="text-slate-300">|</span>
-                            <a href="leaderboard.html" class="hover:text-primary transition px-3 py-1 rounded-full hover:bg-primary/5">🏆 تصنيف الطلاب</a>
-                            <span class="text-slate-300">|</span>
-                            <a href="flashcard.html" class="hover:text-primary transition px-3 py-1 rounded-full hover:bg-primary/5">🧠 بطاقات التذكر</a>
-                            <span class="text-slate-300">|</span>
-                            <a href="Mindmaps.html" class="hover:text-primary transition px-3 py-1 rounded-full hover:bg-primary/5">🗺️ خرائط ذهنية</a>
-                        </div>
-
-                        <!-- زر بدء التعلم -->
-                        <div class="mt-6">
-                            <a href="lectures.html" class="inline-flex items-center gap-2 px-8 py-3.5 bg-primary text-white rounded-2xl font-bold hover:bg-primary/90 transition shadow-lg shadow-primary/25 text-base">
-                                <i class="fas fa-rocket"></i>
-                                ابدأ رحلتك التعليمية
-                            </a>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto mt-8">
+                            <div class="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
+                                <p class="text-2xl font-extrabold text-primary" id="statTeachers">0</p>
+                                <p class="text-xs text-slate-500">مدرسين</p>
+                            </div>
+                            <div class="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
+                                <p class="text-2xl font-extrabold text-primary" id="statGroups">0</p>
+                                <p class="text-xs text-slate-500">مجموعات</p>
+                            </div>
+                            <div class="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
+                                <p class="text-2xl font-extrabold text-primary" id="statStudents">0</p>
+                                <p class="text-xs text-slate-500">طلاب</p>
+                            </div>
+                            <div class="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
+                                <p class="text-2xl font-extrabold text-primary" id="statMessages">0</p>
+                                <p class="text-xs text-slate-500">رسائل</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- ===== إحصائيات سريعة ===== -->
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto mt-8">
-                        <div class="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
-                            <p class="text-2xl font-extrabold text-primary" id="statTeachers">0</p>
-                            <p class="text-xs text-slate-500">مدرسين</p>
-                        </div>
-                        <div class="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
-                            <p class="text-2xl font-extrabold text-primary" id="statGroups">0</p>
-                            <p class="text-xs text-slate-500">مجموعات</p>
-                        </div>
-                        <div class="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
-                            <p class="text-2xl font-extrabold text-primary" id="statStudents">0</p>
-                            <p class="text-xs text-slate-500">طلاب</p>
-                        </div>
-                        <div class="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
-                            <p class="text-2xl font-extrabold text-primary" id="statMessages">0</p>
-                            <p class="text-xs text-slate-500">رسائل</p>
+                    <!-- محتوى الإعدادات (يظهر عند الضغط على الإعدادات) -->
+                    <div id="settings-content" class="hidden">
+                        <div class="max-w-2xl mx-auto">
+                            <div class="flex items-center gap-3 mb-6">
+                                <button onclick="showHomeView()" class="back-btn bg-white hover:bg-slate-50 border border-gray-200 px-5 py-2.5 rounded-xl font-semibold text-slate-600 hover:text-primary flex items-center gap-2 transition">
+                                    <i class="fas fa-arrow-right"></i> العودة للرئيسية
+                                </button>
+                                <h2 class="text-2xl font-bold text-slate-800"><i class="fas fa-cog text-primary ml-2"></i>الإعدادات</h2>
+                            </div>
+
+                            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden settings-card">
+                                <!-- تبديل الوضع -->
+                                <div class="p-6 border-b border-gray-100">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="font-bold text-slate-800"><i class="fas fa-moon text-primary ml-2"></i>الوضع الليلي</h3>
+                                            <p class="text-sm text-slate-500 mt-1">قم بتبديل المظهر بين النهاري والليلي</p>
+                                        </div>
+                                        <button id="settingsThemeToggle" class="relative w-14 h-8 rounded-full bg-slate-200 transition-colors duration-300 focus:outline-none">
+                                            <span class="absolute top-1 right-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300"></span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- تثبيت التطبيق -->
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="font-bold text-slate-800"><i class="fas fa-download text-primary ml-2"></i>تثبيت المنصة</h3>
+                                            <p class="text-sm text-slate-500 mt-1">أضف ديموفر إلى شاشة هاتفك الرئيسية للوصول السريع</p>
+                                        </div>
+                                        <button id="installBtn" class="bg-primary text-white px-5 py-2 rounded-xl font-bold hover:bg-primary/90 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <i class="fas fa-plus ml-1"></i> تثبيت
+                                        </button>
+                                    </div>
+                                    <div id="installMessage" class="mt-3 text-sm text-slate-600 hidden"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- ===== مودال عرض الإعلان ===== -->
     <div id="announcement-modal" class="fixed inset-0 flex items-center justify-center p-4">
         <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
         <div class="modal-card relative bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100">
@@ -610,7 +567,7 @@
             let currentModalAnnouncementId = null;
 
             // ==========================================
-            // 2. وظائف القائمة الجانبية
+            // 2. وظائف القائمة الجانبية والعرض
             // ==========================================
             window.toggleSidebar = function() {
                 const sidebar = document.getElementById('sidebar');
@@ -620,35 +577,94 @@
             };
 
             window.showHomeView = function() {
-                document.getElementById('home-view').classList.remove('hidden');
-                document.getElementById('home-view').classList.add('block');
+                document.getElementById('main-content').classList.remove('hidden');
+                document.getElementById('settings-content').classList.add('hidden');
                 document.getElementById('header-subtitle').innerText = 'الرئيسية';
                 document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
                 document.getElementById('nav-home').classList.add('active');
+                // تحديث العنوان
+                document.querySelector('#header-title span:last-child').innerText = 'الرئيسية';
+            };
+
+            window.showSettingsView = function() {
+                document.getElementById('main-content').classList.add('hidden');
+                document.getElementById('settings-content').classList.remove('hidden');
+                document.getElementById('header-subtitle').innerText = 'الإعدادات';
+                document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+                // نحدد الإعدادات كفعال
+                const settingsLink = document.querySelector('.sidebar-link .fa-cog')?.closest('.sidebar-link');
+                if (settingsLink) settingsLink.classList.add('active');
+                document.querySelector('#header-title span:last-child').innerText = 'الإعدادات';
             };
 
             // ==========================================
-            // 2.5 تبديل الوضع (نهاري/ليلي)
+            // 3. تبديل الوضع (نهاري/ليلي)
             // ==========================================
             const themeToggleBtn = document.getElementById('themeToggleBtn');
             const themeIcon = themeToggleBtn.querySelector('i');
+            const settingsThemeToggle = document.getElementById('settingsThemeToggle');
+            const settingsToggleSpan = settingsThemeToggle.querySelector('span');
 
             // تحميل التفضيل من localStorage
             const savedTheme = localStorage.getItem('dashbord-theme');
             if (savedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
                 themeIcon.className = 'fas fa-sun';
+                settingsToggleSpan.style.transform = 'translateX(-24px)';
             }
 
-            themeToggleBtn.addEventListener('click', () => {
+            // دالة التبديل الموحدة
+            function toggleTheme() {
                 document.body.classList.toggle('dark-mode');
                 const isDark = document.body.classList.contains('dark-mode');
                 localStorage.setItem('dashbord-theme', isDark ? 'dark' : 'light');
                 themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                settingsToggleSpan.style.transform = isDark ? 'translateX(-24px)' : 'translateX(0)';
+            }
+
+            themeToggleBtn.addEventListener('click', toggleTheme);
+            settingsThemeToggle.addEventListener('click', toggleTheme);
+
+            // ==========================================
+            // 4. تثبيت التطبيق (PWA)
+            // ==========================================
+            let deferredPrompt = null;
+            const installBtn = document.getElementById('installBtn');
+            const installMessage = document.getElementById('installMessage');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installBtn.disabled = false;
+                installBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                installMessage.classList.add('hidden');
+            });
+
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const result = await deferredPrompt.userChoice;
+                    if (result.outcome === 'accepted') {
+                        installMessage.innerText = '✅ تم تثبيت التطبيق بنجاح!';
+                        installMessage.classList.remove('hidden', 'text-red-500');
+                        installMessage.classList.add('text-green-600');
+                    } else {
+                        installMessage.innerText = '❌ تم إلغاء التثبيت.';
+                        installMessage.classList.remove('hidden', 'text-green-600');
+                        installMessage.classList.add('text-red-500');
+                    }
+                    deferredPrompt = null;
+                    installBtn.disabled = true;
+                } else {
+                    // المتصفح لا يدعم التثبيت التلقائي
+                    installMessage.innerText = '⚠️ المتصفح لا يدعم التثبيت التلقائي. يمكنك إضافة الموقع إلى الشاشة الرئيسية يدوياً من قائمة المتصفح.';
+                    installMessage.classList.remove('hidden', 'text-green-600', 'text-red-500');
+                    installMessage.classList.add('text-yellow-600');
+                }
             });
 
             // ==========================================
-            // 3. جلب بيانات المستخدم
+            // 5. جلب بيانات المستخدم والإعلانات والإحصائيات
             // ==========================================
             async function loadUserData() {
                 try {
@@ -691,9 +707,6 @@
                 }
             }
 
-            // ==========================================
-            // 4. جلب الإعلانات
-            // ==========================================
             async function loadAnnouncements() {
                 const container = document.getElementById('dropdown-announcements');
                 const badge = document.getElementById('notification-badge');
@@ -790,9 +803,6 @@
 
             function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
 
-            // ==========================================
-            // 5. تحديث البادج
-            // ==========================================
             function updateBadge() {
                 const badge = document.getElementById('notification-badge');
                 const countLabel = document.getElementById('notif-count-label');
@@ -808,9 +818,6 @@
                 }
             }
 
-            // ==========================================
-            // 6. المودال
-            // ==========================================
             window.openAnnouncementModal = function(announcement) {
                 const modal = document.getElementById('announcement-modal');
                 document.getElementById('modal-title').innerText = announcement.title;
@@ -880,9 +887,6 @@
                 }
             }
 
-            // ==========================================
-            // 7. التحكم في القائمة المنسدلة
-            // ==========================================
             function toggleNotificationDropdown() {
                 const dropdown = document.getElementById('notification-dropdown');
                 dropdown.classList.toggle('open');
@@ -892,9 +896,6 @@
                 document.getElementById('notification-dropdown').classList.remove('open');
             };
 
-            // ==========================================
-            // 8. جلب الإحصائيات
-            // ==========================================
             async function loadStats() {
                 try {
                     let teachersCount = 0, groupsCount = 0, studentsCount = 0, messagesCount = 0;
@@ -928,16 +929,13 @@
                 }
             }
 
-            // ==========================================
-            // 9. تسجيل الخروج
-            // ==========================================
             async function logout() {
                 await supabaseClient.auth.signOut();
                 window.location.href = "index.html";
             }
 
             // ==========================================
-            // 10. بدء التشغيل
+            // 6. بدء التشغيل
             // ==========================================
             document.addEventListener('DOMContentLoaded', async () => {
                 try {
@@ -981,6 +979,7 @@
                         }
                     });
 
+                    // التأكد من أن الصفحة الرئيسية هي الظاهرة
                     window.showHomeView();
                 } catch (err) {
                     console.error("خطأ في بدء التشغيل:", err);
