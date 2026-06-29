@@ -3,159 +3,467 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>لوحة الأدمن المتكاملة - المحاضرات والإعلانات</title>
+    <title>ديموفر | لوحة الإدارة</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { 
+                    fontFamily: { sans: ['Cairo', 'sans-serif'] }, 
+                    colors: { primary: '#2563eb', secondary: '#f97316' } 
+                }
+            }
+        }
+    </script>
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
-        body { background: #f0f9ff; padding: 30px 20px; direction: rtl; }
-        .container { max-width: 1300px; margin: auto; }
-        .card { background: white; border-radius: 28px; padding: 24px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        h2 { color: #1e293b; margin-bottom: 20px; border-right: 5px solid #3b82f6; padding-right: 15px; display: flex; align-items: center; gap: 10px; }
-        .form-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 15px; align-items: center; }
-        input, select, textarea { padding: 12px; border-radius: 40px; border: 1px solid #cbd5e1; flex: 1; font-family: inherit; }
-        textarea { border-radius: 20px; resize: vertical; }
-        button { background: #3b82f6; color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        button:hover { background: #2563eb; transform: scale(0.97); }
-        .delete-btn { background: #ef4444; }
-        .delete-btn:hover { background: #dc2626; }
-        .toggle-btn { background: #f59e0b; }
-        .toggle-btn:hover { background: #d97706; }
-        .item-list { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .item { background: #f8fafc; padding: 12px 20px; border-radius: 60px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .teacher-avatar-preview { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #e2e8f0; }
-        .preview-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #3b82f6; }
-        .announcement-thumb { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; background: #cbd5e1; }
-        .badge { background: #10b981; color: white; font-size: 0.7rem; padding: 4px 10px; border-radius: 50px; }
-        .badge-hidden { background: #94a3b8; }
-        @media (max-width: 640px) { .item { flex-direction: column; align-items: flex-start; } }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+        .admin-card {
+            transition: all 0.2s ease;
+        }
+        .admin-card:hover {
+            box-shadow: 0 12px 30px -12px rgba(37, 99, 235, 0.15);
+        }
+        .back-btn {
+            transition: all 0.2s ease;
+        }
+        .back-btn:hover {
+            transform: translateX(-4px);
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        .admin-input {
+            transition: all 0.2s ease;
+        }
+        .admin-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+        
+        /* =========================================== */
+        /* تخصيص احترافي للقوائم المنسدلة               */
+        /* =========================================== */
+        .admin-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            
+            /* سهم مخصص بتقنية SVG */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 1.25rem center;
+            background-size: 1.2rem;
+            padding-left: 3.2rem;
+            
+            /* تصميم أساسي أنيق */
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            line-height: 1.5;
+            min-height: 54px;
+            width: 100%;
+        }
+
+        .admin-select:hover {
+            border-color: #94a3b8;
+            background-color: #fafafa;
+        }
+
+        .admin-select:focus {
+            border-color: #2563eb;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px) scale(1.01);
+            
+            /* تغيير لون السهم عند التركيز */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        }
+
+        /* تنسيق الخيارات الداخلية */
+        .admin-select option {
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: 'Cairo', sans-serif;
+            background-color: #ffffff;
+            color: #1e293b;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.15s ease;
+            min-height: 44px;
+        }
+
+        .admin-select option:hover,
+        .admin-select option:focus,
+        .admin-select option:active,
+        .admin-select option:checked {
+            background: #eff6ff !important;
+            color: #1e4b6e;
+        }
+
+        /* تخصيص لمتصفح Firefox */
+        .admin-select:-moz-focusring {
+            color: transparent;
+            text-shadow: 0 0 0 #1e293b;
+        }
+
+        /* تخصيص لمتصفح Chrome/Edge لإزالة الإطار الأزرق الافتراضي */
+        .admin-select:focus-visible {
+            outline: none;
+        }
+        
+        .admin-btn {
+            transition: all 0.2s ease;
+        }
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -8px rgba(37, 99, 235, 0.3);
+        }
+        .admin-btn:active {
+            transform: scale(0.97);
+        }
+        .delete-btn {
+            transition: all 0.2s ease;
+        }
+        .delete-btn:hover {
+            transform: scale(0.95);
+        }
+        .toggle-btn {
+            transition: all 0.2s ease;
+        }
+        .toggle-btn:hover {
+            transform: scale(0.95);
+        }
+        .item-row {
+            transition: all 0.2s ease;
+        }
+        .item-row:hover {
+            background: #f8fafc;
+        }
+        .teacher-avatar-preview {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e2e8f0;
+            border: 2px solid #e2e8f0;
+        }
+        .announcement-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.75rem;
+            object-fit: cover;
+            background: #e2e8f0;
+            border: 1px solid #e2e8f0;
+        }
+        .badge-visible {
+            background: #10b981;
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 2rem;
+        }
+        .badge-hidden {
+            background: #94a3b8;
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 2rem;
+        }
+        @media (max-width: 640px) {
+            .item-row {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 0.75rem;
+            }
+            .item-row .item-actions {
+                justify-content: flex-start !important;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1 style="margin-bottom: 25px;"><i class="fas fa-shield-alt"></i> لوحة الأدمن المتكاملة</h1>
+
+<div class="max-w-6xl mx-auto">
     
-    <!-- ========== قسم إدارة الإعلانات ========== -->
-    <div class="card">
-        <h2><i class="fas fa-bullhorn"></i> إدارة الإعلانات</h2>
-        <div class="form-row">
-            <input type="text" id="annTitle" placeholder="عنوان الإعلان (مثال: تحديث المنصة)">
-            <textarea id="annContent" placeholder="نص الإعلان التفصيلي" rows="2"></textarea>
+    <!-- الهيدر -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                <i class="fas fa-shield-alt text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-800">لوحة الإدارة</h1>
+                <p class="text-sm text-slate-500">تحكم كامل بالمحتوى التعليمي</p>
+            </div>
         </div>
-        <div class="form-row">
-            <input type="url" id="annImageUrl" placeholder="رابط الصورة (اختياري)">
-            <button id="uploadAnnImageBtn" style="background:#10b981;"><i class="fas fa-cloud-upload-alt"></i> رفع صورة</button>
+        <a href="dashbord.html" class="back-btn inline-flex items-center gap-2 bg-white border border-gray-200 px-5 py-2.5 rounded-full font-semibold text-slate-600 hover:text-primary transition shadow-sm">
+            <i class="fas fa-arrow-right"></i> العودة للرئيسية
+        </a>
+    </div>
+
+    <!-- ===== القسم 1: الإعلانات ===== -->
+    <div class="admin-card bg-white rounded-3xl shadow-sm border border-gray-100 p-6 mb-6">
+        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-3 border-r-4 border-primary pr-4 mb-5">
+            <i class="fas fa-bullhorn text-primary"></i> إدارة الإعلانات
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="text-sm font-semibold text-slate-600 block mb-1"><i class="fas fa-heading text-primary ml-1"></i> عنوان الإعلان</label>
+                <input type="text" id="annTitle" placeholder="مثال: تحديث المنصة" class="admin-input w-full px-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-slate-700 text-sm">
+            </div>
+            <div>
+                <label class="text-sm font-semibold text-slate-600 block mb-1"><i class="fas fa-align-left text-primary ml-1"></i> نص الإعلان</label>
+                <textarea id="annContent" placeholder="نص الإعلان التفصيلي" rows="2" class="admin-input w-full px-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-slate-700 text-sm resize-y"></textarea>
+            </div>
+        </div>
+        
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+            <input type="url" id="annImageUrl" placeholder="رابط الصورة (اختياري)" class="admin-input flex-1 min-w-[200px] px-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-slate-700 text-sm">
+            <button id="uploadAnnImageBtn" class="admin-btn bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm">
+                <i class="fas fa-cloud-upload-alt"></i> رفع صورة
+            </button>
             <input type="file" id="annImageFile" accept="image/*" style="display: none;">
         </div>
-        <div class="form-row">
-            <label><input type="checkbox" id="annIsVisible" checked> مرئي للطلاب</label>
-            <button id="addAnnouncementBtn" style="background:#3b82f6;">➕ نشر إعلان</button>
+        
+        <div class="flex flex-wrap items-center gap-4 mb-4">
+            <label class="flex items-center gap-2 text-sm font-semibold text-slate-600 cursor-pointer">
+                <input type="checkbox" id="annIsVisible" checked class="w-4 h-4 text-primary rounded border-gray-300">
+                مرئي للطلاب
+            </label>
+            <button id="addAnnouncementBtn" class="admin-btn bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm">
+                <i class="fas fa-plus"></i> نشر إعلان
+            </button>
         </div>
-        <div id="announcementsList" class="item-list">
-            <div>جاري تحميل الإعلانات...</div>
+        
+        <div class="border-t border-gray-100 pt-4 mt-2">
+            <p class="text-sm font-semibold text-slate-600 mb-3"><i class="fas fa-list text-primary ml-1"></i> الإعلانات المنشورة</p>
+            <div id="announcementsList" class="space-y-2">
+                <div class="text-center text-slate-500 py-6 text-sm">جاري تحميل الإعلانات...</div>
+            </div>
         </div>
     </div>
 
-    <!-- قسم المدرسين -->
-    <div class="card">
-        <h2><i class="fas fa-user-tie"></i> إدارة المدرسين</h2>
-        <div class="form-row">
-            <input type="text" id="teacherName" placeholder="اسم المدرس">
-            <textarea id="teacherBio" placeholder="نبذة قصيرة" rows="1"></textarea>
+    <!-- ===== القسم 2: المدرسين ===== -->
+    <div class="admin-card bg-white rounded-3xl shadow-sm border border-gray-100 p-6 mb-6">
+        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-3 border-r-4 border-primary pr-4 mb-5">
+            <i class="fas fa-user-tie text-primary"></i> إدارة المدرسين
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="text-sm font-semibold text-slate-600 block mb-1"><i class="fas fa-user text-primary ml-1"></i> اسم المدرس</label>
+                <input type="text" id="teacherName" placeholder="اسم المدرس" class="admin-input w-full px-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-slate-700 text-sm">
+            </div>
+            <div>
+                <label class="text-sm font-semibold text-slate-600 block mb-1"><i class="fas fa-info-circle text-primary ml-1"></i> نبذة قصيرة</label>
+                <textarea id="teacherBio" placeholder="نبذة عن المدرس" rows="1" class="admin-input w-full px-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-slate-700 text-sm resize-y"></textarea>
+            </div>
         </div>
-        <div class="form-row image-upload">
-            <input type="file" id="teacherAvatarFile" accept="image/*">
-            <img id="avatarPreview" class="preview-img" src="" style="display: none;">
-            <button id="uploadAvatarBtn" style="background: #10b981;">رفع صورة المدرس</button>
+        
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+            <div class="flex items-center gap-3 flex-1 min-w-[200px]">
+                <input type="file" id="teacherAvatarFile" accept="image/*" class="text-sm text-slate-500">
+                <img id="avatarPreview" class="teacher-avatar-preview" src="" style="display: none;">
+            </div>
+            <button id="uploadAvatarBtn" class="admin-btn bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm">
+                <i class="fas fa-upload"></i> رفع صورة
+            </button>
+            <button id="addTeacherBtn" class="admin-btn bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm">
+                <i class="fas fa-plus"></i> إضافة مدرس
+            </button>
         </div>
-        <div class="form-row">
-            <button id="addTeacherBtn">➕ إضافة مدرس</button>
+        
+        <div class="border-t border-gray-100 pt-4 mt-2">
+            <p class="text-sm font-semibold text-slate-600 mb-3"><i class="fas fa-list text-primary ml-1"></i> المدرسون المسجلون</p>
+            <div id="teachersList" class="space-y-2"></div>
         </div>
-        <div id="teachersList" class="item-list"></div>
     </div>
 
-    <!-- قسم الفصول -->
-    <div class="card">
-        <h2><i class="fas fa-layer-group"></i> إدارة الفصول</h2>
-        <div class="form-row">
-            <select id="teacherSelectForClass"></select>
-            <input type="text" id="className" placeholder="اسم الفصل (مثال: الفصل الأول)">
-            <input type="number" id="classOrder" placeholder="ترتيب" value="0">
-            <button id="addClassBtn">📚 إضافة فصل</button>
+    <!-- ===== القسم 3: الفصول ===== -->
+    <div class="admin-card bg-white rounded-3xl shadow-sm border border-gray-100 p-6 mb-6">
+        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-3 border-r-4 border-primary pr-4 mb-5">
+            <i class="fas fa-layer-group text-primary"></i> إدارة الفصول
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+                <label class="text-sm font-semibold text-slate-600 block mb-1"><i class="fas fa-user-tie text-primary ml-1"></i> المدرس</label>
+                <select id="teacherSelectForClass" class="admin-select">
+                    <option value="">اختر المدرس</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-sm font-semibold text-slate-600 block mb-1"><i class="fas fa-folder text-primary ml-1"></i> اسم الفصل</label>
+                <input type="text" id="className" placeholder="مثال: الفصل الأول" class="admin-input w-full px-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-slate-700 text-sm">
+            </div>
+            <div>
+                <label class="text-sm font-semibold text-slate-600 block mb-1"><i class="fas fa-sort-numeric-down text-primary ml-1"></i> الترتيب</label>
+                <div class="flex gap-2">
+                    <input type="number" id="classOrder" placeholder="0" value="0" class="admin-input flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-slate-700 text-sm">
+                    <button id="addClassBtn" class="admin-btn bg-primary hover:bg-primary/90 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm whitespace-nowrap">
+                        <i class="fas fa-plus"></i> إضافة
+                    </button>
+                </div>
+            </div>
         </div>
-        <div id="classesList" class="item-list"></div>
+        
+        <div class="border-t border-gray-100 pt-4 mt-2">
+            <p class="text-sm font-semibold text-slate-600 mb-3"><i class="fas fa-list text-primary ml-1"></i> الفصول المسجلة</p>
+            <div id="classesList" class="space-y-2"></div>
+        </div>
     </div>
 
-    <!-- قسم المحاضرات -->
-    <div class="card">
-        <h2><i class="fas fa-video"></i> إدارة المحاضرات</h2>
-        <div class="form-row">
-            <select id="teacherSelectForLecture"></select>
-            <select id="classSelectForLecture"></select>
+    <!-- ===== القسم 4: المحاضرات ===== -->
+    <div class="admin-card bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-3 border-r-4 border-primary pr-4 mb-5">
+            <i class="fas fa-video text-primary"></i> إدارة المحاضرات
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="text-sm font-semibold text-slate-600 block mb-1"><i class="fas fa-user-tie text-primary ml-1"></i> المدرس</label>
+                <select id="teacherSelectForLecture" class="admin-select">
+                    <option value="">اختر المدرس</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-sm font-semibold text-slate-600 block mb-1"><i class="fas fa-layer-group text-primary ml-1"></i> الفصل</label>
+                <select id="classSelectForLecture" class="admin-select">
+                    <option value="">اختر المدرس أولاً</option>
+                </select>
+            </div>
         </div>
-        <div class="form-row">
-            <input type="text" id="lectureTitle" placeholder="عنوان المحاضرة">
-            <input type="url" id="lectureUrl" placeholder="رابط يوتيوب">
-            <button id="addLectureBtn">🎥 إضافة محاضرة</button>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+                <label class="text-sm font-semibold text-slate-600 block mb-1"><i class="fas fa-heading text-primary ml-1"></i> عنوان المحاضرة</label>
+                <input type="text" id="lectureTitle" placeholder="عنوان المحاضرة" class="admin-input w-full px-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-slate-700 text-sm">
+            </div>
+            <div class="md:col-span-2">
+                <label class="text-sm font-semibold text-slate-600 block mb-1"><i class="fas fa-link text-primary ml-1"></i> رابط يوتيوب</label>
+                <div class="flex gap-2">
+                    <input type="url" id="lectureUrl" placeholder="https://youtube.com/..." class="admin-input flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-slate-700 text-sm">
+                    <button id="addLectureBtn" class="admin-btn bg-primary hover:bg-primary/90 text-white px-5 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm whitespace-nowrap">
+                        <i class="fas fa-plus"></i> إضافة
+                    </button>
+                </div>
+            </div>
         </div>
-        <div id="lecturesList" class="item-list"></div>
+        
+        <div class="border-t border-gray-100 pt-4 mt-2">
+            <p class="text-sm font-semibold text-slate-600 mb-3"><i class="fas fa-list text-primary ml-1"></i> المحاضرات المسجلة</p>
+            <div id="lecturesList" class="space-y-2"></div>
+        </div>
     </div>
 </div>
 
 <script>
-    const supabaseClient = supabase.createClient(
-        'https://kuepdppngskwkmhyhohq.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI'
-    );
-
+    // ============================================================
+    //  إعدادات Supabase
+    // ============================================================
+    const SUPABASE_URL = 'https://kuepdppngskwkmhyhohq.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1ZXBkcHBuZ3Nrd2ttaHlob2hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MTUwNzEsImV4cCI6MjA5NTQ5MTA3MX0.USRz4LrPf7bYf5eo6sP5Ay72OiwfcZ2ZpFKFi7lqKQI';
+    
+    if (typeof supabase === 'undefined') {
+        alert('خطأ في تحميل مكتبة Supabase');
+        throw new Error('Supabase not loaded');
+    }
+    
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let teachers = [], classrooms = [], announcements = [];
 
-    // ========== دوال الإعلانات ==========
+    // ============================================================
+    //  دوال مساعدة
+    // ============================================================
+    function escapeHtml(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    // ============================================================
+    //  دوال الإعلانات
+    // ============================================================
     async function loadAnnouncements() {
-        const { data, error } = await supabaseClient.from('announcements').select('*').order('created_at', { ascending: false });
-        if (error) console.error(error);
+        const { data, error } = await sb
+            .from('announcements')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) { console.error(error); return; }
         announcements = data || [];
         renderAnnouncements();
     }
+
     function renderAnnouncements() {
         const container = document.getElementById('announcementsList');
-        if (!announcements.length) { container.innerHTML = '<div>لا توجد إعلانات بعد. أضف إعلانك الأول!</div>'; return; }
+        if (!announcements.length) {
+            container.innerHTML = '<div class="text-center text-slate-500 py-4 text-sm">لا توجد إعلانات بعد</div>';
+            return;
+        }
         container.innerHTML = announcements.map(ann => `
-            <div class="item">
-                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                    ${ann.image_url ? `<img src="${ann.image_url}" class="announcement-thumb" onerror="this.style.display='none'">` : '<i class="fas fa-image" style="color:#94a3b8;"></i>'}
-                    <div>
-                        <strong>${escapeHtml(ann.title)}</strong><br>
-                        <small>${escapeHtml(ann.content.substring(0, 80))}${ann.content.length > 80 ? '…' : ''}</small><br>
-                        <span class="badge ${!ann.is_visible ? 'badge-hidden' : ''}">${ann.is_visible ? 'مرئي' : 'مخفي'}</span>
+            <div class="item-row bg-slate-50 rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 border border-gray-100">
+                <div class="flex items-center gap-3 flex-1 min-w-[200px]">
+                    ${ann.image_url 
+                        ? `<img src="${ann.image_url}" class="announcement-thumb" onerror="this.style.display='none'">` 
+                        : `<div class="w-12 h-12 rounded-xl bg-slate-200 flex items-center justify-center text-slate-400"><i class="fas fa-image"></i></div>`}
+                    <div class="flex-1 min-w-0">
+                        <p class="font-bold text-slate-700 text-sm truncate">${escapeHtml(ann.title)}</p>
+                        <p class="text-xs text-slate-500 truncate">${escapeHtml(ann.content.substring(0, 60))}${ann.content.length > 60 ? '…' : ''}</p>
+                        <span class="${ann.is_visible ? 'badge-visible' : 'badge-hidden'} text-xs">${ann.is_visible ? 'مرئي' : 'مخفي'}</span>
                     </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="toggle-btn" onclick="toggleAnnouncementVisibility('${ann.id}', ${!ann.is_visible})">${ann.is_visible ? 'إخفاء' : 'إظهار'}</button>
-                    <button class="delete-btn" onclick="deleteAnnouncement('${ann.id}')">حذف</button>
+                <div class="flex items-center gap-2 item-actions">
+                    <button class="toggle-btn bg-amber-500 hover:bg-amber-600 text-white px-4 py-1.5 rounded-full text-xs font-bold" onclick="toggleAnnouncementVisibility('${ann.id}', ${!ann.is_visible})">
+                        ${ann.is_visible ? 'إخفاء' : 'إظهار'}
+                    </button>
+                    <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-full text-xs font-bold" onclick="deleteAnnouncement('${ann.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
             </div>
         `).join('');
     }
+
     window.toggleAnnouncementVisibility = async (id, newVisibility) => {
-        const { error } = await supabaseClient.from('announcements').update({ is_visible: newVisibility }).eq('id', id);
+        const { error } = await sb.from('announcements').update({ is_visible: newVisibility }).eq('id', id);
         if (error) alert(error.message);
         else loadAnnouncements();
     };
+
     window.deleteAnnouncement = async (id) => {
         if (!confirm('هل أنت متأكد من حذف هذا الإعلان؟')) return;
-        const { error } = await supabaseClient.from('announcements').delete().eq('id', id);
+        const { error } = await sb.from('announcements').delete().eq('id', id);
         if (error) alert(error.message);
         else loadAnnouncements();
     };
+
     async function addAnnouncement() {
         const title = document.getElementById('annTitle').value.trim();
         const content = document.getElementById('annContent').value.trim();
         const image_url = document.getElementById('annImageUrl').value.trim();
         const is_visible = document.getElementById('annIsVisible').checked;
         if (!title || !content) { alert('الرجاء كتابة العنوان والمحتوى'); return; }
-        const { error } = await supabaseClient.from('announcements').insert([{ title, content, image_url: image_url || null, is_visible }]);
+        const { error } = await sb.from('announcements').insert([{ title, content, image_url: image_url || null, is_visible }]);
         if (error) alert(error.message);
         else {
             document.getElementById('annTitle').value = '';
@@ -163,108 +471,71 @@
             document.getElementById('annImageUrl').value = '';
             document.getElementById('annIsVisible').checked = true;
             loadAnnouncements();
+            alert('✅ تم نشر الإعلان بنجاح');
         }
     }
+
     async function uploadAnnouncementImage(file) {
         const fileExt = file.name.split('.').pop();
         const fileName = `ann_${Date.now()}.${fileExt}`;
-        const { data, error } = await supabaseClient.storage.from('announcements-images').upload(fileName, file);
+        const { data, error } = await sb.storage.from('announcements-images').upload(fileName, file);
         if (error) throw error;
-        const { data: { publicUrl } } = supabaseClient.storage.from('announcements-images').getPublicUrl(fileName);
+        const { data: { publicUrl } } = sb.storage.from('announcements-images').getPublicUrl(fileName);
         return publicUrl;
     }
-    document.getElementById('uploadAnnImageBtn')?.addEventListener('click', () => {
-        document.getElementById('annImageFile').click();
-    });
-    document.getElementById('annImageFile')?.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        try {
-            const url = await uploadAnnouncementImage(file);
-            document.getElementById('annImageUrl').value = url;
-            alert('تم رفع الصورة بنجاح! رابط الصورة جاهز.');
-        } catch (err) {
-            alert('فشل رفع الصورة: ' + err.message);
-        }
-        e.target.value = '';
-    });
 
-    // ========== دوال المدرسين والفصول والمحاضرات ==========
+    // ============================================================
+    //  دوال المدرسين
+    // ============================================================
     async function loadTeachers() {
-        const { data, error } = await supabaseClient.from('teachers').select('*').order('name');
-        if (error) console.error(error);
+        const { data, error } = await sb.from('teachers').select('*').order('name');
+        if (error) { console.error(error); return; }
         teachers = data || [];
         renderTeachers();
         renderTeacherSelects();
     }
-    async function loadClassrooms() {
-        const { data, error } = await supabaseClient.from('classrooms').select('*, teachers(name)').order('order_index');
-        if (error) console.error(error);
-        classrooms = data || [];
-        renderClasses();
-        filterClassesByTeacher();
-    }
-    async function loadLectures() {
-        const { data, error } = await supabaseClient.from('lectures').select('*, teachers(name), classrooms(name)').order('created_at', { ascending: false });
-        if (error) console.error(error);
-        renderLectures(data || []);
-    }
 
     function renderTeachers() {
         const container = document.getElementById('teachersList');
-        if (!teachers.length) { container.innerHTML = '<div>لا يوجد مدرسون</div>'; return; }
+        if (!teachers.length) {
+            container.innerHTML = '<div class="text-center text-slate-500 py-4 text-sm">لا يوجد مدرسون</div>';
+            return;
+        }
         container.innerHTML = teachers.map(t => `
-            <div class="item">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    ${t.avatar_url ? `<img src="${t.avatar_url}" class="teacher-avatar-preview" onerror="this.style.display='none'">` : '<i class="fas fa-chalkboard-user"></i>'}
-                    <div><strong>${escapeHtml(t.name)}</strong><br><small>${escapeHtml(t.bio) || ''}</small></div>
+            <div class="item-row bg-slate-50 rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 border border-gray-100">
+                <div class="flex items-center gap-3 flex-1 min-w-[200px]">
+                    ${t.avatar_url 
+                        ? `<img src="${t.avatar_url}" class="teacher-avatar-preview" onerror="this.style.display='none'">` 
+                        : `<div class="w-11 h-11 rounded-full bg-slate-200 flex items-center justify-center text-slate-400"><i class="fas fa-user-graduate"></i></div>`}
+                    <div>
+                        <p class="font-bold text-slate-700 text-sm">${escapeHtml(t.name)}</p>
+                        <p class="text-xs text-slate-500">${escapeHtml(t.bio) || ''}</p>
+                    </div>
                 </div>
-                <button class="delete-btn" onclick="deleteTeacher('${t.id}')">حذف</button>
+                <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-full text-xs font-bold" onclick="deleteTeacher('${t.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
         `).join('');
     }
+
     function renderTeacherSelects() {
-        const opts = `<option value="">اختر المدرس</option>` + teachers.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+        const opts = `<option value="">اختر المدرس</option>` + teachers.map(t => 
+            `<option value="${t.id}">${escapeHtml(t.name)}</option>`
+        ).join('');
         document.getElementById('teacherSelectForClass').innerHTML = opts;
         document.getElementById('teacherSelectForLecture').innerHTML = opts;
-    }
-    function renderClasses() {
-        const container = document.getElementById('classesList');
-        if (!classrooms.length) { container.innerHTML = '<div>لا توجد فصول</div>'; return; }
-        container.innerHTML = classrooms.map(c => `
-            <div class="item">
-                <div><strong>${escapeHtml(c.name)}</strong> (المدرس: ${c.teachers?.name || '?'}) - ترتيب: ${c.order_index}</div>
-                <button class="delete-btn" onclick="deleteClass('${c.id}')">حذف</button>
-            </div>
-        `).join('');
-    }
-    function renderLectures(lecturesData) {
-        const container = document.getElementById('lecturesList');
-        if (!lecturesData.length) { container.innerHTML = '<div>لا توجد محاضرات</div>'; return; }
-        container.innerHTML = lecturesData.map(l => `
-            <div class="item">
-                <div><strong>${escapeHtml(l.title)}</strong><br>المدرس: ${l.teachers?.name || '-'} | الفصل: ${l.classrooms?.name || '-'}<br><a href="${l.youtube_url}" target="_blank">▶️ مشاهدة</a></div>
-                <button class="delete-btn" onclick="deleteLecture('${l.id}')">حذف</button>
-            </div>
-        `).join('');
-    }
-    function filterClassesByTeacher() {
-        const teacherId = document.getElementById('teacherSelectForLecture').value;
-        const classSelect = document.getElementById('classSelectForLecture');
-        if (!teacherId) { classSelect.innerHTML = '<option value="">اختر المدرس أولاً</option>'; return; }
-        const filtered = classrooms.filter(c => c.teacher_id === teacherId);
-        classSelect.innerHTML = filtered.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
-        if (!filtered.length) classSelect.innerHTML = '<option value="">لا توجد فصول</option>';
     }
 
     async function uploadTeacherAvatar(file) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}.${fileExt}`;
-        const { data, error } = await supabaseClient.storage.from('teacher-avatars').upload(fileName, file);
+        const { data, error } = await sb.storage.from('teacher-avatars').upload(fileName, file);
         if (error) throw error;
-        const { data: { publicUrl } } = supabaseClient.storage.from('teacher-avatars').getPublicUrl(fileName);
+        const { data: { publicUrl } } = sb.storage.from('teacher-avatars').getPublicUrl(fileName);
         return publicUrl;
     }
+
     window.addTeacherWithAvatar = async () => {
         const name = document.getElementById('teacherName').value.trim();
         if (!name) return alert('أدخل اسم المدرس');
@@ -274,10 +545,9 @@
         if (fileInput.files.length > 0) {
             try {
                 avatarUrl = await uploadTeacherAvatar(fileInput.files[0]);
-                alert('تم رفع صورة المدرس');
             } catch (err) { alert('فشل رفع الصورة: ' + err.message); return; }
         }
-        const { error } = await supabaseClient.from('teachers').insert([{ name, bio, avatar_url: avatarUrl }]);
+        const { error } = await sb.from('teachers').insert([{ name, bio, avatar_url: avatarUrl }]);
         if (error) alert(error.message);
         else {
             document.getElementById('teacherName').value = '';
@@ -285,64 +555,154 @@
             document.getElementById('teacherAvatarFile').value = '';
             document.getElementById('avatarPreview').style.display = 'none';
             loadTeachers();
+            alert('✅ تم إضافة المدرس بنجاح');
         }
     };
+
+    window.deleteTeacher = async (id) => {
+        if (!confirm('سيتم حذف جميع فصوله ومحاضراته. هل أنت متأكد؟')) return;
+        const { error } = await sb.from('teachers').delete().eq('id', id);
+        if (error) alert('فشل حذف المدرس: ' + error.message);
+        else { loadTeachers(); loadClassrooms(); loadLectures(); }
+    };
+
+    // ============================================================
+    //  دوال الفصول
+    // ============================================================
+    async function loadClassrooms() {
+        const { data, error } = await sb
+            .from('classrooms')
+            .select('*, teachers(name)')
+            .order('order_index');
+        if (error) { console.error(error); return; }
+        classrooms = data || [];
+        renderClasses();
+        filterClassesByTeacher();
+    }
+
+    function renderClasses() {
+        const container = document.getElementById('classesList');
+        if (!classrooms.length) {
+            container.innerHTML = '<div class="text-center text-slate-500 py-4 text-sm">لا توجد فصول</div>';
+            return;
+        }
+        container.innerHTML = classrooms.map(c => `
+            <div class="item-row bg-slate-50 rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 border border-gray-100">
+                <div class="flex items-center gap-3 flex-1 min-w-[200px]">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-700 text-sm">${escapeHtml(c.name)}</p>
+                        <p class="text-xs text-slate-500">المدرس: ${c.teachers?.name || '?'} | ترتيب: ${c.order_index}</p>
+                    </div>
+                </div>
+                <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-full text-xs font-bold" onclick="deleteClass('${c.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    function filterClassesByTeacher() {
+        const teacherId = document.getElementById('teacherSelectForLecture').value;
+        const classSelect = document.getElementById('classSelectForLecture');
+        if (!teacherId) {
+            classSelect.innerHTML = '<option value="">اختر المدرس أولاً</option>';
+            return;
+        }
+        const filtered = classrooms.filter(c => c.teacher_id === teacherId);
+        classSelect.innerHTML = filtered.map(c => 
+            `<option value="${c.id}">${escapeHtml(c.name)}</option>`
+        ).join('');
+        if (!filtered.length) classSelect.innerHTML = '<option value="">لا توجد فصول</option>';
+    }
+
     window.addClass = async () => {
         const teacher_id = document.getElementById('teacherSelectForClass').value;
         const name = document.getElementById('className').value.trim();
         if (!teacher_id || !name) return alert('اختر المدرس واكتب اسم الفصل');
         const order_index = parseInt(document.getElementById('classOrder').value) || 0;
-        const { error } = await supabaseClient.from('classrooms').insert([{ teacher_id, name, order_index }]);
+        const { error } = await sb.from('classrooms').insert([{ teacher_id, name, order_index }]);
         if (error) alert(error.message);
-        else { document.getElementById('className').value = ''; loadClassrooms(); }
+        else {
+            document.getElementById('className').value = '';
+            document.getElementById('classOrder').value = '0';
+            loadClassrooms();
+            alert('✅ تم إضافة الفصل بنجاح');
+        }
     };
+
+    window.deleteClass = async (id) => {
+        if (!confirm('هل تريد حذف هذا الفصل؟')) return;
+        const { error } = await sb.from('classrooms').delete().eq('id', id);
+        if (error) alert('فشل حذف الفصل: ' + error.message);
+        else { loadClassrooms(); loadLectures(); }
+    };
+
+    // ============================================================
+    //  دوال المحاضرات
+    // ============================================================
+    async function loadLectures() {
+        const { data, error } = await sb
+            .from('lectures')
+            .select('*, teachers(name), classrooms(name)')
+            .order('created_at', { ascending: false });
+        if (error) { console.error(error); return; }
+        renderLectures(data || []);
+    }
+
+    function renderLectures(lecturesData) {
+        const container = document.getElementById('lecturesList');
+        if (!lecturesData.length) {
+            container.innerHTML = '<div class="text-center text-slate-500 py-4 text-sm">لا توجد محاضرات</div>';
+            return;
+        }
+        container.innerHTML = lecturesData.map(l => `
+            <div class="item-row bg-slate-50 rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 border border-gray-100">
+                <div class="flex items-center gap-3 flex-1 min-w-[200px]">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-bold text-slate-700 text-sm truncate">${escapeHtml(l.title)}</p>
+                        <p class="text-xs text-slate-500">المدرس: ${l.teachers?.name || '-'} | الفصل: ${l.classrooms?.name || '-'}</p>
+                        <a href="${l.youtube_url}" target="_blank" class="text-primary text-xs font-semibold hover:underline"><i class="fas fa-play ml-1"></i> مشاهدة</a>
+                    </div>
+                </div>
+                <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-full text-xs font-bold" onclick="deleteLecture('${l.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+
     window.addLectureAdvanced = async () => {
         const teacher_id = document.getElementById('teacherSelectForLecture').value;
         const classroom_id = document.getElementById('classSelectForLecture').value;
         const title = document.getElementById('lectureTitle').value.trim();
         const youtube_url = document.getElementById('lectureUrl').value.trim();
         if (!teacher_id || !classroom_id || !title || !youtube_url) return alert('املأ جميع الحقول');
-        const { error } = await supabaseClient.from('lectures').insert([{ teacher_id, classroom_id, title, youtube_url }]);
+        const { error } = await sb.from('lectures').insert([{ teacher_id, classroom_id, title, youtube_url }]);
         if (error) alert(error.message);
-        else { document.getElementById('lectureTitle').value = ''; document.getElementById('lectureUrl').value = ''; loadLectures(); }
+        else {
+            document.getElementById('lectureTitle').value = '';
+            document.getElementById('lectureUrl').value = '';
+            loadLectures();
+            alert('✅ تم إضافة المحاضرة بنجاح');
+        }
     };
 
-    // ========== دوال الحذف المعدلة (الجزء الأهم) ==========
-    window.deleteTeacher = async (id) => {
-        if (!confirm('سيتم حذف جميع فصوله ومحاضراته. هل أنت متأكد؟')) return;
-        const { error } = await supabaseClient.from('teachers').delete().eq('id', id);
-        if (error) {
-            alert('فشل حذف المدرس: ' + error.message);
-            console.error(error);
-        } else {
-            loadTeachers();
-            loadClassrooms();
-            loadLectures();
-        }
-    };
-    window.deleteClass = async (id) => {
-        if (!confirm('هل تريد حذف هذا الفصل؟')) return;
-        const { error } = await supabaseClient.from('classrooms').delete().eq('id', id);
-        if (error) {
-            alert('فشل حذف الفصل: ' + error.message);
-            console.error(error);
-        } else {
-            loadClassrooms();
-            loadLectures();  // لأن المحاضرات المرتبطة بالفصل قد تُحذف (cascade) أو تبقى، نحدّث كليهما
-        }
-    };
     window.deleteLecture = async (id) => {
         if (!confirm('هل تريد حذف هذه المحاضرة؟')) return;
-        const { error } = await supabaseClient.from('lectures').delete().eq('id', id);
-        if (error) {
-            alert('فشل حذف المحاضرة: ' + error.message);
-            console.error(error);
-        } else {
-            loadLectures();
-        }
+        const { error } = await sb.from('lectures').delete().eq('id', id);
+        if (error) alert('فشل حذف المحاضرة: ' + error.message);
+        else loadLectures();
     };
 
-    // معاينة صورة المدرس
+    // ============================================================
+    //  معاينة صورة المدرس
+    // ============================================================
     document.getElementById('teacherAvatarFile').addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -356,20 +716,50 @@
         }
     });
 
-    // ربط الأزرار
+    // ============================================================
+    //  رفع صورة الإعلان
+    // ============================================================
+    document.getElementById('uploadAnnImageBtn').addEventListener('click', () => {
+        document.getElementById('annImageFile').click();
+    });
+
+    document.getElementById('annImageFile').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+            const url = await uploadAnnouncementImage(file);
+            document.getElementById('annImageUrl').value = url;
+            alert('✅ تم رفع الصورة بنجاح!');
+        } catch (err) {
+            alert('فشل رفع الصورة: ' + err.message);
+        }
+        e.target.value = '';
+    });
+
+    // ============================================================
+    //  ربط الأزرار
+    // ============================================================
     document.getElementById('addAnnouncementBtn').onclick = addAnnouncement;
     document.getElementById('addTeacherBtn').onclick = addTeacherWithAvatar;
     document.getElementById('addClassBtn').onclick = addClass;
     document.getElementById('addLectureBtn').onclick = addLectureAdvanced;
     document.getElementById('teacherSelectForLecture').onchange = filterClassesByTeacher;
 
-    // تحميل كل البيانات
-    loadAnnouncements();
-    loadTeachers();
-    loadClassrooms();
-    loadLectures();
-
-    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+    // ============================================================
+    //  التحقق من الجلسة + بدء التشغيل
+    // ============================================================
+    (async function init() {
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) {
+            window.location.href = "index.html";
+            return;
+        }
+        await loadAnnouncements();
+        await loadTeachers();
+        await loadClassrooms();
+        await loadLectures();
+    })();
 </script>
+
 </body>
 </html>
